@@ -22,7 +22,7 @@ stages:
           hostID:
             - cd2dccc0-e4fc-4e87-9fd2-9aed81b4e264
         script:
-          - cd ~/mty/Job_Backend
+          - cd ~/Job_Backend
           - ./deploy.sh
         notify: []
         strategy:
