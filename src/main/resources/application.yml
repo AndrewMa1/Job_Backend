@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: Job_Backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: http://123.57.153.74:6379/Job?serverTimezone=UTC
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+  data:
+    redis:
+      host: 123.57.153.74
+      port: 6379
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+      password: yes
+#  mail:
+#    host: smtp.qq.com
+#    username: zpddd777@qq.com
+#    password: rtqymxjhzbshbeec
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_uuid
+
+logging:
+  level:
+    root: info
+
