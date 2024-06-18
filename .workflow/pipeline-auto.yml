@@ -1,0 +1,115 @@
+version: '1.0'
+name: pipeline-auto
+displayName: pipeline-auto
+triggers:
+  trigger: auto
+  push:
+    branches:
+      prefix:
+        - dev
+stages:
+  - name: maven-build
+    displayName: maven构建
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@maven
+        name: build_maven
+        displayName: Maven 构建
+        jdkVersion: '8'
+        mavenVersion: 3.8.8
+        commands:
+          - '# 功能：打包'
+          - '# 参数说明：'
+          - '#    -Dmaven.test.skip=true：跳过单元测试'
+          - '#    -U：每次构建检查依赖更新，可避免缓存中快照版本依赖不更新问题，但会牺牲部分性能'
+          - '#    -e -X ：打印调试信息，定位疑难构建问题时建议使用此参数构建'
+          - '#    -B：以batch模式运行，可避免日志打印时出现ArrayIndexOutOfBoundsException异常'
+          - '# 使用场景：打包项目且不需要执行单元测试时使用'
+          - mvn clean package -Dmaven.test.skip=true -U -e -X -B
+          - ''
+          - '# 功能：自定义settings配置'
+          - '# 使用场景：如需手工指定settings.xml，可使用如下方式'
+          - '# 注意事项：如无需自定义settings配置且需要私有依赖仓库，可在该任务配置《私有仓库》处添加私有依赖'
+          - '# mvn -U clean package -s ./settings.xml'
+          - ''
+        artifacts:
+          - name: BUILD_ARTIFACT
+            path:
+              - ./target
+        settings: []
+        caches:
+          - ~/.m2
+        notify: []
+        strategy:
+          retry: '0'
+  - name: stage-9885ac5e
+    displayName: 上传制品
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: publish@general_artifacts
+        name: publish_general_artifacts
+        displayName: 上传制品
+        dependArtifact: BUILD_ARTIFACT
+        artifactName: output
+        notify: []
+        strategy:
+          retry: '0'
+  - name: stage-2b694f01
+    displayName: 发布
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: publish@release_artifacts
+        name: publish_release_artifacts
+        displayName: 发布
+        dependArtifact: output
+        version: 1.0.0.0
+        autoIncrement: false
+        notify: []
+        strategy:
+          retry: '0'
+  - name: stage-f2705e13
+    displayName: 部署
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: deploy@agent
+        name: deploy_agent
+        displayName: 主机部署
+        hostGroupID:
+          ID: '1'
+          hostID:
+            - cd2dccc0-e4fc-4e87-9fd2-9aed81b4e264
+        deployArtifact:
+          - source: artifact
+            name: output
+            target: ~/Job_Backend/deploy
+            artifactRepository: default
+            artifactName: output
+            artifactVersion: latest
+        script:
+          - cd ~/Job_Backend/deploy
+          - ID=`ps -ef | grep Job_Backend-0.0.1-SNAPSHOT.jar | grep -v grep | awk ''{print $2}''`
+          - echo $ID
+          - for id in $ID
+          - do
+          - ' kill -9 $id'
+          - echo "kill $id"
+          - ' done'
+          - ''
+          - tar -zxvf output.tar.gz
+          - ' cd target'
+          - ''
+          - nohup java -jar Job_Backend-0.0.1-SNAPSHOT.jar --server.port=8080 &
+          - ''
+          - echo 'pipeline finished
+          - ''
+        notify: []
+        strategy:
+          retry: '0'
