@@ -20,7 +20,7 @@ stages:
         hostGroupID:
           ID: '1'
           hostID:
-            - cd2dccc0-e4fc-4e87-9fd2-9aed81b4e264
+            - 038364de-1ec4-44fe-936d-bf910d8c7d85
         script:
           - cd ~/Job_Backend
           - ./deploy.sh
