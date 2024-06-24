@@ -28,6 +28,9 @@ spring:
       group-id: Job_Back
       auto-offset-reset: earliest
       enable-auto-commit: true
+      auto-commit-interval: 100
+    listener:
+      missing-topics-fatal: true
 #  mail:
 #    host: smtp.qq.com
 #    username: zpddd777@qq.com
