@@ -21,7 +21,7 @@ public class KafkaConsumer {
     public void onMessage1(ConsumerRecord<?, ?> record){
         // 消费的哪个topic、partition的消息,打印出消息内容
         System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
-        redisTemplate.opsForValue().set("val","111");
+
     }
 
 }

@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: dev
   application:
     name: Job_Backend
   datasource:
@@ -16,9 +18,8 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 0
-      password: yes
   kafka:
-    bootstrap-servers: 123.57.153.74:9093
+    bootstrap-servers: 123.57.153.74:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
