@@ -38,15 +38,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private final RedisUtil redisUtil;
     @Autowired
     private UserMapper userMapper;
+
     @Override
     // 根据用户 ID 集合查询用户信息
     public List<User> getUsersInSet(Set<String> idSet) {
         List<User> users = new ArrayList<>();
-        for (String id:idSet) {
+        for (String id : idSet) {
             users.add(userMapper.selectById(id));
         }
         return users;
     }
+
+    public List<User> getUsers(Set<String> idSet) {
+        return baseMapper.selectBatchIds(idSet);
+    }
+
     @Override
     public ReturnProtocol login(LoginFormDTO loginForm) {
         //获取登录昵称和密码
@@ -55,16 +61,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //从数据库中获取user
         System.out.println(nickname);
         System.out.println(password);
-        User user=null;
-        try {
-            LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
-                    .eq(User::getNickname, nickname)
-                    .eq(User::getPassword, password);
 
-            user = baseMapper.selectOne(wrapper);
-        }catch (Exception e){
-            System.out.println(e.getMessage());
-        }
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
+                .eq(User::getNickname, nickname)
+                .eq(User::getPassword, password);
+
+        User user = baseMapper.selectOne(wrapper);
 
 
         if (user == null) {
@@ -94,7 +96,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = new User(nickname, name, password, education, interestJob);
         try {
             baseMapper.insert(user);
-            return new ReturnProtocol(true, "注册成功",registerDTO);
+            return new ReturnProtocol(true, "注册成功", registerDTO);
         } catch (MybatisPlusException e) {
             return new ReturnProtocol(false, "注册失败");
         }
@@ -183,12 +185,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    /**
+     *
+     * @param follower 被关注者,关系是user关注了follower
+     */
     @Override
     public ReturnProtocol follow(String follower) {
         String userId = UserHolder.getUser().getId();
         try {
-            //在用户的关注列表里面新增一个用户
-            redisUtil.lSet(RedisUtil.FOLLOW_LIST + follower, userId);
+            //在被关注者的粉丝列表里面新增当前用户
+            redisUtil.lSet(RedisUtil.FOLLOWER + follower, userId);
+            //在当前用户的关注列表里面新增被关注者
+            redisUtil.lSet(RedisUtil.FOLLOW + userId,follower);
             return new ReturnProtocol(true, "关注成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "关注失败");
