@@ -34,7 +34,6 @@ public class ChatController {
     @PostMapping("/sendMsg")
     public ReturnProtocol sendMessage(@RequestBody Message message) {
         message.setTimestamp(LocalDateTime.now().toString());
-        SendResult<String, Message> result = null;
             //发送消息到Kafka主题队列
         kafkaTemplate.send(topic, message);
         return new ReturnProtocol(true,"发送消息成功",message);
