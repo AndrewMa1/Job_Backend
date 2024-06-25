@@ -33,23 +33,23 @@ public class UserController {
         return userService.register(registerDTO);
     }
 
-    @PostMapping("update")
+    @PostMapping("update/age")
     public ReturnProtocol updateAge(@RequestParam Integer age) {
 
         return userService.updateAge(age);
     }
 
-    @PostMapping("update")
+    @PostMapping("update/intro")
     public ReturnProtocol updateIntro(@RequestParam String intro) {
         return userService.updateIntro(intro);
     }
 
-    @PostMapping("update")
+    @PostMapping("update/link")
     public ReturnProtocol updateLink(@RequestParam String link) {
         return userService.updateLink(link);
     }
 
-    @PostMapping("update")
+    @PostMapping("update/resume")
     public ReturnProtocol updateResume() {
         return userService.updateResume();
     }

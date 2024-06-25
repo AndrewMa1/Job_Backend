@@ -1,9 +1,11 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
+import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.Enum.EducationEnum;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
@@ -24,6 +26,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+    private final FirmMapper firmMapper;
 
     @Override
     public ReturnProtocol login(LoginFormDTO loginForm) {
@@ -101,5 +104,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         baseMapper.update(user, wrapper);
         log.info("update intro success " + id + " " + intro);
         return new ReturnProtocol(true, "更新简介成功");
+    }
+
+    @Override
+    public ReturnProtocol createFirm(Firm firm){
+        firmMapper.insert(firm);
+
+        return new ReturnProtocol(true,"创建公司成功");
     }
 }
