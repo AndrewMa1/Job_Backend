@@ -27,8 +27,8 @@ public class RedisUtil {
 
     public static final String KEY_FIRMCLERK = "clerk:";//存储公司自己的人
 
-    public static final String STAFF_LIST = "staff:list";
-    public static final String FOLLOW_LIST = "follow:list";
+    public static final String STAFF_LIST = "staff:list:";
+    public static final String FOLLOW_LIST = "follow:list:";
 
     public static final int LOGIN_USER_TTL = 60;
 
