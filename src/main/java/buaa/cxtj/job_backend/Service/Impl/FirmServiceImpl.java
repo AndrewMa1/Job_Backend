@@ -1,5 +1,7 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
+import buaa.cxtj.job_backend.Controller.Exception.HavePostException;
+import buaa.cxtj.job_backend.Controller.Exception.NoInPendingException;
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
@@ -12,6 +14,7 @@ import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
 
 import buaa.cxtj.job_backend.Service.UserService;
+import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -31,6 +34,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private FirmMapper firmMapper;
     @Autowired
     private EmployMapper employMapper;
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private RedisUtil redisUtil;
 
     @Override
     public ReturnProtocol createFirm( String name, String intro, String picture) {
@@ -64,6 +71,23 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         // 将查询结果转换为JobDTO对象列表
         List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
         return new ReturnProtocol(true,"", jobDTOList);
+    }
+
+    @Override
+    public void hireClerk(String user_id, String corporation_id, String post_id) {
+        User user = userMapper.selectById(user_id);
+        if(user.getCorporation()!=null){
+            throw new HavePostException("该用户已经有岗位");
+        }
+        if(!redisUtil.sHasKey(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id)){
+            throw new NoInPendingException("该员工未在该岗位待录取名单当中");
+        }
+        user.setJob(post_id);
+        user.setCorporation(corporation_id);
+        userMapper.updateById(user);
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
+        redisUtil.setRemove(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id);//若该成员被录用,则修改待录用列表中其值前面加个#
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,"#"+user_id);
     }
 
 

@@ -31,6 +31,8 @@ public class User {
     private Integer age;
     @TableField("job")
     private String job;
+    @TableField("corporation")
+    private String corporation;
 
 
     public User(String nickname, String name, String password, EducationEnum education, JobEnum interestJob) {

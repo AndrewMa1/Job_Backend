@@ -21,8 +21,12 @@ import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 
@@ -32,7 +36,17 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
     private final RedisUtil redisUtil;
-
+    @Autowired
+    private UserMapper userMapper;
+    @Override
+    // 根据用户 ID 集合查询用户信息
+    public List<User> getUsersInSet(Set<String> idSet) {
+        List<User> users = new ArrayList<>();
+        for (String id:idSet) {
+            users.add(userMapper.selectById(id));
+        }
+        return users;
+    }
     @Override
     public ReturnProtocol login(LoginFormDTO loginForm) {
         //获取登录昵称和密码
