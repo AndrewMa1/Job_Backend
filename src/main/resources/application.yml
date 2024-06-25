@@ -22,6 +22,11 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "buaa.cxtj.job_backend.POJO.Entity"
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -30,6 +35,11 @@ spring:
       enable-auto-commit: true
       auto-commit-interval: 100
       max-poll-records: 100
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "buaa.cxtj.job_backend.POJO.Entity"
     listener:
       missing-topics-fatal: true
 

@@ -10,11 +10,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.SendResult;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -23,6 +25,9 @@ public class ChatController {
 
     @Autowired
     KafkaTemplate<String,Message> kafkaTemplate;
+    @Autowired
+    SimpMessagingTemplate template;
+
 
     private final String topic = "chat";
 
@@ -41,16 +46,28 @@ public class ChatController {
         return new ReturnProtocol(true,"发送消息成功",message);
     }
 
+    @PostMapping("/getMsg")
+    public ReturnProtocol getMessages(@RequestBody Message message) {
+        message.setTimestamp(LocalDateTime.now().toString());
+        //发送消息到Kafka主题队列
+        kafkaTemplate.send(topic, message);
+        return new ReturnProtocol(true,"发送消息成功",message);
+    }
+
 
 //    @KafkaListener(topics = {"chat"},groupId = "chat_cons")
-//    public void onMessage(ConsumerRecord<?, ?> record){
+//    public void onMessage(Message message){
 //        // 消费的哪个topic、partition的消息,打印出消息内容
-//        System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
+//        template.convertAndSend("/topic/group", message);
 //
 //    }
-
-
-
+//
+//    @MessageMapping("/sendMessage")
+//    @SendTo("/topic/group")
+//    public Message broadcastGroupMessage(@Payload Message message) {
+////将此消息发送给所有订阅者
+//        return message;
+//    }
 
 
 
