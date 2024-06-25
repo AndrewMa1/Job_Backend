@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
@@ -33,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
     private final RedisUtil redisUtil;
+
     @Override
     public ReturnProtocol login(LoginFormDTO loginForm) {
         //获取登录昵称和密码
@@ -56,7 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String token = JWTUtil.createToken(BeanUtil.beanToMap(userDTO, false, true), "mty030806".getBytes());
             userDTO.setToken(token);
             //将登录信息存入Redis
-            redisUtil.set(RedisUtil.USER_TOKEN+token,userDTO.getId(),RedisUtil.LOGIN_USER_TTL, TimeUnit.MINUTES);
+            redisUtil.set(RedisUtil.USER_TOKEN + token, userDTO.getId(), RedisUtil.LOGIN_USER_TTL, TimeUnit.MINUTES);
             return new ReturnProtocol(true, userDTO);
         }
     }
@@ -72,8 +72,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         try {
             baseMapper.insert(user);
             return new ReturnProtocol(true, "注册成功");
-        }catch(MybatisPlusException e){
-            return new ReturnProtocol(false,"注册失败");
+        } catch (MybatisPlusException e) {
+            return new ReturnProtocol(false, "注册失败");
         }
     }
 
@@ -84,12 +84,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<User>()
                 .set(User::getLink, link)
                 .eq(User::getId, id);
-        try{
+        try {
             baseMapper.update(user, updateWrapper);
             log.info("update success " + id + " " + link);
             return new ReturnProtocol(true, "更新仓库/博客链接成功");
-        }catch (MybatisPlusException e){
-            return new ReturnProtocol(false,"更新仓库/博客链接失败");
+        } catch (MybatisPlusException e) {
+            return new ReturnProtocol(false, "更新仓库/博客链接失败");
         }
 
     }
@@ -97,6 +97,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     //TODO:上传简历文件
     @Override
     public ReturnProtocol updateResume() {
+
+
         return new ReturnProtocol(true, "上传简历成功");
     }
 
@@ -107,12 +109,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
                 .set(User::getAge, age)
                 .eq(User::getId, id);
-        try{
+        try {
             baseMapper.update(user, wrapper);
             log.info("update age success " + id + " " + age);
             return new ReturnProtocol(true, "更新年龄成功");
-        }catch (MybatisPlusException e){
-            return new ReturnProtocol(false,"更新年龄失败");
+        } catch (MybatisPlusException e) {
+            return new ReturnProtocol(false, "更新年龄失败");
         }
 
     }
@@ -124,53 +126,56 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
                 .set(User::getIntro, intro)
                 .eq(User::getId, id);
-        try{
+        try {
             baseMapper.update(user, wrapper);
             log.info("update intro success " + id + " " + intro);
             return new ReturnProtocol(true, "更新简介成功");
-        }catch (MybatisPlusException e){
-            return new ReturnProtocol(false,"更新简介失败");
+        } catch (MybatisPlusException e) {
+            return new ReturnProtocol(false, "更新简介失败");
         }
 
     }
 
     @Override
-    public ReturnProtocol addStaff(String firmId){
+    public ReturnProtocol addStaff(String firmId) {
         //获取当前登录的员工信息
         String staffId = UserHolder.getUser().getId();
         //TODO:使用Redis在企业的员工列表中新增员工
+        try {
+            redisUtil.lSet(RedisUtil.STAFF_LIST + firmId, staffId);
+            return new ReturnProtocol(true, "新增员工成功");
+        } catch (Exception e) {
+            return new ReturnProtocol(false, "添加失败");
+        }
 
-
-        return new ReturnProtocol(true,"新增员工成功");
     }
 
     @Override
-    public ReturnProtocol deleteStaff(String staffId){
+    public ReturnProtocol deleteStaff(String staffId) {
         //获取当前登录的管理员所对应的公司
         String managerId = UserHolder.getUser().getId();
         LambdaQueryWrapper<Firm> wrapper = new LambdaQueryWrapper<Firm>()
-                .eq(Firm::getManagerId,managerId);
+                .eq(Firm::getManagerId, managerId);
         String firmId = firmMapper.selectOne(wrapper).getId();
-        //TODO:使用Redis在企业的员工列表中删除员工
-
-        try{
-
-            return new ReturnProtocol(true,"删除员工成功");
-        }catch (Exception e){
-            return new ReturnProtocol(false,"删除员工失败");
+        try {
+            //TODO:使用Redis在企业的员工列表中删除员工
+            redisUtil.lRemove(RedisUtil.STAFF_LIST + firmId, 1, staffId);
+            return new ReturnProtocol(true, "删除员工成功");
+        } catch (Exception e) {
+            return new ReturnProtocol(false, "删除员工失败");
         }
     }
 
     @Override
-    public ReturnProtocol follow(String follower){
+    public ReturnProtocol follow(String follower) {
         String userId = UserHolder.getUser().getId();
         //TODO:在用户的关注列表里面新增一个用户
 
-        try{
-
-            return new ReturnProtocol(true,"关注成功");
-        }catch (Exception e){
-            return  new ReturnProtocol(false,"关注失败");
+        try {
+            redisUtil.lSet(RedisUtil.FOLLOW_LIST + follower, userId);
+            return new ReturnProtocol(true, "关注成功");
+        } catch (Exception e) {
+            return new ReturnProtocol(false, "关注失败");
         }
     }
 

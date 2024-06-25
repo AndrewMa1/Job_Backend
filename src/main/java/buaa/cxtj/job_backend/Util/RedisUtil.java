@@ -1,12 +1,15 @@
 package buaa.cxtj.job_backend.Util;
 
+import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -20,6 +23,8 @@ public class RedisUtil {
     public static final String USER_TOKEN = "user:token:";
     private static final String KEY_PREFIX = "lock:";
     public static final String KEY_FIRM = "firm:";
+    public static final String STAFF_LIST = "staff:list";
+    public static final String FOLLOW_LIST = "follow:list";
 
     public static final int LOGIN_USER_TTL = 60;
 

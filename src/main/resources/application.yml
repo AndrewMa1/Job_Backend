@@ -50,6 +50,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: assign_uuid
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
 
 file:
   upload-dir: src/main/resources/static/
