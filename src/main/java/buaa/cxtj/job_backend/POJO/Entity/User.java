@@ -42,5 +42,8 @@ public class User {
         this.education = education;
         this.interestJob = interestJob;
     }
+
+    public User() {
+    }
 }
 
