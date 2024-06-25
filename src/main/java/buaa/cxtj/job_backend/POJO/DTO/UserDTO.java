@@ -1,4 +1,2 @@
-package buaa.cxtj.job_backend.POJO.DTO;
-
-public class UserDTO {
+package buaa.cxtj.job_backend.POJO.DTO;public class UserDTO {
 }
