@@ -12,4 +12,11 @@ public class Firm {
     private String intro;           //企业简介
     private String picture;         //企业图片
     private String managerId;       //管理员Id
+
+    public Firm(String name, String intro, String picture, String managerId) {
+        this.name = name;
+        this.intro = intro;
+        this.picture = picture;
+        this.managerId = managerId;
+    }
 }
