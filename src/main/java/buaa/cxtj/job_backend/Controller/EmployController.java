@@ -18,8 +18,14 @@ public class EmployController {
     }
 
     @PostMapping("delivery")
-    public ReturnProtocol deliveryPost(@RequestParam String corporation_id,@RequestParam String user_id){
-        deliveryService.deliveryPostService(corporation_id,user_id);
+    public ReturnProtocol deliveryPost(@RequestParam String corporation_id,@RequestParam String user_id,@RequestParam String post_name){
+        deliveryService.deliveryPostService(corporation_id,user_id,post_name);
         return new ReturnProtocol(true,"投递成功");
     }
+
+    @GetMapping("queryEmployee")
+    public ReturnProtocol queryEmployee(){
+        return null;
+    }
+
 }
