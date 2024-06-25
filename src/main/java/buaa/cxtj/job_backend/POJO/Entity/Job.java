@@ -1,4 +1,5 @@
 package buaa.cxtj.job_backend.POJO.Entity;
+import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -20,6 +21,9 @@ public class Job {
     private String jobRequirements;
 
     private String jobCounts;
+
+    @TableField("job_desc")
+    private JobEnum jobDesc;
 
     @TableField(exist = false)
     private ArrayList<String> preEmployeeList;
