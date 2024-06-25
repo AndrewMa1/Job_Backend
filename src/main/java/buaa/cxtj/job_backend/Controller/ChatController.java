@@ -1,4 +1,48 @@
 package buaa.cxtj.job_backend.Controller;
 
+
+import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Message;
+import buaa.cxtj.job_backend.POJO.UserHolder;
+import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
+
+@RestController
+@RequestMapping("/api/chat")
+@Slf4j
 public class ChatController {
+
+    @Autowired
+    KafkaTemplate<String,Message> kafkaTemplate;
+
+    private final String topic = "chat";
+
+    @GetMapping("/getChatRooms")
+    public ReturnProtocol getChatRooms(){
+        UserDTO userDTO = UserHolder.getUser();
+
+        return null;
+    }
+
+    @PostMapping(value = "/sendMsg", consumes = "application/json", produces = "application/json")
+    public ReturnProtocol sendMessage(@RequestBody Message message) {
+        message.setTimestamp(LocalDateTime.now().toString());
+        SendResult<String, Message> result = null;
+        try {
+            //发送消息到Kafka主题队列
+            result = kafkaTemplate.send(topic, message).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return new ReturnProtocol(false,"发送消息失败");
+        }
+        return new ReturnProtocol(true,"发送消息成功",result.getProducerRecord().value().toString());
+    }
+
+
 }
