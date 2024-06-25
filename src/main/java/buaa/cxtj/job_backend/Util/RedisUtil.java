@@ -19,6 +19,8 @@ public class RedisUtil {
 
     public static final String USER_TOKEN = "user:token:";
     private static final String KEY_PREFIX = "lock:";
+    public static final String KEY_FIRM = "firm:";
+
     public static final int LOGIN_USER_TTL = 60;
 
 
