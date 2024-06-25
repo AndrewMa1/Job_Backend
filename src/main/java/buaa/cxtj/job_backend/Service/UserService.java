@@ -1,14 +1,11 @@
 package buaa.cxtj.job_backend.Service;
 
 
-import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
-import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Set;
@@ -26,7 +23,6 @@ public interface UserService extends IService<User> {
 
     ReturnProtocol updateLink(String link);
 
-    ReturnProtocol updateResume();
 
     ReturnProtocol updateAge(Integer age);
 

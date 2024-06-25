@@ -53,11 +53,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String nickname = loginForm.getNickname();
         String password = loginForm.getPassword();
         //从数据库中获取user
+        System.out.println(nickname);
+        System.out.println(password);
+        User user=null;
+        try {
+            LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
+                    .eq(User::getNickname, nickname)
+                    .eq(User::getPassword, password);
 
-        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
-                .eq(User::getNickname, nickname)
-                .eq(User::getPassword, password);
-        User user = baseMapper.selectOne(wrapper);
+            user = baseMapper.selectOne(wrapper);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
+
         if (user == null) {
             //失败返回错误
             return new ReturnProtocol(false, "user does NOT exist");
@@ -85,7 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = new User(nickname, name, password, education, interestJob);
         try {
             baseMapper.insert(user);
-            return new ReturnProtocol(true, "注册成功");
+            return new ReturnProtocol(true, "注册成功",registerDTO);
         } catch (MybatisPlusException e) {
             return new ReturnProtocol(false, "注册失败");
         }
@@ -98,6 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<User>()
                 .set(User::getLink, link)
                 .eq(User::getId, id);
+        System.out.println(user);
         try {
             baseMapper.update(user, updateWrapper);
             log.info("update success " + id + " " + link);
@@ -108,13 +118,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     }
 
-    //TODO:上传简历文件
-    @Override
-    public ReturnProtocol updateResume() {
-
-
-        return new ReturnProtocol(true, "上传简历成功");
-    }
 
     @Override
     public ReturnProtocol updateAge(Integer age) {
@@ -183,9 +186,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ReturnProtocol follow(String follower) {
         String userId = UserHolder.getUser().getId();
-        //TODO:在用户的关注列表里面新增一个用户
-
         try {
+            //在用户的关注列表里面新增一个用户
             redisUtil.lSet(RedisUtil.FOLLOW_LIST + follower, userId);
             return new ReturnProtocol(true, "关注成功");
         } catch (Exception e) {
