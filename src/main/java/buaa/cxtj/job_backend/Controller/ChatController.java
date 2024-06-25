@@ -42,12 +42,12 @@ public class ChatController {
     }
 
 
-    @KafkaListener(topics = {"chat"},groupId = "chat_cons")
-    public void onMessage(ConsumerRecord<?, ?> record){
-        // 消费的哪个topic、partition的消息,打印出消息内容
-        System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
-
-    }
+//    @KafkaListener(topics = {"chat"},groupId = "chat_cons")
+//    public void onMessage(ConsumerRecord<?, ?> record){
+//        // 消费的哪个topic、partition的消息,打印出消息内容
+//        System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
+//
+//    }
 
 
 
