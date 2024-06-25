@@ -12,7 +12,7 @@ public class ProjectExceptionAdvice {
 
     @ExceptionHandler(Exception.class)
     public ReturnProtocol doException(Exception ex){
-        return new ReturnProtocol(false,"未知异常"+ex.getMessage());
+        return new ReturnProtocol(false,ex.getMessage());
     }
 
 //    @ExceptionHandler(BusinessException.class)

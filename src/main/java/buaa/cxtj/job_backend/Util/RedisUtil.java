@@ -22,7 +22,11 @@ public class RedisUtil {
 
     public static final String USER_TOKEN = "user:token:";
     private static final String KEY_PREFIX = "lock:";
-    public static final String KEY_FIRM = "firm:";
+    public static final String KEY_FIRM = "firm:";//公司
+    public static final String KEY_FIRMPENDING = "pendingPerson:";//存储待录用的人
+
+    public static final String KEY_FIRMCLERK = "clerk:";//存储公司自己的人
+
     public static final String STAFF_LIST = "staff:list";
     public static final String FOLLOW_LIST = "follow:list";
 

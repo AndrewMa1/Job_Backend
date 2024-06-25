@@ -12,4 +12,6 @@ public interface FirmService extends IService<Firm> {
     ReturnProtocol showDynamic(String id);
 
     ReturnProtocol showRecruit(String id);
+
+    public void hireClerk(String user_id,String corporation_id,String post_id);
 }

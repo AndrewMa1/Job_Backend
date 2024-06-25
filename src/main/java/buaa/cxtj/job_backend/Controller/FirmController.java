@@ -30,4 +30,17 @@ public class FirmController {
     public ReturnProtocol showRecruit(@RequestParam String id){
         return firmService.showRecruit(id);
     }
+
+    /**
+     *
+     * @param user_id 录取的人的id
+     * @param corporation_id 录用公司id
+     * @param post_id 录取的岗位id
+     * @return
+     */
+    @PostMapping("/hire")
+    public ReturnProtocol hirePerson(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
+        firmService.hireClerk(user_id,corporation_id,post_id);
+        return new ReturnProtocol(true,"录用成功");
+    }
 }
