@@ -19,7 +19,7 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
 
 
     @Override
-    public void deliveryPostService(String corporation_id,String user_id) {
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id,user_id);
+    public void deliveryPostService(String corporation_id,String user_id,String post_name) {
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+post_name,user_id);
     }
 }
