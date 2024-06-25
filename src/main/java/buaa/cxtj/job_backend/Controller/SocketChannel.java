@@ -7,6 +7,8 @@ import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SocketChannel {
 
     // 保存链接的session，key为用户名,value为对应的session名
+    @Autowired
+    KafkaTemplate<String,Message> kafkaTemplate;
     private static ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<>();
 
     /**
@@ -51,16 +55,15 @@ public class SocketChannel {
         //根据message中的to属性获取接收消息的用户的session，利用其session将消息转发过去
         message.setTimestamp(LocalDateTime.now().toString());
         message.setFrom(userId);
+        String msgJson = JSONUtil.toJsonStr(message);
 
         Session toSession = sessionMap.get(message.getTo());
-        sendMessage(toSession, message);
+        sendMessage(toSession, msgJson);
 
-        try {
-            Session fromSession = sessionMap.get(userId);
-            fromSession.getBasicRemote().sendText(msg);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Session fromSession = sessionMap.get(userId);
+        sendMessage(fromSession, msgJson);
+
+
     }
 
 
@@ -92,9 +95,9 @@ public class SocketChannel {
     /**
      * 用来发送消息的方法，参数分别为接收消息的用户的session，和对应的消息
      */
-    private void sendMessage(Session toSession,Message msg){
+    private void sendMessage(Session toSession,String msgJson){
         try {
-            toSession.getBasicRemote().sendText(msg.getMsg());
+            toSession.getBasicRemote().sendText(msgJson);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

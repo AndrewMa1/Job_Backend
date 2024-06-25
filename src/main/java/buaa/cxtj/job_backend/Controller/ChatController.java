@@ -4,6 +4,7 @@ package buaa.cxtj.job_backend.Controller;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Message;
 import buaa.cxtj.job_backend.POJO.UserHolder;
+import buaa.cxtj.job_backend.Service.Impl.KafkaTopicServiceImpl;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -17,6 +18,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -27,6 +29,8 @@ public class ChatController {
     KafkaTemplate<String,Message> kafkaTemplate;
     @Autowired
     SimpMessagingTemplate template;
+    @Autowired
+    KafkaTopicServiceImpl kafkaTopicService;
 
 
     private final String topic = "chat";
@@ -36,6 +40,16 @@ public class ChatController {
         UserDTO userDTO = UserHolder.getUser();
 
         return null;
+    }
+
+    @GetMapping("/newChat/{to_id}")
+    public ReturnProtocol newChatRoom(@PathVariable("to_id")String to){
+        try {
+            kafkaTopicService.addPartitions(topic, 1);
+            return new ReturnProtocol(true,"success");
+        } catch (ExecutionException | InterruptedException e) {
+            return new ReturnProtocol(false,e.toString());
+        }
     }
 
     @PostMapping("/sendMsg")
