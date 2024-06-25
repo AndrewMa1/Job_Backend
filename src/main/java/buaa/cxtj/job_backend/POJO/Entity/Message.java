@@ -1,31 +1,19 @@
 package buaa.cxtj.job_backend.POJO.Entity;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message {
-    private String sender;
-    private String receiver;
-    private String content;
+    private Integer id;
+    private String from;
+    private String to;
+    private String msg;
     private String timestamp;
-
-    public Message() {
-    }
-
-
-    public Message(String sender, String content) {
-        this.sender = sender;
-        this.content = content;
-    }
-
-
-    @Override
-    public String toString() {
-        return "Message{" +
-                "sender='" + sender + '\'' +
-                ", content='" + content + '\'' +
-                ", timestamp='" + timestamp + '\'' +
-                '}';
-    }
+//    private Integer type;//消息发送的类型，0系统群发，1用户私聊
+//    private Integer is_read;//消息是否已读，0未读，1已读
 }
