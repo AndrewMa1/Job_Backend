@@ -25,5 +25,9 @@ public interface UserService extends IService<User> {
 
     ReturnProtocol updateIntro(String intro);
 
-    ReturnProtocol createFirm(Firm firm);
+    ReturnProtocol addStaff(String firmId);
+
+    ReturnProtocol deleteStaff(String staffId);
+
+    ReturnProtocol follow(String id);
 }
