@@ -1,13 +1,12 @@
 spring:
-  profiles:
-    active: dev
   application:
     name: Job_Backend
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: http://123.57.153.74:6379/Job?serverTimezone=UTC
+    url: http://123.57.153.74:3306/Job?serverTimezone=UTC
     username: root
     password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
   data:
     redis:
       host: 123.57.153.74
