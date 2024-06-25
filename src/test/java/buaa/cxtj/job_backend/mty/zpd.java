@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class zpd {
     @Autowired
-    private UserMapper firmMapper;
+    private FirmMapper firmMapper;
     @Test
     public void ss(){
         ;

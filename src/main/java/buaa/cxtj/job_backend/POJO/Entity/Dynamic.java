@@ -16,4 +16,11 @@ public class Dynamic {
     private int trans;              //转发量
     private String transId;         //被转发用户Id
 
+    public Dynamic( String userId, String content) {
+        this.userId = userId;
+        this.content = content;
+        this.agree = 0;
+        this.trans = 0;
+        this.transId = null;
+    }
 }
