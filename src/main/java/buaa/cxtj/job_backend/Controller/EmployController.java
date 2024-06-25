@@ -10,6 +10,6 @@ public class EmployController {
 
     @GetMapping(value = "/postInfo/{id}")
     public ReturnProtocol postJobInfo(@PathVariable String id){
-
+        return null;
     }
 }
