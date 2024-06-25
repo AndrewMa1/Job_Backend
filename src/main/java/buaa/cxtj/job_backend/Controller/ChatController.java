@@ -31,17 +31,13 @@ public class ChatController {
         return null;
     }
 
-    @PostMapping(value = "/sendMsg", consumes = "application/json", produces = "application/json")
+    @PostMapping("/sendMsg")
     public ReturnProtocol sendMessage(@RequestBody Message message) {
         message.setTimestamp(LocalDateTime.now().toString());
         SendResult<String, Message> result = null;
-        try {
             //发送消息到Kafka主题队列
-            result = kafkaTemplate.send(topic, message).get();
-        } catch (InterruptedException | ExecutionException e) {
-            return new ReturnProtocol(false,"发送消息失败");
-        }
-        return new ReturnProtocol(true,"发送消息成功",result.getProducerRecord().value().toString());
+        kafkaTemplate.send(topic, message);
+        return new ReturnProtocol(true,"发送消息成功",message);
     }
 
 
