@@ -12,12 +12,22 @@ public class FirmController {
     private final FirmService firmService;
 
     @PostMapping("/createFirm")
-    public ReturnProtocol createFirm(@RequestParam String id,@RequestParam String name,@RequestParam String intro,@RequestParam String picture){
-        return firmService.createFirm(id,name,intro,picture);
+    public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam String picture){
+        return firmService.createFirm(name,intro,picture);
     }
 
     @GetMapping("/showContent")
     public ReturnProtocol showContent(@RequestParam String id){
         return firmService.showContent(id);
+    }
+
+    @GetMapping("/showDynamic")
+    public ReturnProtocol showDynamic(@RequestParam String id){
+        return firmService.showDynamic(id);
+    }
+
+    @GetMapping("/showRecruit")
+    public ReturnProtocol showRecruit(@RequestParam String id){
+        return firmService.showRecruit(id);
     }
 }
