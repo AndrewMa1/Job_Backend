@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/firm")
 @RequiredArgsConstructor
-public class FrimController {
+public class FirmController {
     private final FirmService firmService;
 
     @PostMapping("/createFirm")
@@ -18,6 +18,6 @@ public class FrimController {
 
     @GetMapping("/showContent")
     public ReturnProtocol showContent(@RequestParam String id){
-        return null;
+        return firmService.showContent(id);
     }
 }

@@ -6,4 +6,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 public interface FirmService extends IService<Firm> {
     ReturnProtocol createFirm(String id, String name, String intro, String picture);
+
+    ReturnProtocol showContent(String id);
 }
