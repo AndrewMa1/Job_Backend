@@ -1,6 +1,5 @@
 package buaa.cxtj.job_backend.Util;
 
-import org.apache.kafka.common.protocol.types.Field;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,11 +26,9 @@ public class RedisUtil {
 
     public static final String KEY_FIRMCLERK = "clerk:";//存储公司自己的人
 
-    public static final String STAFF_LIST = "staff:list:";
-    public static final String FOLLOW_LIST = "follow:list:";
-    public static final String STAFF_LIST = "staff:list";
-    public static final String FOLLOW = "user:follow";//以user为key,存储了该user关注的所有人
-    public static final String FOLLOWER = "user:follower";//以user为key,存储了关注该user的所有人
+    public static final String STAFF = "firm:staff:";
+    public static final String FOLLOW = "user:follow:";//以user为key,存储了该user关注的所有人
+    public static final String FOLLOWER = "user:follower:";//以user为key,存储了关注该user的所有人
 
     public static final int LOGIN_USER_TTL = 60;
 

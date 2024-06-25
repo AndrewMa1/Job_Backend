@@ -161,7 +161,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String staffId = UserHolder.getUser().getId();
         //TODO:使用Redis在企业的员工列表中新增员工
         try {
-            redisUtil.lSet(RedisUtil.STAFF_LIST + firmId, staffId);
+            redisUtil.lSet(RedisUtil.STAFF + firmId, staffId);
             return new ReturnProtocol(true, "新增员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "添加失败");
@@ -178,7 +178,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String firmId = firmMapper.selectOne(wrapper).getId();
         try {
             //TODO:使用Redis在企业的员工列表中删除员工
-            redisUtil.lRemove(RedisUtil.STAFF_LIST + firmId, 1, staffId);
+            redisUtil.lRemove(RedisUtil.STAFF + firmId, 1, staffId);
             return new ReturnProtocol(true, "删除员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "删除员工失败");
