@@ -16,6 +16,7 @@ spring:
           max-active: 8
           max-idle: 8
           min-idle: 0
+      password: "mty030806"
   kafka:
     bootstrap-servers: 123.57.153.74:9092
     producer:
