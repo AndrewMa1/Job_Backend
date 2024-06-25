@@ -1,4 +1,4 @@
-package buaa.cxtj.job_backend.Controller;
+package buaa.cxtj.job_backend.Controller.test;
 
 
 import lombok.extern.slf4j.Slf4j;

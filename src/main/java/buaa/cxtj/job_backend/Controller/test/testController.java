@@ -1,4 +1,4 @@
-package buaa.cxtj.job_backend.Controller;
+package buaa.cxtj.job_backend.Controller.test;
 
 
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
@@ -18,7 +18,7 @@ import java.nio.file.Paths;
 @RestController
 @RequestMapping("/api/kafka")
 @Slf4j
-public class KafkaController {
+public class testController {
 
     @Value("${file.upload-dir}")
     private String basePath;

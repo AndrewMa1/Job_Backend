@@ -1,23 +1,23 @@
 package buaa.cxtj.job_backend.Controller;
 
 
+import buaa.cxtj.job_backend.Mapper.ChatMapper;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Chat;
 import buaa.cxtj.job_backend.POJO.Entity.Message;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.Impl.KafkaTopicServiceImpl;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -27,10 +27,12 @@ public class ChatController {
 
     @Autowired
     KafkaTemplate<String,Message> kafkaTemplate;
-    @Autowired
-    SimpMessagingTemplate template;
+
     @Autowired
     KafkaTopicServiceImpl kafkaTopicService;
+
+    @Autowired
+    ChatMapper chatMapper;
 
 
     private final String topic = "chat";
@@ -38,18 +40,17 @@ public class ChatController {
     @GetMapping("/getChatRooms")
     public ReturnProtocol getChatRooms(){
         UserDTO userDTO = UserHolder.getUser();
-
-        return null;
+        String userId = userDTO.getId();
+        QueryWrapper<Chat> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user1", userId).or().eq("user2",userId);
+        List<Chat> chatList = chatMapper.selectList(queryWrapper);
+        return new ReturnProtocol(true,chatList);
     }
 
     @GetMapping("/newChat/{to_id}")
     public ReturnProtocol newChatRoom(@PathVariable("to_id")String to){
-        try {
-            kafkaTopicService.addPartitions(topic, 1);
-            return new ReturnProtocol(true,"success");
-        } catch (ExecutionException | InterruptedException e) {
-            return new ReturnProtocol(false,e.toString());
-        }
+        kafkaTopicService.createChatTopic(UserHolder.getUser().getId(),to);
+        return new ReturnProtocol(true,"create chat room success");
     }
 
     @PostMapping("/sendMsg")
@@ -60,27 +61,12 @@ public class ChatController {
         return new ReturnProtocol(true,"发送消息成功",message);
     }
 
-    @PostMapping("/getMsg")
-    public ReturnProtocol getMessages(@RequestBody Message message) {
-        message.setTimestamp(LocalDateTime.now().toString());
-        //发送消息到Kafka主题队列
-        kafkaTemplate.send(topic, message);
-        return new ReturnProtocol(true,"发送消息成功",message);
-    }
-
-
-//    @KafkaListener(topics = {"chat"},groupId = "chat_cons")
-//    public void onMessage(Message message){
-//        // 消费的哪个topic、partition的消息,打印出消息内容
-//        template.convertAndSend("/topic/group", message);
-//
-//    }
-//
-//    @MessageMapping("/sendMessage")
-//    @SendTo("/topic/group")
-//    public Message broadcastGroupMessage(@Payload Message message) {
-////将此消息发送给所有订阅者
-//        return message;
+//    @PostMapping("/getMsg")
+//    public ReturnProtocol getMessages(@RequestBody Message message) {
+//        message.setTimestamp(LocalDateTime.now().toString());
+//        //发送消息到Kafka主题队列
+//        kafkaTemplate.send(topic, message);
+//        return new ReturnProtocol(true,"发送消息成功",message);
 //    }
 
 
