@@ -28,4 +28,11 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         FirmDTO firmDTO = new FirmDTO(firm.getId(), name,intro,picture,id);
         return new ReturnProtocol(true,"创建成功",firmDTO);
     }
+
+    @Override
+    public ReturnProtocol showContent(String id) {
+        Firm firm = firmMapper.selectById(id);
+        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getPicture(),firm.getManagerId(),null);
+        return null;
+    }
 }

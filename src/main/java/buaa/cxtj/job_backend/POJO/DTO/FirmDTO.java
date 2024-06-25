@@ -9,6 +9,24 @@ public class FirmDTO{
     private String intro;           //企业简介
     private String picture;         //企业图片
     private String managerId;       //管理员Id
+    private String managerName;        //管理员名字
+
+    public FirmDTO(String id, String name, String intro, String picture, String managerId, String managerName) {
+        this.id = id;
+        this.name = name;
+        this.intro = intro;
+        this.picture = picture;
+        this.managerId = managerId;
+        this.managerName = managerName;
+    }
+
+    public String getManagerName() {
+        return managerName;
+    }
+
+    public void setManagerName(String managerName) {
+        this.managerName = managerName;
+    }
 
     public String getId() {
         return id;
