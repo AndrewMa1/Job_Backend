@@ -32,6 +32,16 @@ spring:
       auto-commit-interval: 100
     listener:
       missing-topics-fatal: true
+  servlet:
+    multipart:
+      enabled: true
+      location: src/main/resources/static
+      max-file-size: 100MB
+  mvc:
+    static-path-pattern: src/main/resources/static
+  web:
+    resources:
+      static-locations: src/main/resources/static
 #  mail:
 #    host: smtp.qq.com
 #    username: zpddd777@qq.com
@@ -41,7 +51,8 @@ mybatis-plus:
     db-config:
       id-type: assign_uuid
 
-
+file:
+  upload-dir: src/main/resources/static/
 
 logging:
   level:
