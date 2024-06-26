@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -30,6 +31,7 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
+        this.createTime = LocalDateTime.now().toString();
     }
 
     public Dynamic(String userId, String content, String transId) {
@@ -38,6 +40,6 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = transId;
-
+        this.createTime = LocalDateTime.now().toString();
     }
 }
