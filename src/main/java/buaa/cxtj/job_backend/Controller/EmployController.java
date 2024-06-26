@@ -1,5 +1,7 @@
 package buaa.cxtj.job_backend.Controller;
 
+import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
+import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
@@ -51,12 +53,12 @@ public class EmployController {
     /**
      * 公司管理员查询该公司某岗位下的应聘成员列表
      * @param corporation_id
-     * @param post_name
+     * @param post_id
      * @return
      */
     @PostMapping ("queryEmployee")
-    public ReturnProtocol queryEmployee(@RequestParam String corporation_id,@RequestParam String post_name){
-       List<User> strings = employService.queryEmployee(corporation_id, post_name);
+    public ReturnProtocol queryEmployee(@RequestParam String corporation_id,@RequestParam String post_id){
+       List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
     }
 
