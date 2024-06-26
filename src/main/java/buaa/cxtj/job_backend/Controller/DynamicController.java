@@ -1,5 +1,6 @@
 package buaa.cxtj.job_backend.Controller;
 
+import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.Service.DynamicService;
 import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
@@ -19,23 +20,23 @@ public class DynamicController {
         return dynamicService.showDynamic();
     }
 
-    @PostMapping("/postDynamic")
+    @GetMapping("/postDynamic")
     public ReturnProtocol postDynamic(@RequestParam("content") String content){
         return dynamicService.postDynamic(content);
     }
 
     @GetMapping("/deleteDynamic")
-    public ReturnProtocol deleteDynamic(@RequestParam String id){
+    public ReturnProtocol deleteDynamic(@RequestParam("id") String id){
         return dynamicService.deleteDynamic(id);
     }
 
     @GetMapping("/agreeDynamic")
-    public ReturnProtocol agreeDynamic(@RequestParam String id){
+    public ReturnProtocol agreeDynamic(@RequestParam("id") String id){
         return dynamicService.agreeDynamic(id);
     }
 
     @GetMapping("/commentDynamic")
-    public ReturnProtocol commentDynamic(@RequestParam String id,@RequestParam String comment){
+    public ReturnProtocol commentDynamic(@RequestParam("id") String id,@RequestParam("comment") String comment){
         return dynamicService.commentDynamic(id,comment);
     }
 

@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +31,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     private final DynamicMapper dynamicMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private RedisTemplate<String,Object> redisTemplate;
     @Override
     public ReturnProtocol postDynamic( String content) {
         String userId = UserHolder.getUser().getId();
@@ -47,9 +50,18 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     @Override
     public ReturnProtocol agreeDynamic(String id) {
         Dynamic dynamic = dynamicMapper.selectById(id);
-        dynamic.setAgree(dynamic.getAgree() + 1);
-        int rows = dynamicMapper.updateById(dynamic);
-        return new ReturnProtocol(true,"",dynamic);
+        String key = RedisUtil.AGREE + UserHolder.getUser().getId();
+        if(redisTemplate.opsForSet().isMember(key,id)){
+            dynamic.setAgree(dynamic.getAgree() - 1);
+            int rows = dynamicMapper.updateById(dynamic);
+            redisTemplate.opsForSet().remove(key,id);
+            return new ReturnProtocol(false,"取消点赞",dynamic);
+        }else {
+            dynamic.setAgree(dynamic.getAgree() + 1);
+            int rows = dynamicMapper.updateById(dynamic);
+            redisTemplate.opsForSet().add(key,id);
+            return new ReturnProtocol(true,"点赞成功",dynamic);
+        }
     }
 
     @Override
