@@ -30,8 +30,8 @@ public class RecommendServiceImpl implements RecommendService {
     public void recTrends() {
         String userId = UserHolder.getUser().getId();
         //1 从redis中拿到该用户的关注列表
-        List<Object> subscribeList = redisUtil.lGet(RedisUtil.FOLLOW + userId, 0, redisUtil.lGetListSize(RedisUtil.FOLLOW + userId));
-        List<String> stringList = subscribeList.stream().map(Object::toString).toList();
+//        List<Object> subscribeList = redisUtil.lGet(RedisUtil.FOLLOW_LIST + userId, 0, redisUtil.lGetListSize(RedisUtil.FOLLOW_LIST + userId));
+//        List<String> stringList = subscribeList.stream().map(Object::toString).toList();
         //2 从mysql的dynamic表中拿到这些up主或者公司的动态
 
 

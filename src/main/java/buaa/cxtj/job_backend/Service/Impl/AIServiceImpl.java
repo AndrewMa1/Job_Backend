@@ -12,6 +12,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Base64;
+
 @Service
 public class AIServiceImpl implements AIService {
 
@@ -28,8 +30,12 @@ public class AIServiceImpl implements AIService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(apiKey);
 
+        // Decode the Base64 encoded resume content
+        byte[] decodedBytes = Base64.getDecoder().decode(resume);
+        String resumeContent = new String(decodedBytes);
+
         // Constructing the prompt for resume optimization
-        String prompt = "Please optimize the following resume to make it more appealing to employers and give me optimized version, dont make examples but use my actual resume:\n\n" + resume;
+        String prompt = "Please optimize the following resume to make it more appealing to employers and give me optimized version, dont make examples but use my actual resume:\n\n" + resumeContent;
 
 
         JSONObject body = new JSONObject();
