@@ -8,6 +8,7 @@ import java.util.Date;
 @Data
 public class CommentDTO {
     private String idCom;
+    private String nameCom;
     private String idDy;
     private String comment;
     private String createTime;

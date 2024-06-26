@@ -1,6 +1,7 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.DynamicMapper;
+import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.CommentDTO;
 import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
@@ -33,6 +34,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     private RedisUtil redisUtil;
     @Autowired
     private RedisTemplate<String,Object> redisTemplate;
+    @Autowired
+    private UserMapper userMapper;
     @Override
     public ReturnProtocol postDynamic( String content) {
         String userId = UserHolder.getUser().getId();
@@ -102,6 +105,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         List<CommentDTO> commentDTOS = new ArrayList<>();
         for(Object o:comments){
             CommentDTO commentDTO = JSONUtil.toBean(o.toString(),CommentDTO.class);
+            commentDTO.setNameCom(userMapper.selectById(commentDTO.getIdCom()).getNickname());
             commentDTOS.add(commentDTO);
         }
         return new ReturnProtocol(true,"",commentDTOS);
