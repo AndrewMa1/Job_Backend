@@ -55,7 +55,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
             dynamic.setAgree(dynamic.getAgree() - 1);
             int rows = dynamicMapper.updateById(dynamic);
             redisTemplate.opsForSet().remove(key,id);
-            return new ReturnProtocol(true,"取消点赞",dynamic);
+            return new ReturnProtocol(false,"取消点赞",dynamic);
         }else {
             dynamic.setAgree(dynamic.getAgree() + 1);
             int rows = dynamicMapper.updateById(dynamic);
