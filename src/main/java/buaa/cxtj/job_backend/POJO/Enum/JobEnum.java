@@ -1,6 +1,5 @@
 package buaa.cxtj.job_backend.POJO.Enum;
 
-import buaa.cxtj.job_backend.POJO.Entity.Job;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;

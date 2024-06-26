@@ -21,8 +21,10 @@ public class User {
     private EducationEnum education;
     @TableField("interest_job")
     private JobEnum interestJob;
-    @TableField("link")
-    private String link;
+    @TableField("blog")
+    private String blog;
+    @TableField("repo")
+    private String repo;
     @TableField("resume")
     private String resume;
     @TableField("intro")

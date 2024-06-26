@@ -4,6 +4,7 @@ import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.User;
@@ -103,56 +104,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public ReturnProtocol updateLink(String link) {
-        String id = UserHolder.getUser().getId();
-        User user = baseMapper.selectById(id);
-        LambdaUpdateWrapper<User> updateWrapper = new LambdaUpdateWrapper<User>()
-                .set(User::getLink, link)
-                .eq(User::getId, id);
-        System.out.println(user);
-        try {
-            baseMapper.update(user, updateWrapper);
-            log.info("update success " + id + " " + link);
-            return new ReturnProtocol(true, "更新仓库/博客链接成功");
-        } catch (MybatisPlusException e) {
-            return new ReturnProtocol(false, "更新仓库/博客链接失败");
-        }
-
-    }
-
-
-    @Override
-    public ReturnProtocol updateAge(Integer age) {
+    public ReturnProtocol update(UpdateDTO updateDTO){
         String id = UserHolder.getUser().getId();
         User user = baseMapper.selectById(id);
         LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
-                .set(User::getAge, age)
-                .eq(User::getId, id);
-        try {
-            baseMapper.update(user, wrapper);
-            log.info("update age success " + id + " " + age);
-            return new ReturnProtocol(true, "更新年龄成功");
-        } catch (MybatisPlusException e) {
-            return new ReturnProtocol(false, "更新年龄失败");
+                .set(User::getAge,updateDTO.getAge())
+                .set(User::getNickname,updateDTO.getNickname())
+                .set(User::getBlog,updateDTO.getBlog())
+                .set(User::getIntro,updateDTO.getIntro())
+                .set(User::getRepo,updateDTO.getRepo())
+                .set(User::getEducation,updateDTO.getEducation())
+                .set(User::getInterestJob,updateDTO.getInterestJob())
+                .eq(User::getId,id);
+        try{
+            baseMapper.update(user,wrapper);
+            log.info("update success");
+            return new ReturnProtocol(true,"更新成功");
+        }catch (MybatisPlusException e){
+            return  new ReturnProtocol(false,"更新失败");
         }
-
-    }
-
-    @Override
-    public ReturnProtocol updateIntro(String intro) {
-        String id = UserHolder.getUser().getId();
-        User user = baseMapper.selectById(id);
-        LambdaUpdateWrapper<User> wrapper = new LambdaUpdateWrapper<User>()
-                .set(User::getIntro, intro)
-                .eq(User::getId, id);
-        try {
-            baseMapper.update(user, wrapper);
-            log.info("update intro success " + id + " " + intro);
-            return new ReturnProtocol(true, "更新简介成功");
-        } catch (MybatisPlusException e) {
-            return new ReturnProtocol(false, "更新简介失败");
-        }
-
     }
 
     @Override

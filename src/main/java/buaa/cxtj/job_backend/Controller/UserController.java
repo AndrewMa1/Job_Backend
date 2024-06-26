@@ -3,6 +3,7 @@ package buaa.cxtj.job_backend.Controller;
 
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
@@ -22,7 +23,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String basePath = "src/main/resource/resume/";
+    private final String basePath = "./src/main/resources/resume/";
 
 
     public UserController(UserService userService) {
@@ -42,20 +43,9 @@ public class UserController {
         return userService.register(registerDTO);
     }
 
-    @PostMapping("update/age")
-    public ReturnProtocol updateAge(@RequestParam Integer age) {
-
-        return userService.updateAge(age);
-    }
-
-    @PostMapping("update/intro")
-    public ReturnProtocol updateIntro(@RequestParam String intro) {
-        return userService.updateIntro(intro);
-    }
-
-    @PostMapping("update/link")
-    public ReturnProtocol updateLink(@RequestParam String link) {
-        return userService.updateLink(link);
+    @PostMapping("update")
+    public ReturnProtocol update(@RequestBody UpdateDTO updateDTO){
+        return userService.update(updateDTO);
     }
 
     @PostMapping("upload/resume")
@@ -66,19 +56,19 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                Path path = Paths.get(basePath + userId + "." + extensionName);
-                Files.write(path, bytes);
+                Path path = Paths.get(basePath + userId + extensionName);
+                Files.write(path,bytes);
                 return new ReturnProtocol(true, "上传成功");
-            } else {
-                return new ReturnProtocol(false, "上传失败");
+            }else {
+                return new ReturnProtocol(false,"上传失败,文件名为NULL");
             }
         } catch (IOException e) {
-            return new ReturnProtocol(false, "上传失败");
+            return new ReturnProtocol(false, "上传失败,IO异常");
         }
     }
 
     @GetMapping("download/resume")
-    public ReturnProtocol downloadResume(@RequestParam("file") String userId, HttpServletResponse response){
+    public ReturnProtocol downloadResume(@RequestParam("userId") String userId, HttpServletResponse response){
         String pathName = basePath +userId + ".pdf";
         File file = new File(pathName);
         if(!file.exists()){

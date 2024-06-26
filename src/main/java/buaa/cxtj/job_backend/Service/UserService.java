@@ -3,6 +3,7 @@ package buaa.cxtj.job_backend.Service;
 
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -21,12 +22,9 @@ public interface UserService extends IService<User> {
 
     ReturnProtocol register(RegisterDTO registerDTO);
 
-    ReturnProtocol updateLink(String link);
+    ;
 
-
-    ReturnProtocol updateAge(Integer age);
-
-    ReturnProtocol updateIntro(String intro);
+    ReturnProtocol update(UpdateDTO updateDTO);
 
     ReturnProtocol addStaff(String firmId);
 
