@@ -4,6 +4,7 @@ import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/firm")
@@ -12,7 +13,7 @@ public class FirmController {
     private final FirmService firmService;
 
     @PostMapping("/createFirm")
-    public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam String picture){
+    public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
 

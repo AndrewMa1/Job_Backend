@@ -20,7 +20,7 @@ public class DynamicController {
     }
 
     @PostMapping("/postDynamic")
-    public ReturnProtocol postDynamic(@RequestParam String content){
+    public ReturnProtocol postDynamic(@RequestParam("content") String content){
         return dynamicService.postDynamic(content);
     }
 
