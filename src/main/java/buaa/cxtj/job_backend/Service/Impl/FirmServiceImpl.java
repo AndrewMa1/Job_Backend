@@ -30,6 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 @Service
@@ -58,22 +61,27 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public ReturnProtocol createFirm(String name, String intro, MultipartFile picture) {
         try {
-            // 获取图片的字节数组
-            byte[] pictureBytes = picture.getBytes();
-            // 将字节数组转换为Base64编码的字符串
-            String pictureBase64 = Base64.getEncoder().encodeToString(pictureBytes);
-            // 创建Firm对象并存储图片Base64字符串
-            Firm firm = new Firm(name, intro, pictureBase64, UserHolder.getUser().getId());
-            // 插入到数据库
-            int insert = firmMapper.insert(firm);
-            // 创建FirmDTO对象
-            FirmDTO firmDTO = new FirmDTO(firm.getId(), name, intro, UserHolder.getUser().getId());
-            // 返回成功的结果
-            return new ReturnProtocol(true, "创建成功", firmDTO);
-        } catch (IOException e) {
+            byte[]bytes = picture.getBytes();
+            String userId = UserHolder.getUser().getId();
+            String fileName = picture.getOriginalFilename();
+
+            Firm firm = new Firm(name,intro,fileName,userId);
+            firmMapper.insert(firm);
+            String firm_id = firm.getId();
+
+            if (fileName != null) {
+                String extensionName = fileName.substring(fileName.lastIndexOf("."));
+                String baseImagePath = "/root/Job_Backend/image/firm/";
+                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
+                Files.write(path, bytes);
+                return new ReturnProtocol(true, "上传成功", firm_id + extensionName);
+            }else {
+                return  new ReturnProtocol(false,"上传失败,文件名为null");
+            }
+        }catch (IOException e){
             e.printStackTrace();
-            // 处理异常情况
-            return new ReturnProtocol(false, "上传图片失败", null);
+            return new ReturnProtocol(false,"上传失败,IO异常");
         }
     }
 
