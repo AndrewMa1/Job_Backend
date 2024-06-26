@@ -60,7 +60,7 @@ public class UserController {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
                 Path path = Paths.get(basePath + userId + extensionName);
                 Files.write(path,bytes);
-                return new ReturnProtocol(true, "上传成功");
+                return new ReturnProtocol(true, "上传成功",userId + extensionName);
             }else {
                 return new ReturnProtocol(false,"上传失败,文件名为NULL");
             }
