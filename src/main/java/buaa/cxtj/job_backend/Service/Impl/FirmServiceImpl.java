@@ -29,6 +29,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -52,18 +53,28 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private RedisTemplate redisTemplate;
 
 
-    @Override
-    public ReturnProtocol createFirm(String name, String intro, MultipartFile picture) {
-        return null;
-    }
+
 
     @Override
-    public ReturnProtocol createFirm(String name, String intro, String picture) {
-        Firm firm = new Firm(name,intro,picture, UserHolder.getUser().getId());
-        int insert = firmMapper.insert(firm);
-        System.out.println(insert);
-        FirmDTO firmDTO = new FirmDTO(firm.getId(), name,intro,picture,UserHolder.getUser().getId());
-        return new ReturnProtocol(true,"创建成功",firmDTO);
+    public ReturnProtocol createFirm(String name, String intro, MultipartFile picture) {
+        try {
+            // 获取图片的字节数组
+            byte[] pictureBytes = picture.getBytes();
+            // 将字节数组转换为Base64编码的字符串
+            String pictureBase64 = Base64.getEncoder().encodeToString(pictureBytes);
+            // 创建Firm对象并存储图片Base64字符串
+            Firm firm = new Firm(name, intro, pictureBase64, UserHolder.getUser().getId());
+            // 插入到数据库
+            int insert = firmMapper.insert(firm);
+            // 创建FirmDTO对象
+            FirmDTO firmDTO = new FirmDTO(firm.getId(), name, intro, UserHolder.getUser().getId());
+            // 返回成功的结果
+            return new ReturnProtocol(true, "创建成功", firmDTO);
+        } catch (IOException e) {
+            e.printStackTrace();
+            // 处理异常情况
+            return new ReturnProtocol(false, "上传图片失败", null);
+        }
     }
 
     @Override
@@ -71,7 +82,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         Firm firm = firmMapper.selectById(id);
         User user = userMapper.selectById(firm.getManagerId());
         String managerName = user.getNickname();
-        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getPicture(),firm.getManagerId(),managerName);
+        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getManagerId(),managerName);
         return new ReturnProtocol(true,"",firmDTO);
     }
 
@@ -96,7 +107,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("firm_id", id); // 根据公司id查询
         List<Job> jobList = employMapper.selectList(queryWrapper);
-
         // 将查询结果转换为JobDTO对象列表
         List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
         return new ReturnProtocol(true,"", jobDTOList);
