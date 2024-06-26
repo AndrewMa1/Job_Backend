@@ -37,22 +37,13 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
     private final RedisUtil redisUtil;
-    @Autowired
-    private UserMapper userMapper;
 
     @Override
     // 根据用户 ID 集合查询用户信息
     public List<User> getUsersInSet(Set<String> idSet) {
-        List<User> users = new ArrayList<>();
-        for (String id : idSet) {
-            users.add(userMapper.selectById(id));
-        }
-        return users;
-    }
-
-    public List<User> getUsers(Set<String> idSet) {
         return baseMapper.selectBatchIds(idSet);
     }
+
 
     @Override
     public ReturnProtocol login(LoginFormDTO loginForm) {
