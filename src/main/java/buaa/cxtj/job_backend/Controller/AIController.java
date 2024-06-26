@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @RestController
 @RequestMapping("/api/ai")
@@ -29,7 +30,7 @@ public class AIController {
     public void refineResume(@RequestParam("resume") MultipartFile resume, HttpServletResponse response) {
         String resume_content = null;
         try {
-            resume_content = new String(resume.getBytes(), StandardCharsets.UTF_8);
+            resume_content = Base64.getEncoder().encodeToString(resume.getBytes());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
