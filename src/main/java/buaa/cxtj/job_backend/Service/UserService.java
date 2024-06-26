@@ -31,4 +31,6 @@ public interface UserService extends IService<User> {
     ReturnProtocol deleteStaff(String staffId);
 
     ReturnProtocol follow(String id);
+
+    ReturnProtocol getUser(String id);
 }

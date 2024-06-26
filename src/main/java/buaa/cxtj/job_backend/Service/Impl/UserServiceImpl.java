@@ -173,4 +173,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    @Override
+    public ReturnProtocol getUser(String id) {
+        try{
+            User user = baseMapper.selectById(id);
+            return new ReturnProtocol(true,"获取成功",user);
+        }catch (MybatisPlusException e){
+            return new ReturnProtocol(false,"获取失败");
+        }
+    }
+
 }

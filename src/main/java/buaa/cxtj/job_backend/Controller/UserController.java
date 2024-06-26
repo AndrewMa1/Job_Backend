@@ -8,10 +8,12 @@ import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.plaf.PanelUI;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -106,5 +108,10 @@ public class UserController {
     @PostMapping("follow")
     public ReturnProtocol follow(@RequestParam String follower) {
         return userService.follow(follower);
+    }
+
+    @GetMapping("get/info")
+    public ReturnProtocol getInfo(@RequestParam String id){
+        return userService.getUser(id);
     }
 }
