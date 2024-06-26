@@ -4,9 +4,11 @@ package buaa.cxtj.job_backend.Controller;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
+import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -58,6 +60,11 @@ public class UserController {
                 Path path = Paths.get(baseResumePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path,bytes);
+                LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
+                        .set(User::getResume,userId+extensionName)
+                        .eq(User::getId,userId);
+
+                userService.update(null,wrapper);
                 return new ReturnProtocol(true, "上传成功",userId + extensionName);
             }else {
                 return new ReturnProtocol(false,"上传失败,文件名为NULL");
@@ -76,7 +83,8 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_backend/image/";
+                String baseImagePath = "/root/Job_Backend/image/";
+
                 Path path = Paths.get(baseImagePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
