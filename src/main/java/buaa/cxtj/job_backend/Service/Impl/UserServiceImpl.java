@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
+    private final UserMapper userMapper;
     private final RedisUtil redisUtil;
 
     @Override
@@ -154,6 +155,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public ReturnProtocol follow(String follower) {
         String userId = UserHolder.getUser().getId();
         try {
+            //将follower的粉丝数量加1
+            LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
+                    .setSql("follower_num = follower_num + 1")
+                    .eq(User::getId,follower);
+            baseMapper.update(null,wrapper);
             //在被关注者的粉丝列表里面新增当前用户
             redisUtil.lSet(RedisUtil.FOLLOWER + follower, userId);
             //在当前用户的关注列表里面新增被关注者
