@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String basePath = "./resume";
+    private final String basePath = "/root/Job_Backend/resume/";
 
 
     public UserController(UserService userService) {
