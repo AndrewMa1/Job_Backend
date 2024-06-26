@@ -65,7 +65,7 @@ mybatis-plus:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
 
 file:
-  upload-dir: src/main/resources/static/
+  upload-dir: ./resume/
 
 openai:
   api-key: sk-lKY42a3cbe311b0c84e7481d51e8512278df461306ebUrW4
