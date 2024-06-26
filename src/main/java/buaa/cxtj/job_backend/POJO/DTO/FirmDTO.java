@@ -7,15 +7,13 @@ public class FirmDTO{
     private String id;              //企业Id
     private String name;            //企业名称
     private String intro;           //企业简介
-    private String picture;         //企业图片
     private String managerId;       //管理员Id
     private String managerName;        //管理员名字
 
-    public FirmDTO(String id, String name, String intro, String picture, String managerId, String managerName) {
+    public FirmDTO(String id, String name, String intro,  String managerId, String managerName) {
         this.id = id;
         this.name = name;
         this.intro = intro;
-        this.picture = picture;
         this.managerId = managerId;
         this.managerName = managerName;
     }
@@ -52,13 +50,7 @@ public class FirmDTO{
         this.intro = intro;
     }
 
-    public String getPicture() {
-        return picture;
-    }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     public String getManagerId() {
         return managerId;
@@ -68,11 +60,10 @@ public class FirmDTO{
         this.managerId = managerId;
     }
 
-    public FirmDTO(String id, String name, String intro, String picture, String managerId) {
+    public FirmDTO(String id, String name, String intro,  String managerId) {
         this.id = id;
         this.name = name;
         this.intro = intro;
-        this.picture = picture;
         this.managerId = managerId;
     }
 }

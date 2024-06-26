@@ -9,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FirmService extends IService<Firm> {
     ReturnProtocol createFirm( String name, String intro, MultipartFile picture);
 
-    ReturnProtocol createFirm(String name, String intro, String picture);
-
     ReturnProtocol showContent(String id);
 
     ReturnProtocol showDynamic(String id);
