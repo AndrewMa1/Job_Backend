@@ -7,10 +7,7 @@ import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -24,8 +21,7 @@ public class RecommendController {
 
     @PostMapping("/recTrends")
     public ReturnProtocol recTrends() {
-        recommendService.recTrends();
-        return new ReturnProtocol(true,"推送成功");
+        return new ReturnProtocol(true,"推送成功",recommendService.recTrends());
     }
 
     @PostMapping("/recJob")
@@ -39,6 +35,11 @@ public class RecommendController {
 //        System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
 //
 //    }
+
+    @GetMapping("/search/{firm}")
+    public ReturnProtocol searchFirm(@PathVariable("firm")String firm){
+        return recommendService.searchFirm(firm);
+    }
 
 
 }

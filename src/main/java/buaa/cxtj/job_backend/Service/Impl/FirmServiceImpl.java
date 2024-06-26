@@ -39,6 +39,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Autowired
     private RedisUtil redisUtil;
 
+
     @Override
     public ReturnProtocol createFirm( String name, String intro, String picture) {
         Firm firm = new Firm(name,intro,picture, UserHolder.getUser().getId());
@@ -51,7 +52,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public ReturnProtocol showContent(String id) {
         Firm firm = firmMapper.selectById(id);
-        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getPicture(),firm.getManagerId(),null);
+        User user = userMapper.selectById(firm.getManagerId());
+        String managerName = user.getNickname();
+        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getPicture(),firm.getManagerId(),managerName);
         return new ReturnProtocol(true,"",firmDTO);
     }
 

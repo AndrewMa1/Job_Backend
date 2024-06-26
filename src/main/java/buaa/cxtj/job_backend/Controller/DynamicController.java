@@ -14,6 +14,11 @@ public class DynamicController {
     @Autowired
     private final DynamicService dynamicService;
 
+    @GetMapping("/showDynamic")
+    public ReturnProtocol showDynamic(){
+        return dynamicService.showDynamic();
+    }
+
     @PostMapping("/postDynamic")
     public ReturnProtocol postDynamic(@RequestParam String content){
         return dynamicService.postDynamic(content);
@@ -27,5 +32,20 @@ public class DynamicController {
     @GetMapping("/agreeDynamic")
     public ReturnProtocol agreeDynamic(@RequestParam String id){
         return dynamicService.agreeDynamic(id);
+    }
+
+    @GetMapping("/commentDynamic")
+    public ReturnProtocol commentDynamic(@RequestParam String id,@RequestParam String comment){
+        return dynamicService.commentDynamic(id,comment);
+    }
+
+    @GetMapping("/transDynamic")
+    public ReturnProtocol transDynamic(@RequestParam String id){
+        return dynamicService.transDynamic(id);
+    }
+
+    @GetMapping("/showComment")
+    public ReturnProtocol showComment(@RequestParam String id){
+        return dynamicService.showComment(id);
     }
 }

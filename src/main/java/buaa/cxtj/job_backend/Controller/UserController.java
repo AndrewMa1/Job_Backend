@@ -8,12 +8,10 @@ import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.PanelUI;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +23,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String basePath = "./src/main/resources/resume/";
+    private final String basePath = "/root/Job_Backend/resume/";
 
 
     public UserController(UserService userService) {
@@ -59,12 +57,14 @@ public class UserController {
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
                 Path path = Paths.get(basePath + userId + extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path,bytes);
-                return new ReturnProtocol(true, "上传成功");
+                return new ReturnProtocol(true, "上传成功",userId + extensionName);
             }else {
                 return new ReturnProtocol(false,"上传失败,文件名为NULL");
             }
         } catch (IOException e) {
+            e.printStackTrace();
             return new ReturnProtocol(false, "上传失败,IO异常");
         }
     }
