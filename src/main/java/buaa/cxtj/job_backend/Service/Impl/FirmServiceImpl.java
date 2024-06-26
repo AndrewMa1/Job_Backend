@@ -16,22 +16,19 @@ import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
 
-import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.druid.support.json.JSONUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.metrics.stats.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +50,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
 
     @Override
-    public ReturnProtocol createFirm( String name, String intro, String picture) {
+    public ReturnProtocol createFirm(String name, String intro, MultipartFile picture) {
+        return null;
+    }
+
+    @Override
+    public ReturnProtocol createFirm(String name, String intro, String picture) {
         Firm firm = new Firm(name,intro,picture, UserHolder.getUser().getId());
         int insert = firmMapper.insert(firm);
         System.out.println(insert);
