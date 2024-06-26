@@ -3,6 +3,8 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.DynamicMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
+import buaa.cxtj.job_backend.Mapper.UserMapper;
+import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,18 +36,23 @@ public class RecommendServiceImpl implements RecommendService {
     FirmMapper firmMapper;
 
     @Autowired
+    UserMapper userMapper;
+
+    @Autowired
     KafkaTopicServiceImpl kafkaTopicService;
 
     @Autowired
     KafkaConsumerService kafkaConsumerService;
 
     @Override
-    public List<Dynamic> recTrends() {
+    public DynamicDTO recTrends() {
         String userId = UserHolder.getUser().getId();
 
         //1 从redis中拿到该用户的关注列表
         List<Object> subscribeList = redisUtil.lGet(RedisUtil.FOLLOW + userId, 0, redisUtil.lGetListSize(RedisUtil.FOLLOW + userId));
         List<String> stringList = subscribeList.stream().map(Object::toString).toList();
+
+        stringList.forEach(System.out::println);
 
         //2 从mysql的dynamic表中拿到这些up主或者公司的动态
         ArrayList<Dynamic> result = new ArrayList<>();
@@ -53,7 +61,20 @@ public class RecommendServiceImpl implements RecommendService {
             queryWrapper.eq("user_id",userid);
             result.addAll(dynamicMapper.selectList(queryWrapper));
         }
-        return result;
+
+        //3 从redis取出该用户的点赞动态列表
+        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
+        Set<String> fullSet = result.stream().map(Dynamic::getId).collect(Collectors.toSet());
+        ArrayList<Boolean> isAgreeList = new ArrayList<>();
+        for(String id: fullSet){
+            if(agreeSet.contains(id)){
+                isAgreeList.add(true);
+            }else {
+                isAgreeList.add(false);
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),result,isAgreeList);
+        return dynamicDTO;
     }
 
     //推荐与用户意向岗位一致的岗位招聘信息
