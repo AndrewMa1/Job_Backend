@@ -3,6 +3,7 @@ package buaa.cxtj.job_backend.POJO.DTO;
 import lombok.Data;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -18,8 +19,7 @@ public class TransDTO {
         this.userId = userId;
         this.content = content;
         this.transId = transId;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.createTime = sdf.format(new Date());;
+        this.createTime = LocalDateTime.now().toString();
     }
 
 }
