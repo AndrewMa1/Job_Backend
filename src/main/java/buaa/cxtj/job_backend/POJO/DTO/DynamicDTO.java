@@ -10,15 +10,17 @@ public class DynamicDTO {
     private String name;
     private List<Dynamic> dynamics;
     private List<Boolean> isAgree;
+    private List<String> poster;
 
     public DynamicDTO(String name, List<Dynamic> dynamics) {
         this.name = name;
         this.dynamics = dynamics;
     }
 
-    public DynamicDTO(String name, List<Dynamic> dynamics, List<Boolean> isAgree) {
+    public DynamicDTO(String name, List<Dynamic> dynamics, List<Boolean> isAgree, List<String>poster) {
         this.name = name;
         this.dynamics = dynamics;
         this.isAgree = isAgree;
+        this.poster = poster;
     }
 }

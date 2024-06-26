@@ -47,6 +47,10 @@ public class KafkaTopicServiceImpl {
         kafkaAdminConfig.createTopic(topicName, 1, (short) 1);
     }
 
+    public void createTopic(String topicName){
+        kafkaAdminConfig.createTopic(topicName, 1, (short) 1);
+    }
+
     public void sendMessage(String topic, String message) {
         kafkaTemplate.send(topic, message);
     }
