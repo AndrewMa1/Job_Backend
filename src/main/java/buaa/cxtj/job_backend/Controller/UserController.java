@@ -23,7 +23,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String basePath = "./src/main/resources/resume/";
+    private final String basePath = "./resume";
 
 
     public UserController(UserService userService) {
@@ -56,9 +56,9 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                Path path = Paths.get(userId + extensionName);
+                Path path = Paths.get(basePath + userId + extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path,bytes);
-                System.out.println(path.toAbsolutePath());
                 return new ReturnProtocol(true, "上传成功",userId + extensionName);
             }else {
                 return new ReturnProtocol(false,"上传失败,文件名为NULL");
