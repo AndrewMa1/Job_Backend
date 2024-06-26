@@ -2,6 +2,7 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.DynamicMapper;
 import buaa.cxtj.job_backend.POJO.DTO.CommentDTO;
+import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.DynamicService;
@@ -54,6 +55,9 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     @Override
     public ReturnProtocol commentDynamic(String id, String comment) {
         String key = "comment:"+id;
+        Dynamic dynamic = dynamicMapper.selectById(id);
+        dynamic.setComments(dynamic.getComments() + 1);
+        dynamicMapper.updateById(dynamic);
         CommentDTO commentDTO = new CommentDTO(UserHolder.getUser().getId(),id,comment);
         redisUtil.lSet(key, JSONUtil.toJsonStr(commentDTO));
         return new ReturnProtocol(true,"",commentDTO);
@@ -75,9 +79,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",id);
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
-
-
-        return new  ReturnProtocol(true,"",dynamics);
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(), dynamics);
+        return new  ReturnProtocol(true,"",dynamicDTO);
     }
 
     @Override

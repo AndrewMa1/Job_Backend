@@ -17,6 +17,7 @@ public class Dynamic {
     private int agree;             //点赞量
     private int trans;              //转发量
     private String transId;         //被转发用户Id
+    private int comments;
 
     public Dynamic( String userId, String content) {
         this.userId = userId;
