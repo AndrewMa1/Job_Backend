@@ -160,5 +160,13 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         kafkaTopicService.sendMessage(interestJob.toString(),JSONUtil.toJsonStr(job));
     }
 
+    @Override
+    public ReturnProtocol showMembers(String id) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("corporation",id).orderByDesc("follower_num");
+        List<User> users = userMapper.selectList(queryWrapper);
+        return new ReturnProtocol(true,"",users);
+    }
+
 
 }

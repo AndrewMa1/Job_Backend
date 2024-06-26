@@ -115,6 +115,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 
+
     @Override
     public ReturnProtocol showComment(String id) {
         String key = "comment:"+id;

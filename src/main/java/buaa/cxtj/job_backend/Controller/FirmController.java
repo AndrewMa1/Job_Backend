@@ -17,6 +17,10 @@ public class FirmController {
     public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
+    @GetMapping("/showMembers")
+    public ReturnProtocol showMembers(@RequestParam String id){
+        return firmService.showMembers(id);
+    }
 
     @GetMapping("/showContent")
     public ReturnProtocol showContent(@RequestParam String id){
