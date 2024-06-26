@@ -68,7 +68,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("upload/image")
+    @PostMapping("upload/image/avatar")
     public ReturnProtocol uploadImage(@RequestParam("file")MultipartFile file){
         try {
             byte[]bytes = file.getBytes();
@@ -99,7 +99,6 @@ public class UserController {
         if(!file.exists()){
             return new ReturnProtocol(false,"未上传简历");
         }
-        response.reset();
         response.setContentType("application/octet-stream");
         response.setCharacterEncoding("utf-8");
         response.setContentLength((int) file.length());
