@@ -80,7 +80,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         for(Object o:comments){
             CommentDTO commentDTO1 = JSONUtil.toBean(o.toString(),CommentDTO.class);
             commentDTO1.setNameCom(userMapper.selectById(commentDTO1.getIdCom()).getNickname());
-            commentDTOS.add(commentDTO1);
+            commentDTOS.add(commentDTO1);  
         }
         return new ReturnProtocol(true,"",commentDTOS);
     }
