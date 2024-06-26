@@ -76,7 +76,7 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_backend/image";
+                String baseImagePath = "/root/Job_backend/image/";
                 Path path = Paths.get(baseImagePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
