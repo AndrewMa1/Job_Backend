@@ -8,6 +8,7 @@ import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
+import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
@@ -18,16 +19,18 @@ import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.metrics.stats.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,6 +47,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private RedisUtil redisUtil;
     @Autowired
     private DynamicMapper dynamicMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     @Override
@@ -94,18 +100,31 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public void hireClerk(String user_id, String corporation_id, String post_id) {
         User user = userMapper.selectById(user_id);
-        if(user.getCorporation()!=null){
+        if(user.getCorporation()!=null && !user.getCorporation().isBlank()){
+            log.info("1"+user.getCorporation().isBlank());
             throw new HavePostException("该用户已经有岗位");
         }
-        if(!redisUtil.sHasKey(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id)){
-            throw new NoInPendingException("该员工未在该岗位待录取名单当中");
+        Map<String, Integer> userMap = new HashMap<>();
+        PendingOfferDTO p1 = null;
+        Set<Object> users = redisUtil.sGet(RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id);
+        for (Object obj : users) {
+            String str = String.valueOf(obj); // 将对象转换为字符串
+            PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(str, PendingOfferDTO.class);
+            userMap.put(pendingOfferDTO.getUser_id(),pendingOfferDTO.getStatus());
+            if(pendingOfferDTO.getUser_id().equals(user_id)){
+                p1=pendingOfferDTO;
+            }
+        }
+        if(p1==null){
+            throw new RuntimeException("该岗位投递无此人");
+        }
+        if(userMapper.selectById(user_id).getCorporation()==null && !userMapper.selectById(user_id).getCorporation().isBlank()){
+            throw new NoInPendingException("该员工已经有岗位了");
         }
         user.setJob(post_id);
         user.setCorporation(corporation_id);
         userMapper.updateById(user);
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
-        redisUtil.setRemove(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id);//若该成员被录用,则修改待录用列表中其值前面加个#
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,"#"+user_id);
     }
 
 

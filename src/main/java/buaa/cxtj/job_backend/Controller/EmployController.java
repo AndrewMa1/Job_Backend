@@ -25,8 +25,10 @@ public class EmployController {
 
     @Autowired
     EmployService employService;
-    @Value("${file.upload-dir}")
-    private String basePath;
+//    @Value("${file.upload-dir}")
+//    private String basePath;
+    private String basePath="src/main/resources/static/";
+
 
     @GetMapping(value = "postInfo/{id}")
     public ReturnProtocol postJobInfo(@PathVariable String id){
