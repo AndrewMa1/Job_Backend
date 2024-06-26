@@ -4,7 +4,9 @@ import buaa.cxtj.job_backend.Mapper.DynamicMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.CommentDTO;
 import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
+import buaa.cxtj.job_backend.POJO.DTO.TransDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
+import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.DynamicService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
@@ -80,7 +82,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         for(Object o:comments){
             CommentDTO commentDTO1 = JSONUtil.toBean(o.toString(),CommentDTO.class);
             commentDTO1.setNameCom(userMapper.selectById(commentDTO1.getIdCom()).getNickname());
-            commentDTOS.add(commentDTO1);  
+            commentDTOS.add(commentDTO1);
         }
         return new ReturnProtocol(true,"",commentDTOS);
     }
@@ -92,7 +94,9 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         dynamicMapper.insert(dynamic1);
         dynamic.setTrans(dynamic.getTrans() + 1);
         dynamicMapper.updateById(dynamic);
-        return new ReturnProtocol(true,"",dynamic1);
+        User user = userMapper.selectById(dynamic.getUserId());
+        TransDTO transDTO = new TransDTO(user.getNickname(),dynamic1.getUserId(),dynamic1.getContent(),dynamic.getUserId());
+        return new ReturnProtocol(true,"",transDTO);
     }
 
     @Override
