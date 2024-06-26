@@ -24,8 +24,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.metrics.stats.Min;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,14 +51,24 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private RedisUtil redisUtil;
     @Autowired
     private DynamicMapper dynamicMapper;
-
+    @Value("${file.upload-dir}")
+    private String basePath;
 
     @Override
-    public ReturnProtocol createFirm( String name, String intro, String picture) {
-        Firm firm = new Firm(name,intro,picture, UserHolder.getUser().getId());
+    public ReturnProtocol createFirm( String name, String intro, MultipartFile picture) {
+
+        Firm firm = new Firm(name,intro,picture.getOriginalFilename(), UserHolder.getUser().getId());
         int insert = firmMapper.insert(firm);
         System.out.println(insert);
-        FirmDTO firmDTO = new FirmDTO(firm.getId(), name,intro,picture,UserHolder.getUser().getId());
+        FirmDTO firmDTO = new FirmDTO(firm.getId(), name,intro,picture.getOriginalFilename(),UserHolder.getUser().getId());
+        try {
+            byte[] bytes = picture.getBytes();
+            Path path = Paths.get(basePath + picture.getOriginalFilename());
+            Files.write(path, bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ReturnProtocol(false,"上传失败");
+        }
         return new ReturnProtocol(true,"创建成功",firmDTO);
     }
 
