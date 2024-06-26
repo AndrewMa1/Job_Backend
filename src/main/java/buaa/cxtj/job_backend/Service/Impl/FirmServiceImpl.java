@@ -2,11 +2,13 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Controller.Exception.HavePostException;
 import buaa.cxtj.job_backend.Controller.Exception.NoInPendingException;
+import buaa.cxtj.job_backend.Mapper.DynamicMapper;
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
@@ -20,9 +22,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.metrics.stats.Min;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +42,8 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private UserMapper userMapper;
     @Autowired
     private RedisUtil redisUtil;
+    @Autowired
+    private DynamicMapper dynamicMapper;
 
 
     @Override
@@ -60,8 +66,17 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
     @Override
     public ReturnProtocol showDynamic(String id) {
-
-        return null;
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("corporation",id).orderByDesc("follower_num");
+        List<User> users = userMapper.selectList(queryWrapper);
+        List<Dynamic> dynamics = new ArrayList<>();
+        for(User user:users){
+            QueryWrapper<Dynamic> queryWrapper1 = new QueryWrapper<>();
+            queryWrapper1.eq("user_id",user.getId());
+            dynamics.addAll(dynamicMapper.selectList(queryWrapper1));
+        }
+        dynamics.subList(0, Math.min(dynamics.size(),10));
+        return new ReturnProtocol(true,"",dynamics);
     }
 
     @Override
