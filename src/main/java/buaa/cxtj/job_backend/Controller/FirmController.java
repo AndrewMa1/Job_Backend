@@ -1,5 +1,6 @@
 package buaa.cxtj.job_backend.Controller;
 
+import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,11 @@ public class FirmController {
     public ReturnProtocol hirePerson(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
         firmService.hireClerk(user_id,corporation_id,post_id);
         return new ReturnProtocol(true,"录用成功");
+    }
+
+    @PostMapping("/publishInfo")
+    public ReturnProtocol publishHireInfo(@RequestBody Job job){
+        firmService.publishHireInfo(job);
+        return new ReturnProtocol(true,"发布成功");
     }
 }

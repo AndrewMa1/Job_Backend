@@ -129,5 +129,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
     }
 
+    @Override
+    public void publishHireInfo(Job job) {
+        employMapper.insert(job);
+    }
+
 
 }
