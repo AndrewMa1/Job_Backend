@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
-@Getter
+
 public enum JobEnum {
     BACKEND_DEV_1(1, "后端开发工程师"),
     BACKEND_DEV_JAVA(2, "Java后端开发工程师"),
@@ -69,7 +69,7 @@ public enum JobEnum {
     AUTONOMOUS_DRIVING_SYSTEM(61, "自动驾驶系统工程师"),
     DATA_ANNOTATION_TRAINER(62, "数据标注/AI训练师");
 
-
+    @Getter
     @EnumValue
     private final Integer value;
     @JsonValue
