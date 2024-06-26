@@ -23,8 +23,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String basePath = "/root/Job_Backend/resume/";
-
+    private final String baseResumePath = "/root/Job_Backend/resume/";
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -56,7 +55,7 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                Path path = Paths.get(basePath + userId + extensionName);
+                Path path = Paths.get(baseResumePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path,bytes);
                 return new ReturnProtocol(true, "上传成功",userId + extensionName);
@@ -69,9 +68,33 @@ public class UserController {
         }
     }
 
+    @PostMapping("upload/image")
+    public ReturnProtocol uploadImage(@RequestParam("file")MultipartFile file){
+        try {
+            byte[]bytes = file.getBytes();
+            String userId = UserHolder.getUser().getId();
+            String fileName = file.getOriginalFilename();
+            if (fileName != null) {
+                String extensionName = fileName.substring(fileName.lastIndexOf("."));
+                String baseImagePath = "/root/Job_backend/image/user/";
+                Path path = Paths.get(baseImagePath + userId + extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
+                Files.write(path, bytes);
+                return new ReturnProtocol(true, "上传成功", userId + extensionName);
+            }else {
+                return  new ReturnProtocol(false,"上传失败,文件名为null");
+            }
+        }catch (IOException e){
+            e.printStackTrace();
+            return new ReturnProtocol(false,"上传失败,IO异常");
+        }
+    }
+
+
+
     @GetMapping("download/resume")
     public ReturnProtocol downloadResume(@RequestParam("userId") String userId, HttpServletResponse response){
-        String pathName = basePath +userId + ".pdf";
+        String pathName = baseResumePath +userId + ".pdf";
         File file = new File(pathName);
         if(!file.exists()){
             return new ReturnProtocol(false,"未上传简历");
