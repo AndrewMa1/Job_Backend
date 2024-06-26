@@ -4,9 +4,13 @@ import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
+@Getter
 public enum JobEnum {
-    TESTER(1, "测试工程师");
-    @Getter
+    TEST_1(1, "测试工程师"),
+    TEST_2(2, "测试工程师"),
+    DEVELOP(3,"开发工程师"),
+    ALGORITHM(4,"算法工程师");
+
     @EnumValue
     private final Integer value;
     @JsonValue

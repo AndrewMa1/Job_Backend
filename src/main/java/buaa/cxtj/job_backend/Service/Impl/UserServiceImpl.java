@@ -178,4 +178,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    @Override
+    public ReturnProtocol getFirmId(String userId) {
+        LambdaQueryWrapper<Firm> wrapper = new LambdaQueryWrapper<Firm>()
+                .eq(Firm::getManagerId,userId);
+        try{
+            String firmId = firmMapper.selectOne(wrapper).getId();
+            return new ReturnProtocol(true,"查询成功",firmId);
+        }catch (MybatisPlusException e){
+            return new ReturnProtocol(false,"查询失败");
+        }
+
+    }
+
 }

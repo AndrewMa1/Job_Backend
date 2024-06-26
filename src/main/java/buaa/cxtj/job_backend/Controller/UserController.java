@@ -114,4 +114,9 @@ public class UserController {
     public ReturnProtocol getInfo(@RequestParam String id){
         return userService.getUser(id);
     }
+
+    @GetMapping("get/firmId")
+    public ReturnProtocol getFirmId(@RequestParam String userId){
+        return userService.getFirmId(userId);
+    }
 }
