@@ -11,4 +11,12 @@ public interface DynamicService extends IService<Dynamic> {
     ReturnProtocol deleteDynamic(String id);
 
     ReturnProtocol agreeDynamic(String id);
+
+    ReturnProtocol commentDynamic(String id,String comment);
+
+    ReturnProtocol transDynamic(String id);
+
+    ReturnProtocol showDynamic();
+
+    ReturnProtocol showComment(String id);
 }
