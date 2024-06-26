@@ -8,11 +8,13 @@ import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
+import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.RecommendService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,14 +54,14 @@ public class RecommendServiceImpl implements RecommendService {
         List<Object> subscribeList = redisUtil.lGet(RedisUtil.FOLLOW + userId, 0, redisUtil.lGetListSize(RedisUtil.FOLLOW + userId));
         List<String> stringList = subscribeList.stream().map(Object::toString).toList();
 
-        stringList.forEach(System.out::println);
-
         //2 从mysql的dynamic表中拿到这些up主或者公司的动态
         ArrayList<Dynamic> result = new ArrayList<>();
+        ArrayList<String>poster = new ArrayList<>();
         for(String userid:stringList){
             QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id",userid);
             result.addAll(dynamicMapper.selectList(queryWrapper));
+            poster.add(userMapper.selectById(userid).getNickname());
         }
 
         //3 从redis取出该用户的点赞动态列表
@@ -73,7 +75,7 @@ public class RecommendServiceImpl implements RecommendService {
                 isAgreeList.add(false);
             }
         }
-        DynamicDTO dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),result,isAgreeList);
+        DynamicDTO dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),result,isAgreeList,poster);
         return dynamicDTO;
     }
 
@@ -83,12 +85,15 @@ public class RecommendServiceImpl implements RecommendService {
     //3 用户加载推荐招聘信息时，根据用户填写的意向岗位，找到对应的topic，消费topic中的消息 ******
     @Override
     public ReturnProtocol recJob() {
-        String userId = UserHolder.getUser().getId();
-        JobEnum interestJob = UserHolder.getUser().getInterestJob();
-        List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(interestJob.name(), 0);
-        List<Job> recJobList = JSONUtil.toList(
-                JSONUtil.parseArray(recJobListJson)
-                , Job.class);
+        JobEnum interestJob = userMapper.selectById(UserHolder.getUser().getId()).getInterestJob();
+        List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(interestJob.toString(), 0);
+        System.out.println(recJobListJson.size());
+        List<Job> recJobList = new ArrayList<>();
+        for (String jsonString : recJobListJson) {
+            JSONObject jsonObject = JSONUtil.parseObj(jsonString);
+            Job job = jsonObject.toBean(Job.class);
+            recJobList.add(job);
+        }
         return new ReturnProtocol(true,recJobList);
     }
 

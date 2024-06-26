@@ -13,6 +13,7 @@ import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
 
@@ -44,6 +45,8 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private RedisUtil redisUtil;
     @Autowired
     private DynamicMapper dynamicMapper;
+    @Autowired
+    KafkaTopicServiceImpl kafkaTopicService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -132,6 +135,11 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public void publishHireInfo(Job job) {
         employMapper.insert(job);
+        JobEnum interestJob = job.getJobDesc();
+        if(!kafkaTopicService.topicExists(interestJob.toString())){
+            kafkaTopicService.createTopic(interestJob.toString());
+        }
+        kafkaTopicService.sendMessage(interestJob.toString(),JSONUtil.toJsonStr(job));
     }
 
 
