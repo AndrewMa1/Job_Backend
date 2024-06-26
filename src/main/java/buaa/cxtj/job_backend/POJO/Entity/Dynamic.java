@@ -22,6 +22,7 @@ public class Dynamic {
     private int trans;              //转发量
     private String transId;         //被转发用户Id
     private int comments;
+    @TableField(exist = false)
     private String createTime;      //创建时间
 
     public Dynamic( String userId, String content) {
