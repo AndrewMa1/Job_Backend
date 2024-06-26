@@ -1,11 +1,13 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
+import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,8 +27,10 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     UserService userService;
 
     @Override
-    public void deliveryPostService(String corporation_id, String user_id, String post_name) {
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_name,user_id);
+    public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
+        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id,resume);
+        String json = JSONUtil.toJsonStr(pendingOfferDTO);
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,json);
     }
 
     @Override
