@@ -30,7 +30,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/login")
+    @PostMapping("/login")
     public ReturnProtocol login(@RequestBody LoginFormDTO loginFormDTO) {
 
         return userService.login(loginFormDTO);
