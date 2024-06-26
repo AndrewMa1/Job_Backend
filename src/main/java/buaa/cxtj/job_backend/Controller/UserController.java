@@ -95,6 +95,7 @@ public class UserController {
     @GetMapping("download/resume")
     public ReturnProtocol downloadResume(@RequestParam("userId") String userId, HttpServletResponse response){
         String pathName = baseResumePath +userId + ".pdf";
+
         File file = new File(pathName);
         if(!file.exists()){
             return new ReturnProtocol(false,"未上传简历");
