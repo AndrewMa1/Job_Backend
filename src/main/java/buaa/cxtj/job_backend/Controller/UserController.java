@@ -150,4 +150,6 @@ public class UserController {
     public ReturnProtocol getFirmId(@RequestParam String userId){
         return userService.getFirmId(userId);
     }
+
+
 }

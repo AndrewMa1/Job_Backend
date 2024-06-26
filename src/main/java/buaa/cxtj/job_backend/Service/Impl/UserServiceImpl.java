@@ -158,6 +158,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .setSql("follower_num = follower_num + 1")
                     .eq(User::getId,follower);
             baseMapper.update(null,wrapper);
+
+            LambdaUpdateWrapper<User>wrapper1 = new LambdaUpdateWrapper<User>()
+                    .setSql("interest_num = interest_num + 1")
+                            .eq(User::getId,userId);
+            baseMapper.update(null,wrapper1);
             //在被关注者的粉丝列表里面新增当前用户
             redisUtil.lSet(RedisUtil.FOLLOWER + follower, userId);
             //在当前用户的关注列表里面新增被关注者
