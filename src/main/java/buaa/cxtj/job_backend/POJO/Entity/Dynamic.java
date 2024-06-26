@@ -7,6 +7,9 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 @Data
 @TableName("t_dynamic")
 @NoArgsConstructor
@@ -19,6 +22,7 @@ public class Dynamic {
     private int trans;              //转发量
     private String transId;         //被转发用户Id
     private int comments;
+    private String createTime;      //创建时间
 
     public Dynamic( String userId, String content) {
         this.userId = userId;
@@ -26,6 +30,8 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.createTime = sdf.format(new Date());;
     }
 
     public Dynamic(String userId, String content, String transId) {
@@ -34,5 +40,7 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = transId;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.createTime = sdf.format(new Date());;
     }
 }

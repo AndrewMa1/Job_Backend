@@ -105,7 +105,13 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",id);
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
-        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(), dynamics);
+        List<String> names = new ArrayList<>();
+        for(Dynamic dynamic:dynamics){
+            if(dynamic.getTransId()!=null){
+                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),names ,dynamics);
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 
