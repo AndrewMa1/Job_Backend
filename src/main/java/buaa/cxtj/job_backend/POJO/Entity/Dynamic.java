@@ -22,7 +22,6 @@ public class Dynamic {
     private int trans;              //转发量
     private String transId;         //被转发用户Id
     private int comments;
-    @TableField(exist = false)
     private String createTime;      //创建时间
 
     public Dynamic( String userId, String content) {
@@ -31,8 +30,6 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.createTime = sdf.format(new Date());;
     }
 
     public Dynamic(String userId, String content, String transId) {
@@ -41,7 +38,6 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = transId;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        this.createTime = sdf.format(new Date());;
+
     }
 }
