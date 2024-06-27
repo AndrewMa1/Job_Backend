@@ -10,6 +10,11 @@ public class JobDTO {
 
     private String jobCounts;
 
+    private int wage;
+    private String workPlace;
+    private String internTime;
+    private int bonus;
+
     public JobDTO(String jobName, String jobRequirements, String jobCounts) {
         this.jobName = jobName;
         this.jobRequirements = jobRequirements;
