@@ -2,13 +2,16 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
+import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,9 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    EmployMapper employMapper;
 
     @Override
     public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
@@ -67,6 +73,22 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         }
         return userDto;
     }
+    @Override
+    public List<JobDTO> queryJob(String job_id) {
+        // 使用 MyBatis-Plus 的 QueryWrapper 进行条件查询
+        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("job_id", job_id);  // 在原始的 queryWrapper 上设置查询条件
+        List<Job> jobs = employMapper.selectList(queryWrapper);// 使用 queryWrapper 进行查询
+        List<JobDTO> jobDTOS = new ArrayList<>();
+        log.info("查询到的结果为 "+ jobs);
+        for(Job job:jobs){
+            JobDTO jobDTO = new JobDTO();
+            BeanUtils.copyProperties(job,jobDTO);
+            jobDTOS.add(jobDTO);
+        }
+        return jobDTOS;
+    }
+
 
 
 }

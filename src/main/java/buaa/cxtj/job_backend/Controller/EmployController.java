@@ -1,6 +1,7 @@
 package buaa.cxtj.job_backend.Controller;
 
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
+import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Service.EmployService;
@@ -63,5 +64,20 @@ public class EmployController {
        List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
     }
+
+
+    /**
+     * 根据job_id返回对应信息
+     */
+    @GetMapping("queryJob/{id}")
+    public ReturnProtocol queryJob(@PathVariable String id){
+        List<JobDTO> jobDTOS = employService.queryJob(id);
+        return new ReturnProtocol(true,jobDTOS);
+    }
+
+    /**
+     * 根据公司id返还公司信息
+     */
+//    GetMapping("")
 
 }

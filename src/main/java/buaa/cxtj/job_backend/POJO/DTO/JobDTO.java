@@ -1,8 +1,10 @@
 package buaa.cxtj.job_backend.POJO.DTO;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class JobDTO {
     private String jobName;
 

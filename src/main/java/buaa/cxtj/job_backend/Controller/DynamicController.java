@@ -1,6 +1,5 @@
 package buaa.cxtj.job_backend.Controller;
 
-import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.Service.DynamicService;
 import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
