@@ -141,9 +141,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         if(p1==null){
             throw new RuntimeException("该岗位投递无此人");
         }
-        if(userMapper.selectById(user_id).getCorporation()==null && !userMapper.selectById(user_id).getCorporation().isBlank()){
-            throw new NoInPendingException("该员工已经有岗位了");
-        }
         user.setJob(post_id);
         user.setCorporation(corporation_id);
         userMapper.updateById(user);
