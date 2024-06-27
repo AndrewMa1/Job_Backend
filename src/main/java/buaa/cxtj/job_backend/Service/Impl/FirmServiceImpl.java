@@ -62,9 +62,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
     @Override
     public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
-//        String name = firmDTO.getName();
-//        String intro = firmDTO.getIntro();
-//        MultipartFile picture = firmDTO.getPicture();
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();
@@ -80,6 +77,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 Path path = Paths.get(baseImagePath + firm_id + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
+                redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
                 return new ReturnProtocol(true, "上传成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
