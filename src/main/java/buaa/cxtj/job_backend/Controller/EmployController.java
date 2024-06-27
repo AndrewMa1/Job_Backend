@@ -28,7 +28,7 @@ public class EmployController {
     EmployService employService;
 //    @Value("${file.upload-dir}")
 //    private String basePath;
-    private String basePath="src/main/resources/static/";
+    private String basePath="/root/Job_Backend/resume/job/";
 
 
     @GetMapping(value = "postInfo/{id}")
