@@ -62,11 +62,20 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
     @Override
     public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
+        User user = userMapper.selectById(UserHolder.getUser().getId());
+        if(user.getCorporation()!=null && !user.getCorporation().isBlank()){
+            throw new HavePostException("该用户已经有公司！");
+        }
+        QueryWrapper<Firm> queryWrapper = new QueryWrapper<>();
+        Firm existingFirm = firmMapper.selectOne(queryWrapper);
+        if (existingFirm != null) {
+            // 如果已存在同名公司，可以根据实际需求进行处理，比如抛出异常或者返回相应信息
+            return new ReturnProtocol(false,"已存在同名公司!");
+        }
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();
             String fileName = picture.getOriginalFilename();
-
             Firm firm = new Firm(name,intro,fileName,userId);
             firmMapper.insert(firm);
             String firm_id = firm.getId();
@@ -78,7 +87,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
-                return new ReturnProtocol(true, "上传成功", firm_id + extensionName);
+                user.setCorporation(firm.getName());
+                userMapper.insert(user);
+                return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
             }
@@ -96,6 +107,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getManagerId(),managerName);
         return new ReturnProtocol(true,"",firmDTO);
     }
+
 
     @Override
     public ReturnProtocol showDynamic(String id) {
@@ -170,6 +182,31 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         queryWrapper.eq("corporation",id).orderByDesc("follower_num");
         List<User> users = userMapper.selectList(queryWrapper);
         return new ReturnProtocol(true,"",users);
+    }
+
+    @Override
+    public ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture) {
+        Firm firm = firmMapper.selectById(firm_id);
+        try {
+            byte[]bytes = picture.getBytes();
+            String fileName = picture.getOriginalFilename();
+            if (fileName != null) {
+                String extensionName = fileName.substring(fileName.lastIndexOf("."));
+                String baseImagePath = "/root/Job_Backend/image/firm/";
+                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+                Files.write(path, bytes);
+                firm.setName(name);
+                firm.setIntro(intro);
+                firm.setPicture(fileName);
+                firmMapper.insert(firm);
+                return new ReturnProtocol(true, "修改信息成功", firm_id + extensionName);
+            }else {
+                return  new ReturnProtocol(false,"上传失败,文件名为null");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new HavePostException("上传失败,IO异常");
+        }
     }
 
 
