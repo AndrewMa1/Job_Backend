@@ -127,12 +127,12 @@ public class UserController {
     }
 
     @PostMapping("add/staff")
-    public ReturnProtocol addStaff(@RequestParam String firmId) {
+    public ReturnProtocol addStaff(@RequestBody String firmId) {
         return userService.addStaff(firmId);
     }
 
     @PostMapping("delete/staff")
-    public ReturnProtocol deleteStaff(@RequestParam String firmId) {
+    public ReturnProtocol deleteStaff(@RequestBody String firmId) {
         return userService.deleteStaff(firmId);
     }
 
