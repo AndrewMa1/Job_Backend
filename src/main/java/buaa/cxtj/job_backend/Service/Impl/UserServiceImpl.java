@@ -15,6 +15,7 @@ import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -91,7 +92,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(user1!=null){
             return new ReturnProtocol(false,"注册失败,昵称重复");
         }
-
         try {
             baseMapper.insert(user);
             return new ReturnProtocol(true, "注册成功", registerDTO);
@@ -126,6 +126,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public ReturnProtocol addStaff(String firmId) {
         //获取当前登录的员工信息
         String staffId = UserHolder.getUser().getId();
+
+        Firm firm = firmMapper.selectById(firmId);
+        System.out.println(firmId);
+        System.out.println(firm);
+        if(firm == null){
+            return new ReturnProtocol(false,"公司不存在");
+        }
         //TODO:使用Redis在企业的员工列表中新增员工
         try {
             redisUtil.lSet(RedisUtil.STAFF + firmId, staffId);

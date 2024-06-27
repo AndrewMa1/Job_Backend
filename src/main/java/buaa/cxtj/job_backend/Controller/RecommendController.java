@@ -36,8 +36,8 @@ public class RecommendController {
 //
 //    }
 
-    @GetMapping("/search/{firm}")
-    public ReturnProtocol searchFirm(@PathVariable("firm")String firm){
+    @GetMapping("/search")
+    public ReturnProtocol searchFirm(@RequestParam(name = "firm") String firm){
         return recommendService.searchFirm(firm);
     }
 

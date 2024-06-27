@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -59,7 +60,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
 
     @Override
-    public ReturnProtocol createFirm(String name, String intro, MultipartFile picture) {
+    public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
+//        String name = firmDTO.getName();
+//        String intro = firmDTO.getIntro();
+//        MultipartFile picture = firmDTO.getPicture();
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();
@@ -116,7 +120,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         queryWrapper.eq("firm_id", id); // 根据公司id查询
         List<Job> jobList = employMapper.selectList(queryWrapper);
         // 将查询结果转换为JobDTO对象列表
-        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
+        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
         return new ReturnProtocol(true,"", jobDTOList);
     }
 

@@ -2,6 +2,7 @@ package buaa.cxtj.job_backend.POJO.DTO;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -11,6 +12,7 @@ public class FirmDTO{
     private String intro;           //企业简介
     private String managerId;       //管理员Id
     private String managerName;        //管理员名字
+    private MultipartFile picture;
 
     public FirmDTO(String id, String name, String intro,  String managerId, String managerName) {
         this.id = id;

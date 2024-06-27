@@ -23,7 +23,7 @@ public class AIController {
     @Autowired
     AIService aiService;
 
-    @GetMapping("/refineResume")
+    @PostMapping("/refineResume")
     public void refineResume(@RequestParam("resume") MultipartFile resume, HttpServletResponse response) {
         String resume_content = null;
         try {

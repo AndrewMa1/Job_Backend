@@ -1,20 +1,23 @@
 package buaa.cxtj.job_backend.Controller;
 
+import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
+@Slf4j
 @RequestMapping("/api/firm")
 @RequiredArgsConstructor
 public class FirmController {
     private final FirmService firmService;
 
-    @GetMapping("/createFirm")
-    public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam("picture") MultipartFile picture){
+    @PostMapping("/createFirm")
+    public ReturnProtocol createFirm(@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
     @GetMapping("/showMember")
@@ -46,6 +49,7 @@ public class FirmController {
      */
     @GetMapping("/hire")
     public ReturnProtocol hirePerson(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
+        log.info("正在录取clerk");
         firmService.hireClerk(user_id,corporation_id,post_id);
         return new ReturnProtocol(true,"录用成功");
     }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
 import lombok.Getter;
 
-
+@Getter
 public enum EducationEnum {
     MIDDLE_SCHOOL(1, "初中"),
     HIGH_SCHOOL(2, "高中"),
@@ -13,7 +13,7 @@ public enum EducationEnum {
     GRADUATE(4, "硕士"),
     DOCTOR(5, "博士");
 
-    @Getter
+
     @EnumValue
     private final Integer value;
     @JsonValue
