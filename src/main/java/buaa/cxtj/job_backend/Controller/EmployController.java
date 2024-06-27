@@ -36,7 +36,7 @@ public class EmployController {
         return null;
     }
 
-    @GetMapping("delivery")
+    @PostMapping("delivery")
     public ReturnProtocol deliveryPost(@RequestParam String corporation_id,@RequestParam String user_id,@RequestParam String post_id,@RequestParam("file") MultipartFile file){
         try {
             log.info("基本信息为: "+corporation_id+'\n'+user_id+'\n'+post_id+'\n'+file.getOriginalFilename());
