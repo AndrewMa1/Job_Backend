@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FirmService extends IService<Firm> {
-    ReturnProtocol createFirm(String name, String intro, MultipartFile picture);
+    ReturnProtocol createFirm(FirmDTO firmDTO);
 
     ReturnProtocol showContent(String id);
 
