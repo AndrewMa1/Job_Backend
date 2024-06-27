@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -61,9 +62,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
     @Override
     public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
-//        String name = firmDTO.getName();
-//        String intro = firmDTO.getIntro();
-//        MultipartFile picture = firmDTO.getPicture();
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();
@@ -79,6 +77,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 Path path = Paths.get(baseImagePath + firm_id + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
+                redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
                 return new ReturnProtocol(true, "上传成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
@@ -109,8 +108,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             queryWrapper1.eq("user_id",user.getId());
             dynamics.addAll(dynamicMapper.selectList(queryWrapper1));
         }
-        dynamics.subList(0, Math.min(dynamics.size(),10));
-        return new ReturnProtocol(true,"",dynamics);
+        List<Dynamic> sortedDynamics = dynamics.stream()
+                .sorted((d1, d2) -> d2.getCreateTime().compareTo(d1.getCreateTime()))
+                .collect(Collectors.toList());
+        // 截取前10条
+        List<Dynamic> top10Dynamics = sortedDynamics.subList(0, Math.min(sortedDynamics.size(), 10));
+        return new ReturnProtocol(true, "", top10Dynamics);
     }
 
     @Override

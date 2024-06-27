@@ -136,6 +136,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //TODO:使用Redis在企业的员工列表中新增员工
         try {
             redisUtil.lSet(RedisUtil.STAFF + firmId, staffId);
+            LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
+                    .set(User::getCorporation,firmId)
+                    .eq(User::getId,staffId);
+            baseMapper.update(null,wrapper);
             return new ReturnProtocol(true, "新增员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "添加失败");

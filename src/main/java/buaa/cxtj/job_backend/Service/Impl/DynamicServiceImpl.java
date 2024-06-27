@@ -103,7 +103,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public ReturnProtocol showDynamic() {
         String id = UserHolder.getUser().getId();
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("user_id",id);
+        queryWrapper.eq("user_id",id).orderByDesc("create_time");;
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
         List<String> names = new ArrayList<>();
         for(Dynamic dynamic:dynamics){
