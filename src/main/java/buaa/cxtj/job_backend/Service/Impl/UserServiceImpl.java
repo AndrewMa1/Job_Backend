@@ -85,6 +85,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         EducationEnum education = EducationEnum.getEnum(registerDTO.getEducation());
         JobEnum interestJob = JobEnum.getEnum(registerDTO.getInterestJob());
         User user = new User(nickname, name, password, education, interestJob);
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<User>()
+                .eq(User::getNickname,nickname);
+        User user1 = baseMapper.selectOne(wrapper);
+        if(user1!=null){
+            return new ReturnProtocol(false,"注册失败,昵称重复");
+        }
+
         try {
             baseMapper.insert(user);
             return new ReturnProtocol(true, "注册成功", registerDTO);
