@@ -1,9 +1,13 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
+import buaa.cxtj.job_backend.Mapper.FirmMapper;
+import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
+import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Service.EmployService;
@@ -32,8 +36,13 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     UserService userService;
 
     @Autowired
+    UserMapper userMapper;
+
+    @Autowired
     EmployMapper employMapper;
 
+    @Autowired
+    FirmMapper firmMapper;
     @Override
     public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
         PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id,resume,1);
@@ -89,6 +98,17 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         return jobDTOS;
     }
 
+    @Override
+    public FirmDTO queryFrim(String id) {
+        Firm firm = firmMapper.selectById(id);
+        User user = userMapper.selectById(firm.getManagerId());
+        if(user==null){
+            throw new RuntimeException("没找到这位管理员");
+        }
+        FirmDTO firmDTO = new FirmDTO(firm.getId(), firm.getName(), firm.getIntro(),firm.getManagerId(),user.getName());
+        return firmDTO;
+
+    }
 
 
 }

@@ -1,6 +1,7 @@
 package buaa.cxtj.job_backend.Service;
 
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
+import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
@@ -14,4 +15,6 @@ public interface EmployService extends IService<Job> {
     public List<ExhibitPendingDTO> queryEmployee(String corporation_id, String post_id);
 
     public List<JobDTO> queryJob(String job_id);
+
+    public FirmDTO queryFrim(String id);
 }

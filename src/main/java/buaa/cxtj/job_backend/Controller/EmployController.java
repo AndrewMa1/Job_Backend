@@ -78,6 +78,9 @@ public class EmployController {
     /**
      * 根据公司id返还公司信息
      */
-//    GetMapping("")
+    @GetMapping("queryFirm/{id}")
+    public ReturnProtocol queryFirm(@PathVariable String id){
+        return new ReturnProtocol(true,employService.queryFrim(id));
+    }
 
 }
