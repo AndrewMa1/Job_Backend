@@ -25,6 +25,13 @@ public class Job {
     @TableField("job_desc")
     private JobEnum jobDesc;
 
+    private int wage;
+    private String workPlace;
+    private String internTime;
+    private int bonus;
+
+
+
     @TableField(exist = false)
     private ArrayList<String> preEmployeeList;
 
