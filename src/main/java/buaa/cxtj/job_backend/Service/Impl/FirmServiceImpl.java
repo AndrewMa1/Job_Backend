@@ -220,8 +220,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         if(Objects.equals(firm.getManagerId(), user.getId())){
             return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
         }
-
-        return null;
+        redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
+        redisUtil.lRemove(RedisUtil.STAFF+firmId,1,user.getId());
+        user.setJob(null);
+        user.setCorporation(null);
+        userMapper.updateById(user);
+        return new ReturnProtocol(true,"退出企业成功");
     }
 
 
