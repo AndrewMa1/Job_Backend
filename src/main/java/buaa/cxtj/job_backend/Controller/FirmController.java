@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FirmController {
     private final FirmService firmService;
 
-    @GetMapping("/createFirm")
+    @PostMapping("/createFirm")
     public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
