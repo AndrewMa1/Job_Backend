@@ -126,8 +126,8 @@ public class UserController {
         }
     }
 
-    @PostMapping("add/staff")
-    public ReturnProtocol addStaff(@RequestBody String firmId) {
+    @GetMapping("add/staff")
+    public ReturnProtocol addStaff(@RequestParam String firmId) {
         return userService.addStaff(firmId);
     }
 
