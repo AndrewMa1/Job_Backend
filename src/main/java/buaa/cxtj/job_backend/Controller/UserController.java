@@ -151,5 +151,19 @@ public class UserController {
         return userService.getFirmId(userId);
     }
 
+    @GetMapping("get/staff")
+    public ReturnProtocol getStaffs(@RequestParam String firmId){
+        return userService.getStaffs(firmId);
+    }
+
+    @GetMapping("get/isFollowed")
+    public ReturnProtocol isFollowed(@RequestParam String id){
+        return userService.isFollowed(id);
+    }
+
+    @GetMapping("delete/follow")
+    public ReturnProtocol deleteFollow(@RequestParam String id){
+        return userService.deleteFollow(id);
+    }
 
 }

@@ -15,7 +15,6 @@ import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -35,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
-    private final UserMapper userMapper;
     private final RedisUtil redisUtil;
 
     @Override
@@ -112,6 +110,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(User::getRepo,updateDTO.getRepo())
                 .set(User::getEducation,updateDTO.getEducation())
                 .set(User::getInterestJob,updateDTO.getInterestJob())
+                .set(User::getJob,updateDTO.getJob())
                 .eq(User::getId,id);
         try{
             baseMapper.update(user,wrapper);
@@ -128,19 +127,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String staffId = UserHolder.getUser().getId();
 
         Firm firm = firmMapper.selectById(firmId);
-        System.out.println(firmId);
-        System.out.println(firm);
         if(firm == null){
             return new ReturnProtocol(false,"公司不存在");
         }
         //TODO:使用Redis在企业的员工列表中新增员工
         try {
-            redisUtil.lSet(RedisUtil.STAFF + firmId, staffId);
+            redisUtil.sSet(RedisUtil.STAFF + firmId, staffId);
             LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
                     .set(User::getCorporation,firmId)
                     .eq(User::getId,staffId);
             baseMapper.update(null,wrapper);
-            return new ReturnProtocol(true, "新增员工成功");
+            Set<Object>staffs = redisUtil.sGet(RedisUtil.STAFF + firmId);
+
+            return new ReturnProtocol(true, "新增员工成功",staffs);
         } catch (Exception e) {
             return new ReturnProtocol(false, "添加失败");
         }
@@ -156,7 +155,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String firmId = firmMapper.selectOne(wrapper).getId();
         try {
             //TODO:使用Redis在企业的员工列表中删除员工
-            redisUtil.lRemove(RedisUtil.STAFF + firmId, 1, staffId);
+            redisUtil.setRemove(RedisUtil.STAFF + firmId, 1, staffId);
             return new ReturnProtocol(true, "删除员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "删除员工失败");
@@ -182,9 +181,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                             .eq(User::getId,userId);
             baseMapper.update(null,wrapper1);
             //在被关注者的粉丝列表里面新增当前用户
-            redisUtil.lSet(RedisUtil.FOLLOWER + follower, userId);
+            redisUtil.sSet(RedisUtil.FOLLOWER + follower, userId);
             //在当前用户的关注列表里面新增被关注者
-            redisUtil.lSet(RedisUtil.FOLLOW + userId,follower);
+            redisUtil.sSet(RedisUtil.FOLLOW + userId,follower);
             return new ReturnProtocol(true, "关注成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "关注失败");
@@ -212,6 +211,41 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return new ReturnProtocol(false,"查询失败");
         }
 
+    }
+
+    @Override
+    public ReturnProtocol getStaffs(String firmId){
+        try{
+            Set<Object>staffs = redisUtil.sGet(RedisUtil.STAFF + firmId);
+            return new ReturnProtocol(true,"获取成功",staffs);
+        }catch (Exception e){
+            return new ReturnProtocol(false,"获取失败");
+        }
+
+
+    }
+
+    @Override
+    public ReturnProtocol isFollowed(String id){
+        try{
+            String userId = UserHolder.getUser().getId();
+            boolean isFollowed = redisUtil.sHasKey(RedisUtil.FOLLOW + userId,id);
+            return new ReturnProtocol(true,"获取成功",isFollowed);
+        }catch (Exception e){
+            return new ReturnProtocol(false,"获取失败");
+        }
+    }
+
+    @Override
+    public ReturnProtocol deleteFollow(String id) {
+        String userId = UserHolder.getUser().getId();
+        try{
+            redisUtil.setRemove(RedisUtil.FOLLOW+userId,id);
+            redisUtil.setRemove(RedisUtil.FOLLOWER+id,userId);
+            return new ReturnProtocol(true,"取消关注成功");
+        }catch (Exception e){
+            return new ReturnProtocol(false,"取消关注失败");
+        }
     }
 
 }

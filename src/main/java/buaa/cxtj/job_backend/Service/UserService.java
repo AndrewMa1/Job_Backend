@@ -35,4 +35,10 @@ public interface UserService extends IService<User> {
     ReturnProtocol getUser(String id);
 
     ReturnProtocol getFirmId(String userId);
+
+    ReturnProtocol getStaffs(String firmId);
+
+    ReturnProtocol isFollowed(String id);
+
+    ReturnProtocol deleteFollow(String id);
 }
