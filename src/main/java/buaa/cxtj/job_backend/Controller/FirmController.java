@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class FirmController {
     private final FirmService firmService;
 
-    @PostMapping("/createFirm")
+    @GetMapping("/createFirm")
     public ReturnProtocol createFirm(@RequestParam String name,@RequestParam String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
@@ -44,7 +44,7 @@ public class FirmController {
      * @param post_id 录取的岗位id
      * @return
      */
-    @PostMapping("/hire")
+    @GetMapping("/hire")
     public ReturnProtocol hirePerson(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
         firmService.hireClerk(user_id,corporation_id,post_id);
         return new ReturnProtocol(true,"录用成功");
