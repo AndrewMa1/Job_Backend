@@ -164,6 +164,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         user.setCorporation(corporation_id);
         userMapper.updateById(user);
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
+        redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
     }
 
     @Override
