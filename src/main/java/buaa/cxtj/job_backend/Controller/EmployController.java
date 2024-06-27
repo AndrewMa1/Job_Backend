@@ -3,8 +3,11 @@ package buaa.cxtj.job_backend.Controller;
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.EmployService;
+import buaa.cxtj.job_backend.Util.PermissionUntil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +33,8 @@ public class EmployController {
 //    private String basePath;
     private String basePath="/root/Job_Backend/resume/job/";
 
+    @Autowired
+    PermissionUntil permissionUntil;
 
     @GetMapping(value = "postInfo/{id}")
     public ReturnProtocol postJobInfo(@PathVariable String id){
@@ -61,6 +66,7 @@ public class EmployController {
      */
     @GetMapping ("queryEmployee")
     public ReturnProtocol queryEmployee(@RequestParam String corporation_id,@RequestParam String post_id){
+        permissionUntil.checkIfManagerOfFirm();
        List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
     }
