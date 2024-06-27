@@ -120,7 +120,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         queryWrapper.eq("firm_id", id); // 根据公司id查询
         List<Job> jobList = employMapper.selectList(queryWrapper);
         // 将查询结果转换为JobDTO对象列表
-        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
+        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts())).toList();
         return new ReturnProtocol(true,"", jobDTOList);
     }
 
