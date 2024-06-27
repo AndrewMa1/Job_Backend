@@ -45,9 +45,9 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     FirmMapper firmMapper;
     @Override
     public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
-        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id,resume,1);
-        String json = JSONUtil.toJsonStr(pendingOfferDTO);
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,json);
+//        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id,resume,1);
+//        String json = JSONUtil.toJsonStr(pendingOfferDTO);
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id);
     }
 
     @Override

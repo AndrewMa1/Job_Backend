@@ -142,27 +142,25 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public void hireClerk(String user_id, String corporation_id, String post_id) {
         User user = userMapper.selectById(user_id);
+        String pending = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
+        if(user==null){
+            throw new RuntimeException("用户表中不存在该用户");
+        }
         if(user.getCorporation()!=null && !user.getCorporation().isBlank()){
             log.info("1"+user.getCorporation().isBlank());
             throw new HavePostException("该用户已经有岗位");
         }
-        Map<String, Integer> userMap = new HashMap<>();
-        PendingOfferDTO p1 = null;
-        Set<Object> users = redisUtil.sGet(RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id);
-        for (Object obj : users) {
-            String str = String.valueOf(obj); // 将对象转换为字符串
-            PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(str, PendingOfferDTO.class);
-            userMap.put(pendingOfferDTO.getUser_id(),pendingOfferDTO.getStatus());
-            if(pendingOfferDTO.getUser_id().equals(user_id)){
-                p1=pendingOfferDTO;
-            }
-        }
-        if(p1==null){
+        Boolean member = redisTemplate.opsForSet().isMember(RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id, user_id);
+        log.info("是否查到此人 "+member);
+        if(!member){
             throw new RuntimeException("该岗位投递无此人");
         }
         user.setJob(post_id);
         user.setCorporation(corporation_id);
         userMapper.updateById(user);
+        log.info("字符串为 "+pending);
+        log.info("user_id "+user_id);
+        redisTemplate.opsForSet().remove(pending, user_id);//直接将被录取的人从待录取中直接删除
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
     }
 
