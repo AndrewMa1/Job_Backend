@@ -8,11 +8,9 @@ import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
+import buaa.cxtj.job_backend.POJO.DTO.MailDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
-import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
-import buaa.cxtj.job_backend.POJO.Entity.Firm;
-import buaa.cxtj.job_backend.POJO.Entity.Job;
-import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.Entity.*;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
@@ -27,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +33,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -140,6 +140,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     }
 
     @Override
+    @Transactional
     public void hireClerk(String user_id, String corporation_id, String post_id) {
         User user = userMapper.selectById(user_id);
         if(user.getCorporation()!=null && !user.getCorporation().isBlank()){
@@ -164,8 +165,25 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         user.setCorporation(corporation_id);
         userMapper.updateById(user);
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
+
+
+        Mail mail = new Mail();
+        mail.setSenderId(UserHolder.getUser().getId());
+        mail.setReceiveId(userMapper.selectById(user_id).getId());
+        mail.setCreateTime(LocalDateTime.now().toString());
+        mail.setIsRead(false);
+
+        String firm_name = firmMapper.selectById(corporation_id).getName();
+        String job_name = employMapper.selectById(post_id).getJobName();
+        mail.setContent("恭喜您，您已经被录取至"+ firm_name + "公司的" + job_name + "岗位！");
+
+
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
+
     }
 
+
+    //权限问题
     @Override
     public void publishHireInfo(Job job) {
         employMapper.insert(job);

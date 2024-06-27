@@ -1,8 +1,12 @@
 package buaa.cxtj.job_backend.Controller;
 
 
+import buaa.cxtj.job_backend.POJO.DTO.MailDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Mail;
 import buaa.cxtj.job_backend.Service.MailService;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import cn.hutool.json.JSONUtil;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,13 +40,12 @@ public class MailController {
 
 
     // 当监听到消息时，自动往mail表里添加数据
-    
-//    @KafkaListener(topics = {"test"},groupId = "")
-//    public void onMessage1(ConsumerRecord<?, ?> record){
-//
-//        System.out.println("简单消费Topic："+record.topic()+"**分区"+record.partition()+"**值内容"+record.value());
-//
-//    }
+
+    @KafkaListener(topics = {"Mail"},groupId = "Mail_cons")
+    public void onMessage1(String mailJsonStr){
+        Mail mail = JSONUtil.toBean(mailJsonStr, Mail.class);
+        mailService.save(mail);
+    }
 
 
 
