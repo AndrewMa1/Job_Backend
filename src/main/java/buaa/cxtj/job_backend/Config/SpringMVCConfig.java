@@ -19,7 +19,8 @@ public class SpringMVCConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginInterceptor(redisUtil))
                 .excludePathPatterns("/api/user/login")
-                .excludePathPatterns("/api/user/register");
+                .excludePathPatterns("/api/user/register")
+                .excludePathPatterns("/api/rec/recJobForVisitor");
     }
 
     @Override
