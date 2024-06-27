@@ -60,10 +60,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
 
     @Override
-    public ReturnProtocol createFirm(FirmDTO firmDTO) {
-        String name = firmDTO.getName();
-        String intro = firmDTO.getIntro();
-        MultipartFile picture = firmDTO.getPicture();
+    public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
+//        String name = firmDTO.getName();
+//        String intro = firmDTO.getIntro();
+//        MultipartFile picture = firmDTO.getPicture();
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();

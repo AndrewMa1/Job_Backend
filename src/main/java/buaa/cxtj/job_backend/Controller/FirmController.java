@@ -17,8 +17,8 @@ public class FirmController {
     private final FirmService firmService;
 
     @PostMapping("/createFirm")
-    public ReturnProtocol createFirm(@RequestBody FirmDTO firmDTO){
-        return firmService.createFirm( firmDTO);
+    public ReturnProtocol createFirm(@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
+        return firmService.createFirm(name,intro,picture);
     }
     @GetMapping("/showMember")
     public ReturnProtocol showMembers(@RequestParam String id){
