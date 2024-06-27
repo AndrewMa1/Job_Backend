@@ -187,6 +187,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture) {
         Firm firm = firmMapper.selectById(firm_id);
+        if(!Objects.equals(firm.getManagerId(), UserHolder.getUser().getId())){
+            return new ReturnProtocol(false,"您不是公司管理员，不能编辑！");
+        }
         try {
             byte[]bytes = picture.getBytes();
             String fileName = picture.getOriginalFilename();
@@ -198,7 +201,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 firm.setName(name);
                 firm.setIntro(intro);
                 firm.setPicture(fileName);
-                firmMapper.insert(firm);
+                firmMapper.updateById(firm);
                 return new ReturnProtocol(true, "修改信息成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
@@ -207,6 +210,25 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             e.printStackTrace();
             throw new HavePostException("上传失败,IO异常");
         }
+    }
+
+    @Override
+    public ReturnProtocol exitFirm() {
+        User user = userMapper.selectById(UserHolder.getUser().getId());
+        if(!(user.getCorporation()!=null && !user.getCorporation().isBlank())){
+            return new ReturnProtocol(false,"该用户没有公司！");
+        }
+        String firmId = user.getCorporation();
+        Firm firm = firmMapper.selectById(firmId);
+        if(Objects.equals(firm.getManagerId(), user.getId())){
+            return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
+        }
+        redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
+        redisUtil.lRemove(RedisUtil.STAFF+firmId,1,user.getId());
+        user.setJob(null);
+        user.setCorporation(null);
+        userMapper.updateById(user);
+        return new ReturnProtocol(true,"退出企业成功");
     }
 
 

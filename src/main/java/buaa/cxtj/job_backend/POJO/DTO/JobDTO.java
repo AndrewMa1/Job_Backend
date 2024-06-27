@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class JobDTO {
-    private String postId;
+    private String jobId;
     private String jobName;
 
     private String jobRequirements;
@@ -19,7 +19,7 @@ public class JobDTO {
     private int bonus;
 
     public JobDTO(String postId, String jobName, String jobRequirements, String jobCounts, int wage, String workPlace, String internTime, int bonus) {
-        this.postId = postId;
+        this.jobId = postId;
         this.jobName = jobName;
         this.jobRequirements = jobRequirements;
         this.jobCounts = jobCounts;
