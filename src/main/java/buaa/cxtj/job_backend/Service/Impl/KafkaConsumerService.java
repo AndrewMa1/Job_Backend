@@ -5,6 +5,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,9 @@ public class KafkaConsumerService {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
+    @Autowired
+    KafkaTopicServiceImpl kafkaTopicService;
 
     private final String groupId = "chat-cons";
 
@@ -36,6 +40,10 @@ public class KafkaConsumerService {
     }
 
     public List<String> readMessagesFromPartition(String topicName, int partition) {
+        if(!kafkaTopicService.topicExists(topicName)){
+            return new ArrayList<>();
+        }
+
         KafkaConsumer<String, String> consumer = createConsumer();
         TopicPartition topicPartition = new TopicPartition(topicName, partition);
         consumer.assign(Collections.singletonList(topicPartition));

@@ -24,9 +24,14 @@ public class RecommendController {
         return new ReturnProtocol(true,"推送成功",recommendService.recTrends());
     }
 
-    @PostMapping("/recJob")
-    public ReturnProtocol recJob() {
-        return recommendService.recJob();
+    @PostMapping("/recJobForVisitor")
+    public ReturnProtocol recJobForVisitor() {
+        return recommendService.recJobForVisitor();
+    }
+
+    @PostMapping("/recJobForUser")
+    public ReturnProtocol recJobForUser() {
+        return recommendService.recJobForUser();
     }
 
 //    @KafkaListener(topics = {""},groupId = "")

@@ -10,7 +10,9 @@ public interface RecommendService {
 
     public DynamicDTO recTrends();
 
-    public ReturnProtocol recJob();
+    public ReturnProtocol recJobForUser();
+
+    public ReturnProtocol recJobForVisitor();
 
     public void recUserAndFirm();
 

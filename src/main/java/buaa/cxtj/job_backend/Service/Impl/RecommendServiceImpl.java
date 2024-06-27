@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -84,19 +85,42 @@ public class RecommendServiceImpl implements RecommendService {
     //2 将该新增岗位信息推送到对应topic中
     //3 用户加载推荐招聘信息时，根据用户填写的意向岗位，找到对应的topic，消费topic中的消息 ******
     @Override
-    public ReturnProtocol recJob() {
-        JobEnum interestJob = userMapper.selectById(UserHolder.getUser().getId()).getInterestJob();
-        List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(interestJob.toString(), 0);
-        System.out.println(recJobListJson.size());
+    public ReturnProtocol recJobForUser() {
+        JobEnum interestJob = null;
         List<Job> recJobList = new ArrayList<>();
+        interestJob = userMapper.selectById(UserHolder.getUser().getId()).getInterestJob();
+        List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(interestJob.toString(), 0);
         for (String jsonString : recJobListJson) {
             JSONObject jsonObject = JSONUtil.parseObj(jsonString);
             Job job = jsonObject.toBean(Job.class);
             recJobList.add(job);
         }
-        return new ReturnProtocol(true,recJobList);
+        List<Job> result = new ArrayList<>();
+        if(!recJobList.isEmpty()) result = recJobList.subList(0, Math.min(9, recJobList.size()));
+        return new ReturnProtocol(true,result);
     }
 
+    @Override
+    public ReturnProtocol recJobForVisitor() {
+        List<Job> recJobList = new ArrayList<>();
+
+        List<JobEnum> jobEnumList = new ArrayList<>(List.of(JobEnum.values()));
+        Collections.shuffle(jobEnumList);
+        List<JobEnum> jobEnum = jobEnumList.subList(0, 9);
+
+        for(JobEnum job : jobEnum){
+            List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(job.toString(), 0);
+            for (String jsonString : recJobListJson) {
+                JSONObject jsonObject = JSONUtil.parseObj(jsonString);
+                Job job_i = jsonObject.toBean(Job.class);
+                recJobList.add(job_i);
+            }
+        }
+
+        List<Job> result = new ArrayList<>();
+        if(!recJobList.isEmpty()) result = recJobList.subList(0, Math.min(9, recJobList.size()));
+        return new ReturnProtocol(true,result);
+    }
 
     @Override
     public void recUserAndFirm() {
