@@ -187,6 +187,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture) {
         Firm firm = firmMapper.selectById(firm_id);
+        if(!Objects.equals(firm.getManagerId(), UserHolder.getUser().getId())){
+            return new ReturnProtocol(false,"您不是公司管理员，不能编辑！");
+        }
         try {
             byte[]bytes = picture.getBytes();
             String fileName = picture.getOriginalFilename();
