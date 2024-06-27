@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 public class PermissionUntil {
     @Autowired
     FirmMapper firmMapper;
-
+    @Autowired
+    UserMapper userMapper;
     /**
      * 判断该用户是否是管理员
      * @return
@@ -21,7 +22,8 @@ public class PermissionUntil {
     public void checkIfManagerOfFirm(){
         UserDTO user = UserHolder.getUser();
         String user_id = user.getId();
-        String corporation_id = user.getCorporation();
+        User user1 = userMapper.selectById(user_id);
+        String corporation_id = user1.getCorporation();
         if(corporation_id == null || corporation_id.isBlank()){
             throw new RuntimeException("您非企业管理员,无权限进行操作!");
         }
