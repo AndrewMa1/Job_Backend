@@ -65,6 +65,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             throw new HavePostException("该用户已经有公司！");
         }
         QueryWrapper<Firm> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name",name);
         Firm existingFirm = firmMapper.selectOne(queryWrapper);
         if (existingFirm != null) {
             // 如果已存在同名公司，可以根据实际需求进行处理，比如抛出异常或者返回相应信息
@@ -235,9 +236,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
         }
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
-        redisUtil.lRemove(RedisUtil.STAFF+firmId,1,user.getId());
-        user.setJob(null);
-        user.setCorporation(null);
+        redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
+        user.setJob("");
+        user.setCorporation("");
         userMapper.updateById(user);
         return new ReturnProtocol(true,"退出企业成功");
     }
