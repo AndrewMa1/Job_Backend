@@ -87,7 +87,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 Files.write(path, bytes);
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
                 user.setCorporation(firm.getName());
-                user.setJob("Manager");
+                //user.setJob("Manager");
                 userMapper.updateById(user);
                 return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
