@@ -9,10 +9,7 @@ import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
-import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
-import buaa.cxtj.job_backend.POJO.Entity.Firm;
-import buaa.cxtj.job_backend.POJO.Entity.Job;
-import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.Entity.*;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
@@ -34,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -67,6 +65,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             throw new HavePostException("该用户已经有公司！");
         }
         QueryWrapper<Firm> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("name",name);
         Firm existingFirm = firmMapper.selectOne(queryWrapper);
         if (existingFirm != null) {
             // 如果已存在同名公司，可以根据实际需求进行处理，比如抛出异常或者返回相应信息
@@ -87,8 +86,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
-                user.setCorporation(firm.getName());
-                userMapper.insert(user);
+                user.setCorporation(firm.getId());
+                user.setJob("Manager");
+                userMapper.updateById(user);
                 return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
@@ -162,6 +162,19 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         log.info("user_id "+user_id);
         redisTemplate.opsForSet().remove(pending, user_id);//直接将被录取的人从待录取中直接删除
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
+        redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
+        Mail mail = new Mail();
+        mail.setSenderId(UserHolder.getUser().getId());
+        mail.setReceiveId(userMapper.selectById(user_id).getId());
+        mail.setCreateTime(LocalDateTime.now().toString());
+        mail.setIsRead(false);
+
+        String firm_name = firmMapper.selectById(corporation_id).getName();
+        String job_name = employMapper.selectById(post_id).getJobName();
+        mail.setContent("恭喜您，您已经被录取至"+ firm_name + "公司的" + job_name + "岗位！");
+
+
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
     }
 
     @Override
@@ -222,9 +235,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
         }
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
-        redisUtil.lRemove(RedisUtil.STAFF+firmId,1,user.getId());
-        user.setJob(null);
-        user.setCorporation(null);
+        redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
+        user.setJob("");
+        user.setCorporation("");
         userMapper.updateById(user);
         return new ReturnProtocol(true,"退出企业成功");
     }
