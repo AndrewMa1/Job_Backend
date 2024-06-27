@@ -91,7 +91,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if(user1!=null){
             return new ReturnProtocol(false,"注册失败,昵称重复");
         }
-
         try {
             baseMapper.insert(user);
             return new ReturnProtocol(true, "注册成功", registerDTO);
@@ -126,6 +125,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public ReturnProtocol addStaff(String firmId) {
         //获取当前登录的员工信息
         String staffId = UserHolder.getUser().getId();
+        LambdaQueryWrapper<Firm>wrapper = new LambdaQueryWrapper<Firm>()
+                .eq(Firm::getId,firmId);
+        if(!firmMapper.exists(wrapper)){
+            return new ReturnProtocol(false,"公司不存在");
+        }
         //TODO:使用Redis在企业的员工列表中新增员工
         try {
             redisUtil.lSet(RedisUtil.STAFF + firmId, staffId);
