@@ -9,10 +9,7 @@ import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
-import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
-import buaa.cxtj.job_backend.POJO.Entity.Firm;
-import buaa.cxtj.job_backend.POJO.Entity.Job;
-import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.Entity.*;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
@@ -34,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -165,6 +163,18 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         userMapper.updateById(user);
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
         redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
+        Mail mail = new Mail();
+        mail.setSenderId(UserHolder.getUser().getId());
+        mail.setReceiveId(userMapper.selectById(user_id).getId());
+        mail.setCreateTime(LocalDateTime.now().toString());
+        mail.setIsRead(false);
+
+        String firm_name = firmMapper.selectById(corporation_id).getName();
+        String job_name = employMapper.selectById(post_id).getJobName();
+        mail.setContent("恭喜您，您已经被录取至"+ firm_name + "公司的" + job_name + "岗位！");
+
+
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
     }
 
     @Override
