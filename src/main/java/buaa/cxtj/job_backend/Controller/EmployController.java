@@ -59,7 +59,7 @@ public class EmployController {
      * @param post_id
      * @return
      */
-    @PostMapping ("queryEmployee")
+    @GetMapping ("queryEmployee")
     public ReturnProtocol queryEmployee(@RequestParam String corporation_id,@RequestParam String post_id){
        List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
