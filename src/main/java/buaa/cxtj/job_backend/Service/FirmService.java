@@ -23,4 +23,6 @@ public interface FirmService extends IService<Firm> {
     ReturnProtocol showMembers(String id);
 
     ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture);
+
+    ReturnProtocol exitFirm();
 }

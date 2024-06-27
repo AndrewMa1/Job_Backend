@@ -198,7 +198,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 firm.setName(name);
                 firm.setIntro(intro);
                 firm.setPicture(fileName);
-                firmMapper.insert(firm);
+                firmMapper.updateById(firm);
                 return new ReturnProtocol(true, "修改信息成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
@@ -207,6 +207,21 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             e.printStackTrace();
             throw new HavePostException("上传失败,IO异常");
         }
+    }
+
+    @Override
+    public ReturnProtocol exitFirm() {
+        User user = userMapper.selectById(UserHolder.getUser().getId());
+        if(!(user.getCorporation()!=null && !user.getCorporation().isBlank())){
+            return new ReturnProtocol(false,"该用户没有公司！");
+        }
+        String firmId = user.getCorporation();
+        Firm firm = firmMapper.selectById(firmId);
+        if(Objects.equals(firm.getManagerId(), user.getId())){
+            return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
+        }
+
+        return null;
     }
 
 

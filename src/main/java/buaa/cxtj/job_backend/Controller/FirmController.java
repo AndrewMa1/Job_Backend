@@ -28,6 +28,10 @@ public class FirmController {
     public ReturnProtocol editContent(@RequestParam("id") String id,@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.editContent(id,name,intro,picture);
     }
+    @GetMapping("/exitFirm")
+    public ReturnProtocol exitFirm(){
+        return firmService.exitFirm();
+    }
     @GetMapping("/showMember")
     public ReturnProtocol showMembers(@RequestParam String id){
         return firmService.showMembers(id);
