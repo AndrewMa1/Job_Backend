@@ -20,6 +20,10 @@ public class FirmController {
     public ReturnProtocol createFirm(@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.createFirm(name,intro,picture);
     }
+    @PostMapping("/editContent")
+    public ReturnProtocol editContent(@RequestParam("id") String id,@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
+        return firmService.editContent(id,name,intro,picture);
+    }
     @GetMapping("/showMember")
     public ReturnProtocol showMembers(@RequestParam String id){
         return firmService.showMembers(id);

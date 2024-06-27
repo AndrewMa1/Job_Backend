@@ -21,4 +21,6 @@ public interface FirmService extends IService<Firm> {
     public void publishHireInfo(Job job);
 
     ReturnProtocol showMembers(String id);
+
+    ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture);
 }
