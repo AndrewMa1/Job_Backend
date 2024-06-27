@@ -5,10 +5,11 @@ import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FirmService extends IService<Firm> {
-    ReturnProtocol createFirm(FirmDTO firmDTO);
+    ReturnProtocol createFirm(String name, String intro, MultipartFile picture);
 
     ReturnProtocol showContent(String id);
 

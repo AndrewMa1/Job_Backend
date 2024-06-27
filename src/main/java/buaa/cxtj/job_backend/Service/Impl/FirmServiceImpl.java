@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -59,10 +60,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
 
     @Override
-    public ReturnProtocol createFirm(FirmDTO firmDTO) {
-        String name = firmDTO.getName();
-        String intro = firmDTO.getIntro();
-        MultipartFile picture = firmDTO.getPicture();
+    public ReturnProtocol createFirm(String name,  String intro,  MultipartFile picture) {
+//        String name = firmDTO.getName();
+//        String intro = firmDTO.getIntro();
+//        MultipartFile picture = firmDTO.getPicture();
         try {
             byte[]bytes = picture.getBytes();
             String userId = UserHolder.getUser().getId();
