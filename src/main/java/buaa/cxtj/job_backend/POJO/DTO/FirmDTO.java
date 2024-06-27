@@ -1,8 +1,10 @@
 package buaa.cxtj.job_backend.POJO.DTO;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class FirmDTO{
     private String id;              //企业Id
     private String name;            //企业名称
