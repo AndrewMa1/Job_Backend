@@ -15,11 +15,13 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-@ServerEndpoint(value = "/chat/{chatId}/{userName}")
+@ServerEndpoint(value = "/chat")
 @Component
 @Slf4j
 public class SocketChannel {
@@ -29,14 +31,36 @@ public class SocketChannel {
     private KafkaConsumerService kafkaConsumerService;
     private static ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<>();
 
+
+
+    private Map<String, String> parseQueryString(String queryString) {
+        Map<String, String> queryParams = new HashMap<>();
+        if (queryString != null && !queryString.isEmpty()) {
+            String[] pairs = queryString.split("&");
+            for (String pair : pairs) {
+                String[] keyValue = pair.split("=");
+                queryParams.put(keyValue[0], keyValue[1]);
+            }
+        }
+        return queryParams;
+    }
+
+
     /**
      * 创建连接
      * 用于监听建立连接，当有客户端与该服务端点建立连接时，将会自回调该注解标注的方法
      * @param session
-     * @param chatId
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName) {
+    public void onOpen(Session session) {
+        // @PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName
+
+        // 获取查询参数
+        String queryString = session.getQueryString();
+        Map<String, String> queryParams = parseQueryString(queryString);
+        String chatId = queryParams.get("chatId");
+        String userName = queryParams.get("userName");
+
         if (kafkaTopicService == null || kafkaConsumerService == null) {
             kafkaTopicService = SpringContextUtil.getBean(KafkaTopicServiceImpl.class);
             kafkaConsumerService = SpringContextUtil.getBean(KafkaConsumerService.class);
@@ -75,10 +99,18 @@ public class SocketChannel {
     /**
      * 用于监听客户端向服务端发送消息，当客户端与服务端发送消息时，将会回调该注解标注的方法
      * @param msg: {"to":{},"msg":{}}
-     * @param chatId
      */
     @OnMessage
-    public void onMessage(String msg,@PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName){
+    public void onMessage(Session session, String msg){
+
+        //,@PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName
+
+        // 获取查询参数
+        String queryString = session.getQueryString();
+        Map<String, String> queryParams = parseQueryString(queryString);
+        String chatId = queryParams.get("chatId");
+        String userName = queryParams.get("userName");
+
         log.info("聊天室{}新增消息:{}",chatId,msg);
         Message message = JSONUtil.toBean(msg, Message.class);
         message.setTimestamp(LocalDateTime.now().toString());
