@@ -47,6 +47,15 @@ public class ChatController {
         QueryWrapper<Chat> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user1", userId).or().eq("user2",userId);
         List<Chat> chatList = chatMapper.selectList(queryWrapper);
+        for(Chat chat : chatList){
+            chat.setNowUserId(userId);
+            chat.setUser1Name(userDTO.getNickname());
+            if(userId.equals(chat.getUser1())){
+                chat.setUser2Name(userMapper.selectById(chat.getUser2()).getNickname());
+            }else{
+                chat.setUser2Name(userMapper.selectById(chat.getUser1()).getNickname());
+            }
+        }
         return new ReturnProtocol(true,chatList);
     }
 
