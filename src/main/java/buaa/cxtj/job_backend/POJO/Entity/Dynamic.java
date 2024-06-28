@@ -22,6 +22,7 @@ public class Dynamic {
     private int agree;             //点赞量
     private int trans;              //转发量
     private String transId;         //被转发用户Id
+    private String transName;  //被转发用户的昵称
     private int comments;
     private String createTime;      //创建时间
 
