@@ -80,6 +80,44 @@ public class RecommendServiceImpl implements RecommendService {
         return dynamicDTO;
     }
 
+    @Override
+    public DynamicDTO recRandomTrends() {
+        String userId = UserHolder.getUser().getId();
+
+
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        List<User> userList = userMapper.selectList(userQueryWrapper);
+        Collections.shuffle(userList);
+        userList = userList.subList(0,Math.min(10, userList.size()));
+        System.out.println(userList.size());
+
+        //2 从mysql的dynamic表中拿到这些up主或者公司的动态
+        ArrayList<Dynamic> result = new ArrayList<>();
+        ArrayList<String>poster = new ArrayList<>();
+        for(User user :userList){
+            QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("user_id", user.getId());
+            List<Dynamic> dynamicList = dynamicMapper.selectList(queryWrapper);
+            result.addAll(dynamicList);
+            if(!dynamicList.isEmpty()) poster.add(userMapper.selectById(user.getId()).getNickname());
+        }
+
+        //3 从redis取出该用户的点赞动态列表
+        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
+        Set<String> fullSet = result.stream().map(Dynamic::getId).collect(Collectors.toSet());
+        ArrayList<Boolean> isAgreeList = new ArrayList<>();
+        for(String id: fullSet){
+            if(agreeSet.contains(id)){
+                isAgreeList.add(true);
+            }else {
+                isAgreeList.add(false);
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),result.subList(0,Math.min(10, result.size())),
+                isAgreeList.subList(0,Math.min(10, isAgreeList.size())),poster.subList(0,Math.min(10, poster.size())));
+        return dynamicDTO;
+    }
+
     //推荐与用户意向岗位一致的岗位招聘信息
     //1 企业新增岗位招聘时，如果岗位对应的topic不存在，则新建岗位对应的topic
     //2 将该新增岗位信息推送到对应topic中
