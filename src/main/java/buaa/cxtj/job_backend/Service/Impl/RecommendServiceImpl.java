@@ -92,7 +92,7 @@ public class RecommendServiceImpl implements RecommendService {
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         List<User> userList = userMapper.selectList(userQueryWrapper);
         Collections.shuffle(userList);
-        userList = userList.subList(0,Math.min(10, userList.size()));
+        userList = userList.subList(0,Math.min(50, userList.size()));
         System.out.println(userList.size());
 
         //2 从mysql的dynamic表中拿到这些up主或者公司的动态
@@ -110,7 +110,7 @@ public class RecommendServiceImpl implements RecommendService {
 
         //3 从redis取出该用户的点赞动态列表
         Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
-        Set<String> fullSet = result.stream().map(Dynamic::getId).collect(Collectors.toSet());
+        List<String> fullSet = result.stream().map(Dynamic::getId).toList();
         ArrayList<Boolean> isAgreeList = new ArrayList<>();
         for(String id: fullSet){
             if(agreeSet.contains(id)){
