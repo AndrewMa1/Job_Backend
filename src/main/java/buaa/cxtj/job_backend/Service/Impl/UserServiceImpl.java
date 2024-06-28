@@ -156,6 +156,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(Firm::getManagerId, managerId);
         String firmId = firmMapper.selectOne(wrapper).getId();
         try {
+            LambdaUpdateWrapper<User>wrapper1 = new LambdaUpdateWrapper<User>()
+                    .set(User::getCorporation,null)
+                    .set(User::getJob,null)
+                    .set(User::getJobName,null);
+            baseMapper.update(null,wrapper1);
             //TODO:使用Redis在企业的员工列表中删除员工
             redisUtil.setRemove(RedisUtil.STAFF + firmId, 1, staffId);
             return new ReturnProtocol(true, "删除员工成功");
