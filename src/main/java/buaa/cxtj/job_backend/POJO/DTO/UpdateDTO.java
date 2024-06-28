@@ -11,5 +11,5 @@ public class UpdateDTO {
     private String blog;
     private String repo;
     private String intro;
-    private Integer job;
+    private String job;
 }

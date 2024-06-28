@@ -39,6 +39,8 @@ public class User {
     private Integer followerNum;
     @TableField("interest_num")
     private Integer interestNum;
+    @TableField("job_name")
+    private String jobName;
 
 
     public User(String nickname, String name, String password, EducationEnum education, JobEnum interestJob) {

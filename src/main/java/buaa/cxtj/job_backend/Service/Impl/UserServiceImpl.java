@@ -139,6 +139,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             baseMapper.update(null,wrapper);
             Set<Object>staffs = redisUtil.sGet(RedisUtil.STAFF + firmId);
 
+
+
             return new ReturnProtocol(true, "新增员工成功",staffs);
         } catch (Exception e) {
             return new ReturnProtocol(false, "添加失败");

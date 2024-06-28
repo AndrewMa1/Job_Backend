@@ -183,5 +183,4 @@ public class UserController {
     public ReturnProtocol deleteFollow(@RequestParam String id){
         return userService.deleteFollow(id);
     }
-
 }
