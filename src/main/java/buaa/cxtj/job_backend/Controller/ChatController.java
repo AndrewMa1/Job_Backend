@@ -54,7 +54,8 @@ public class ChatController {
     public ReturnProtocol newChatRoom(@PathVariable("to_id")String to){
         Chat chat = kafkaTopicService.createChatTopic(UserHolder.getUser().getId(),to);
         chat.setNowUserId(UserHolder.getUser().getId());
-
+        chat.setUser1Name(UserHolder.getUser().getNickname()); //当前用户的姓名
+        chat.setUser2Name(userMapper.selectById(to).getNickname());
         return new ReturnProtocol(true,"create chat room success",chat);
     }
 

@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-@ServerEndpoint(value = "/chat/{chatId}/{userId}")
+@ServerEndpoint(value = "/chat/{chatId}/{userName}")
 @Component
 @Slf4j
 public class SocketChannel {
@@ -36,15 +36,15 @@ public class SocketChannel {
      * @param chatId
      */
     @OnOpen
-    public void onOpen(Session session, @PathParam(value = "chatId") String chatId, @PathParam(value = "userId") String userId) {
+    public void onOpen(Session session, @PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName) {
         if (kafkaTopicService == null || kafkaConsumerService == null) {
             kafkaTopicService = SpringContextUtil.getBean(KafkaTopicServiceImpl.class);
             kafkaConsumerService = SpringContextUtil.getBean(KafkaConsumerService.class);
         }
 
-//        String userId = UserHolder.getUser().getId();
-        log.info("聊天室{}已创建连接，连接人{}", chatId,userId);
-        String id = chatId+" "+userId;  // 该session的Id
+//        String userName = UserHolder.getUser().getId();
+        log.info("聊天室{}已创建连接，连接人{}", chatId,userName);
+        String id = chatId+" "+userName;  // 该session的Id
         sessionMap.put(id,session);
         initMes(id);  //初始化聊天记录
     }
@@ -78,15 +78,15 @@ public class SocketChannel {
      * @param chatId
      */
     @OnMessage
-    public void onMessage(String msg,@PathParam(value = "chatId") String chatId, @PathParam(value = "userId") String userId){
+    public void onMessage(String msg,@PathParam(value = "chatId") String chatId, @PathParam(value = "userName") String userName){
         log.info("聊天室{}新增消息:{}",chatId,msg);
         Message message = JSONUtil.toBean(msg, Message.class);
         message.setTimestamp(LocalDateTime.now().toString());
-        message.setFrom(userId);
+        message.setFrom(userName);
 
         String msgJson = JSONUtil.toJsonStr(message);
         String to_id = chatId+" "+message.getTo();  // 该session的Id
-        String from_id = chatId+" "+userId;  // 该session的Id
+        String from_id = chatId+" "+userName;  // 该session的Id
         try{
             Session toSession = sessionMap.get(to_id);
             sendMessage(chatId,toSession, msgJson);
