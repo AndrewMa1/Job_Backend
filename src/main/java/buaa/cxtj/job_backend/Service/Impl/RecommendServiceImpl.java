@@ -99,7 +99,9 @@ public class RecommendServiceImpl implements RecommendService {
             queryWrapper.eq("user_id", user.getId());
             List<Dynamic> dynamicList = dynamicMapper.selectList(queryWrapper);
             result.addAll(dynamicList);
-            if(!dynamicList.isEmpty()) poster.add(userMapper.selectById(user.getId()).getNickname());
+            for(int i=0;i<dynamicList.size();++i){
+                poster.add(user.getNickname());
+            }
         }
 
         //3 从redis取出该用户的点赞动态列表
