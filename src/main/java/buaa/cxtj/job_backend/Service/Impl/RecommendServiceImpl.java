@@ -61,13 +61,17 @@ public class RecommendServiceImpl implements RecommendService {
         for(String userid:stringList){
             QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id",userid);
+            List<Dynamic> dynamicList = dynamicMapper.selectList(queryWrapper);
             result.addAll(dynamicMapper.selectList(queryWrapper));
-            poster.add(userMapper.selectById(userid).getNickname());
+            String userName = userMapper.selectById(userid).getNickname();
+            for(int i=0;i<dynamicList.size();++i){
+                poster.add(userName);
+            }
         }
 
         //3 从redis取出该用户的点赞动态列表
         Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
-        Set<String> fullSet = result.stream().map(Dynamic::getId).collect(Collectors.toSet());
+        List<String> fullSet = result.stream().map(Dynamic::getId).collect(Collectors.toList());
         ArrayList<Boolean> isAgreeList = new ArrayList<>();
         for(String id: fullSet){
             if(agreeSet.contains(id)){
