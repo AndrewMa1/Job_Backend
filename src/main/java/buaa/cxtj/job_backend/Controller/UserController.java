@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String baseResumePath = "static/resume/";
+    private final String baseResumePath = "/root/Job_Backend/static/resume/";
 
     @Autowired
     private ResourceLoader resourceLoader;
@@ -65,9 +65,9 @@ public class UserController {
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
 
-                URL resource = getClass().getClassLoader().getResource("");
+//                URL resource = getClass().getClassLoader().getResource("");
 
-                Path path = Paths.get(resource.getPath()+baseResumePath+userId+extensionName);
+                Path path = Paths.get(baseResumePath+userId+extensionName);
 
 //                Path path = Paths.get(baseResumePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
@@ -95,11 +95,11 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "static/image/";
+                String baseImagePath = "/root/Job_Backend/static/image/";
 
-                URL resource = getClass().getClassLoader().getResource("");
+//                URL resource = getClass().getClassLoader().getResource("");
 
-                Path path = Paths.get(resource.getPath()+baseImagePath+userId+extensionName);
+                Path path = Paths.get(baseImagePath+userId+extensionName);
 
 //                Path path = Paths.get(baseImagePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
@@ -119,8 +119,8 @@ public class UserController {
     @GetMapping("download/resume")
     public ReturnProtocol downloadResume(@RequestParam("userId") String userId, HttpServletResponse response){
 //        String pathName = baseResumePath +userId + ".pdf";
-        URL resource = getClass().getClassLoader().getResource("");
-        String pathName = resource.getPath()+baseResumePath+userId+ ".pdf";
+//        URL resource = getClass().getClassLoader().getResource("");
+        String pathName = baseResumePath+userId+ ".pdf";
 
         File file = new File(pathName);
         if(!file.exists()){
