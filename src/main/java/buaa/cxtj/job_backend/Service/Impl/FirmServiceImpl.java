@@ -111,7 +111,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         Firm firm = firmMapper.selectById(id);
         User user = userMapper.selectById(firm.getManagerId());
         String managerName = user.getNickname();
-        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getManagerId(),managerName);
+        FirmDTO firmDTO = new FirmDTO(id,firm.getName(),firm.getIntro(),firm.getManagerId(),managerName,firm.getPicture());
         return new ReturnProtocol(true,"",firmDTO);
     }
 

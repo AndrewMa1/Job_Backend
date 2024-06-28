@@ -12,14 +12,15 @@ public class FirmDTO{
     private String intro;           //企业简介
     private String managerId;       //管理员Id
     private String managerName;        //管理员名字
-    private MultipartFile picture;
+    private String picture;
 
-    public FirmDTO(String id, String name, String intro,  String managerId, String managerName) {
+    public FirmDTO(String id, String name, String intro,  String managerId, String managerName,String picture) {
         this.id = id;
         this.name = name;
         this.intro = intro;
         this.managerId = managerId;
         this.managerName = managerName;
+        this.picture = picture;
     }
 
     public String getManagerName() {
