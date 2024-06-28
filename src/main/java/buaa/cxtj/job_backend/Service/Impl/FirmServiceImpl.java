@@ -83,12 +83,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
 
-                String baseImagePath = "static/image/firm/";
+                String baseImagePath = "/root/Job_Backend/static/image/firm/";
 //                Path path = Paths.get(baseImagePath + firm_id + extensionName);
 
-                URL resource = getClass().getClassLoader().getResource("");
+//                URL resource = getClass().getClassLoader().getResource("");
 
-                Path path = Paths.get(resource.getPath()+baseImagePath+firm_id+extensionName);
+                Path path = Paths.get(baseImagePath+firm_id+extensionName);
 
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
@@ -220,12 +220,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             String fileName = picture.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "static/image/firm/";
+                String baseImagePath = "/root/Job_Backend/static/image/firm/";
 //                Path path = Paths.get(baseImagePath + firm_id + extensionName);
 
-                URL resource = getClass().getClassLoader().getResource("");
+//                URL resource = getClass().getClassLoader().getResource("");
 
-                Path path = Paths.get(resource.getPath()+baseImagePath+firm_id+extensionName);
+                Path path = Paths.get(baseImagePath+firm_id+extensionName);
                 Files.write(path, bytes);
                 firm.setName(name);
                 firm.setIntro(intro);
