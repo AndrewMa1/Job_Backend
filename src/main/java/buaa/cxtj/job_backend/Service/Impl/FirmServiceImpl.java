@@ -96,6 +96,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 user.setJob("Manager");
                 user.setJobName("管理人员");
                 userMapper.updateById(user);
+                firm.setPicture(firm.getId()+extensionName);
                 return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");
@@ -231,7 +232,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 Files.write(path, bytes);
                 firm.setName(name);
                 firm.setIntro(intro);
-                firm.setPicture(fileName);
+                firm.setPicture(firm_id+extensionName);
                 firmMapper.updateById(firm);
                 return new ReturnProtocol(true, "修改信息成功", firm_id + extensionName);
             }else {
