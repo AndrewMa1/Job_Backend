@@ -24,10 +24,11 @@ public class SpringMVCConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/static/**");
     }
 
-//    @Override
-//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-//        //匹配到resourceHandler,将URL映射至location,也就是本地文件夹
-//        registry.addResourceHandler("/static/**").addResourceLocations("src/main/resources/static/");
-//    }
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        //匹配到resourceHandler,将URL映射至location,也就是本地文件夹
+        registry.addResourceHandler("/static/image/**").addResourceLocations("classpath:/static/image/");
+        registry.addResourceHandler("/static/resume/**").addResourceLocations("classpath:/static/resume/");
+    }
 
 }

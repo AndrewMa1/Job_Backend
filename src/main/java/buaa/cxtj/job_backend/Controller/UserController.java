@@ -11,10 +11,14 @@ import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -25,7 +29,10 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
-    private final String baseResumePath = "/root/Job_Backend/resume/";
+    private final String baseResumePath = "static/resume/";
+
+    @Autowired
+    private ResourceLoader resourceLoader;
 
     public UserController(UserService userService) {
         this.userService = userService;
@@ -57,7 +64,12 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                Path path = Paths.get(baseResumePath + userId + extensionName);
+
+                URL resource = getClass().getClassLoader().getResource("");
+
+                Path path = Paths.get(resource.getPath()+baseResumePath+userId+extensionName);
+
+//                Path path = Paths.get(baseResumePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path,bytes);
                 LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
@@ -83,9 +95,13 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_Backend/image/";
+                String baseImagePath = "static/image/";
 
-                Path path = Paths.get(baseImagePath + userId + extensionName);
+                URL resource = getClass().getClassLoader().getResource("");
+
+                Path path = Paths.get(resource.getPath()+baseImagePath+userId+extensionName);
+
+//                Path path = Paths.get(baseImagePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
                 return new ReturnProtocol(true, "上传成功", userId + extensionName);
@@ -102,7 +118,9 @@ public class UserController {
 
     @GetMapping("download/resume")
     public ReturnProtocol downloadResume(@RequestParam("userId") String userId, HttpServletResponse response){
-        String pathName = baseResumePath +userId + ".pdf";
+//        String pathName = baseResumePath +userId + ".pdf";
+        URL resource = getClass().getClassLoader().getResource("");
+        String pathName = resource.getPath()+baseResumePath+userId+ ".pdf";
 
         File file = new File(pathName);
         if(!file.exists()){

@@ -42,11 +42,11 @@ spring:
               packages: "buaa.cxtj.job_backend.POJO.Entity"
     listener:
       missing-topics-fatal: true
-  mvc:
-    static-path-pattern: /static/**
-  web:
-    resources:
-      static-locations: /root/Job_Backend
+#  mvc:
+#    static-path-pattern: /static/**
+#  web:
+#    resources:
+#      static-locations: classpath:/static
 
 #  mail:
 #    host: smtp.qq.com

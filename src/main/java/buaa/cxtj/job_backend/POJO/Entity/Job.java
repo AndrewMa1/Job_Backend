@@ -26,7 +26,10 @@ public class Job {
     private JobEnum jobDesc;
 
     private String wage;
+
+    @TableField("work_place")
     private String workPlace;
+    @TableField("intern_time")
     private String internTime;
     private String bonus;
 
