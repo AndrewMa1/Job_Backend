@@ -2,6 +2,7 @@ package buaa.cxtj.job_backend.Controller;
 
 
 import buaa.cxtj.job_backend.Mapper.ChatMapper;
+import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Chat;
 import buaa.cxtj.job_backend.POJO.Entity.Message;
@@ -34,6 +35,8 @@ public class ChatController {
     @Autowired
     ChatMapper chatMapper;
 
+    @Autowired
+    UserMapper userMapper;
 
     private final String topic = "chat";
 
@@ -49,8 +52,10 @@ public class ChatController {
 
     @GetMapping("/newChat/{to_id}")
     public ReturnProtocol newChatRoom(@PathVariable("to_id")String to){
-        kafkaTopicService.createChatTopic(UserHolder.getUser().getId(),to);
-        return new ReturnProtocol(true,"create chat room success");
+        Chat chat = kafkaTopicService.createChatTopic(UserHolder.getUser().getId(),to);
+        chat.setNowUserId(UserHolder.getUser().getId());
+
+        return new ReturnProtocol(true,"create chat room success",chat);
     }
 
     @PostMapping("/sendMsg")

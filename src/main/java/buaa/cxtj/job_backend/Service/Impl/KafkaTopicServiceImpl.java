@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Service
@@ -39,12 +40,19 @@ public class KafkaTopicServiceImpl {
         adminClient.createPartitions(Collections.singletonMap(topicName, newPartitions)).all().get();
     }
 
-    public void createChatTopic(String user1, String user2) {
+    public Chat createChatTopic(String user1, String user2) {
+        QueryWrapper<Chat> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user1",user1).eq("user2",user2).or().eq("user1",user2).eq("user2",user1);
+        List<Chat> chats = chatMapper.selectList(queryWrapper);
+        if(!chats.isEmpty()){
+            return chats.get(0);
+        }
         Chat chat = new Chat(user1,user2, LocalDateTime.now().toString());
         chatMapper.insert(chat);
         System.out.println("chat id:"+chat.getId());
         String topicName = chat.getId();
         kafkaAdminConfig.createTopic(topicName, 1, (short) 1);
+        return chat;
     }
 
     public void createTopic(String topicName){

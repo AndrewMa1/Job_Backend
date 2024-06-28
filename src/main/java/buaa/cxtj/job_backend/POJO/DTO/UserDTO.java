@@ -17,6 +17,7 @@ public class UserDTO {
     private Integer age;
     private String job;
     private String corporation;
+    private String picture;
 
     private String token;
 }

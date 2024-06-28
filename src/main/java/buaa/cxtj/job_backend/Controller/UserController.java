@@ -1,6 +1,7 @@
 package buaa.cxtj.job_backend.Controller;
 
 
+import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
@@ -29,6 +30,10 @@ import java.nio.file.Paths;
 public class UserController {
 
     private final UserService userService;
+
+    @Autowired
+    UserMapper userMapper;
+
     private final String baseResumePath = "/root/Job_Backend/static/resume/";
 
     @Autowired
@@ -104,6 +109,9 @@ public class UserController {
 //                Path path = Paths.get(baseImagePath + userId + extensionName);
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
+                User user = userMapper.selectById(userId);
+                user.setPicture(userId+extensionName);
+                userMapper.updateById(user);
                 return new ReturnProtocol(true, "上传成功", userId + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");

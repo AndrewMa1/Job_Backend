@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
     private final RedisUtil redisUtil;
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     // 根据用户 ID 集合查询用户信息
@@ -56,7 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getNickname, nickname)
                 .eq(User::getPassword, password);
 
-        User user = baseMapper.selectOne(wrapper);
+        User user = userMapper.selectOne(wrapper);
 
 
         if (user == null) {
@@ -200,7 +203,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public ReturnProtocol getUser(String id) {
         try{
-            User user = baseMapper.selectById(id);
+            User user = userMapper.selectById(id);
             return new ReturnProtocol(true,"获取成功",user);
         }catch (MybatisPlusException e){
             return new ReturnProtocol(false,"获取失败");
