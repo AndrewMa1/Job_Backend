@@ -278,7 +278,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         mail.setIsRead(false);
 
         String job_name = employMapper.selectById(user.getJob()).getJobName();
-        mail.setContent("员工"+ user.getNickname() + "工作于"+ job_name +"岗位，已经提交辞职申请，请您审批！");
+        mail.setContent("id:" +user.getId() + "员工"+ user.getNickname() + "工作于"+ job_name +"岗位，已经提交辞职申请，请您审批！");
 
         kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
 
