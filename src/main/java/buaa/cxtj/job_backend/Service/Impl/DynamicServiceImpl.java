@@ -13,6 +13,7 @@ import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +44,9 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     private RedisTemplate<String,Object> redisTemplate;
     @Autowired
     private UserMapper userMapper;
+
+    private final String baseDynamicPath = "/root/Job_Backend/static/dynamic/";
+
     @Override
     public ReturnProtocol postDynamic( String content) {
         String userId = UserHolder.getUser().getId();
@@ -47,8 +56,45 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     }
 
     @Override
+    public ReturnProtocol postDynamic(String content, MultipartFile picture) {
+        String userId = UserHolder.getUser().getId();
+
+        try {
+            byte[] bytes = picture.getBytes();
+            String fileName = picture.getOriginalFilename();
+            if (fileName != null) {
+                String extensionName = fileName.substring(fileName.lastIndexOf("."));
+                Dynamic dynamic = new Dynamic(userId,content);
+                dynamicMapper.insert(dynamic);
+
+                Path path = Paths.get(baseDynamicPath+dynamic.getId()+extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
+                Files.write(path,bytes);
+
+                dynamic.setPicture(dynamic.getId()+extensionName);
+                dynamicMapper.updateById(dynamic);
+
+                return new ReturnProtocol(true, "上传成功",dynamic.getId() + extensionName);
+            }else {
+                return new ReturnProtocol(false,"上传失败,文件名为NULL");
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+    }
+
+    @Override
     public ReturnProtocol deleteDynamic(String id) {
-        dynamicMapper.deleteById(id);
+        Dynamic dynamic = dynamicMapper.selectById(id);
+        dynamicMapper.deleteById(dynamic);
+        Path path = Paths.get(baseDynamicPath+dynamic.getPicture());
+        try {
+            if(Files.exists(path)) {
+                Files.delete(path);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return new ReturnProtocol(true,"删除成功",null);
     }
 
@@ -92,6 +138,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         Dynamic dynamic = dynamicMapper.selectById(id);
         User user1 = userMapper.selectById(dynamic.getUserId());
         Dynamic dynamic1 = new Dynamic(UserHolder.getUser().getId(), dynamic.getContent(),dynamic.getUserId(), user1.getNickname());
+        dynamic1.setPicture(dynamic.getPicture());
         dynamicMapper.insert(dynamic1);
         dynamic.setTrans(dynamic.getTrans() + 1);
         dynamicMapper.updateById(dynamic);

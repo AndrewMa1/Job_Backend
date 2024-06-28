@@ -6,6 +6,7 @@ import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/dynamic")
@@ -23,6 +24,11 @@ public class DynamicController {
     public ReturnProtocol postDynamic(@RequestParam("content") String content){
         return dynamicService.postDynamic(content);
     }
+
+//    @GetMapping("/postDynamic")
+//    public ReturnProtocol postDynamic(@RequestParam("content") String content, @RequestParam("picture")MultipartFile picture){
+//        return dynamicService.postDynamic(content,picture);
+//    }
 
     @GetMapping("/deleteDynamic")
     public ReturnProtocol deleteDynamic(@RequestParam("id") String id){

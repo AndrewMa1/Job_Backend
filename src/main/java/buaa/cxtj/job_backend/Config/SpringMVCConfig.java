@@ -30,6 +30,7 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/static/image/user/**").addResourceLocations("file:/root/Job_Backend/static/image/user/");
         registry.addResourceHandler("/static/image/firm/**").addResourceLocations("file:/root/Job_Backend/static/image/firm/");
         registry.addResourceHandler("/static/resume/**").addResourceLocations("file:/root/Job_Backend/static/resume/");
+        registry.addResourceHandler("/static/dynamic/**").addResourceLocations("file:/root/Job_Backend/static/dynamic/");
     }
 
 }

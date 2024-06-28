@@ -95,6 +95,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 user.setJobName("管理人员");
                 userMapper.updateById(user);
                 firm.setPicture(firm.getId()+extensionName);
+                firmMapper.updateById(firm);
                 return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
                 return  new ReturnProtocol(false,"上传失败,文件名为null");

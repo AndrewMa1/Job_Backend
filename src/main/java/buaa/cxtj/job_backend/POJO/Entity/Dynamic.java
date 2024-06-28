@@ -19,6 +19,7 @@ public class Dynamic {
     private String id;              //动态Id
     private String userId;      //用户Id
     private String content;       //动态内容
+    private String picture;
     private int agree;             //点赞量
     private int trans;              //转发量
     private String transId;         //被转发用户Id
@@ -29,6 +30,15 @@ public class Dynamic {
     public Dynamic( String userId, String content) {
         this.userId = userId;
         this.content = content;
+        this.agree = 0;
+        this.trans = 0;
+        this.transId = null;
+        this.createTime = LocalDateTime.now().toString();
+    }
+    public Dynamic( String userId, String content, String picture) {
+        this.userId = userId;
+        this.content = content;
+        this.picture = picture;
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
