@@ -128,4 +128,19 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         }
         return new ReturnProtocol(true,"",commentDTOS);
     }
+
+    @Override
+    public ReturnProtocol showOther(String id) {
+        QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id",id).orderByDesc("create_time");;
+        List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
+        List<String> names = new ArrayList<>();
+        for(Dynamic dynamic:dynamics){
+            if(dynamic.getTransId()!=null){
+                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),names ,dynamics);
+        return new  ReturnProtocol(true,"",dynamicDTO);
+    }
 }
