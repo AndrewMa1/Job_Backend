@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,8 +82,14 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_Backend/image/firm/";
-                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+
+                String baseImagePath = "static/image/firm/";
+//                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+
+                URL resource = getClass().getClassLoader().getResource("");
+
+                Path path = Paths.get(resource.getPath()+baseImagePath+firm_id+extensionName);
+
                 log.info(String.valueOf(path.toAbsolutePath()));
                 Files.write(path, bytes);
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
@@ -213,8 +220,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             String fileName = picture.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_Backend/image/firm/";
-                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+                String baseImagePath = "static/image/firm/";
+//                Path path = Paths.get(baseImagePath + firm_id + extensionName);
+
+                URL resource = getClass().getClassLoader().getResource("");
+
+                Path path = Paths.get(resource.getPath()+baseImagePath+firm_id+extensionName);
                 Files.write(path, bytes);
                 firm.setName(name);
                 firm.setIntro(intro);
