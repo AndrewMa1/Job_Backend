@@ -18,6 +18,9 @@ public interface FirmService extends IService<Firm> {
     ReturnProtocol showRecruit(String id);
 
     public void hireClerk(String user_id,String corporation_id,String post_id);
+
+    public void refuseHire(String user_id,String corporation_id,String post_id);
+
     public void publishHireInfo(Job job);
 
     ReturnProtocol showMembers(String id);

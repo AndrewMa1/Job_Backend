@@ -20,13 +20,14 @@ public class SpringMVCConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginInterceptor(redisUtil))
                 .excludePathPatterns("/api/user/login")
                 .excludePathPatterns("/api/user/register")
-                .excludePathPatterns("/api/rec/recJobForVisitor");
+                .excludePathPatterns("/api/rec/recJobForVisitor")
+                .excludePathPatterns("/static/**");
     }
 
-    @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        //匹配到resourceHandler,将URL映射至location,也就是本地文件夹
-        registry.addResourceHandler("/file/**").addResourceLocations("src/main/resources/static/");
-    }
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        //匹配到resourceHandler,将URL映射至location,也就是本地文件夹
+//        registry.addResourceHandler("/static/**").addResourceLocations("src/main/resources/static/");
+//    }
 
 }

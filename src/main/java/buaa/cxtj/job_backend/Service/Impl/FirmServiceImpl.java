@@ -178,6 +178,13 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     }
 
     @Override
+    public void refuseHire(String user_id, String corporation_id, String post_id) {
+
+
+
+    }
+
+    @Override
     public void publishHireInfo(Job job) {
         employMapper.insert(job);
         JobEnum interestJob = job.getJobDesc();
