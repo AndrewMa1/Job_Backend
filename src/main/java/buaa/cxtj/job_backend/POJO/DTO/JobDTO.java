@@ -13,12 +13,12 @@ public class JobDTO {
 
     private String jobCounts;
 
-    private int wage;
+    private String wage;
     private String workPlace;
     private String internTime;
-    private int bonus;
+    private String bonus;
 
-    public JobDTO(String postId, String jobName, String jobRequirements, String jobCounts, int wage, String workPlace, String internTime, int bonus) {
+    public JobDTO(String postId, String jobName, String jobRequirements, String jobCounts, String wage, String workPlace, String internTime, String bonus) {
         this.jobId = postId;
         this.jobName = jobName;
         this.jobRequirements = jobRequirements;

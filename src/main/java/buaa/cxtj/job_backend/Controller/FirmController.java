@@ -28,9 +28,13 @@ public class FirmController {
     public ReturnProtocol editContent(@RequestParam("id") String id,@RequestParam("name") String name,@RequestParam("intro") String intro,@RequestParam("picture") MultipartFile picture){
         return firmService.editContent(id,name,intro,picture);
     }
-    @GetMapping("/exitFirm")
-    public ReturnProtocol exitFirm(){
-        return firmService.exitFirm();
+    @GetMapping("/ensureExit")
+    public ReturnProtocol ensureExit(String id){
+        return firmService.ensureExit(id);
+    }
+    @GetMapping("/sendExit")
+    public ReturnProtocol sendExit(){
+        return firmService.sendExit();
     }
     @GetMapping("/showMember")
     public ReturnProtocol showMembers(@RequestParam String id){

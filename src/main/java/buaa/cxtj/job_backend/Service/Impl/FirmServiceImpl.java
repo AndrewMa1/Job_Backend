@@ -231,7 +231,20 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     }
 
     @Override
-    public ReturnProtocol exitFirm() {
+    public ReturnProtocol ensureExit(String id) {
+        User user = userMapper.selectById(id);
+        String firmId = user.getCorporation();
+        Firm firm = firmMapper.selectById(firmId);
+        redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
+        redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
+        user.setJob(null);
+        user.setCorporation(null);
+        userMapper.updateById(user);
+        return new ReturnProtocol(true,"成功批准" + user.getNickname() + "退出企业");
+    }
+
+    @Override
+    public ReturnProtocol sendExit(){
         User user = userMapper.selectById(UserHolder.getUser().getId());
         if(!(user.getCorporation()!=null && !user.getCorporation().isBlank())){
             return new ReturnProtocol(false,"该用户没有公司！");
@@ -241,13 +254,14 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         if(Objects.equals(firm.getManagerId(), user.getId())){
             return new ReturnProtocol(false,"您是公司管理员，不能退出公司！");
         }
-        redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
-        redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
-        user.setJob("");
-        user.setCorporation("");
-        userMapper.updateById(user);
-        return new ReturnProtocol(true,"退出企业成功");
+        String managerId = firm.getManagerId();
+        User manager = userMapper.selectById(managerId);
+
+        //还需要发送给管理员消息
+        return new ReturnProtocol(true,"已发送至管理员审核");
     }
+
+
 
 
 }

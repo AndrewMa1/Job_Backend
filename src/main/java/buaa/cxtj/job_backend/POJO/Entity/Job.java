@@ -25,10 +25,10 @@ public class Job {
     @TableField("job_desc")
     private JobEnum jobDesc;
 
-    private int wage;
+    private String wage;
     private String workPlace;
     private String internTime;
-    private int bonus;
+    private String bonus;
 
 
 
