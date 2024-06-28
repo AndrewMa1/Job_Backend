@@ -105,7 +105,7 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         if(user==null){
             throw new RuntimeException("没找到这位管理员");
         }
-        FirmDTO firmDTO = new FirmDTO(firm.getId(), firm.getName(), firm.getIntro(),firm.getManagerId(),user.getName());
+        FirmDTO firmDTO = new FirmDTO(firm.getId(), firm.getName(), firm.getIntro(),firm.getManagerId(),user.getName(),firm.getPicture());
         return firmDTO;
 
     }
