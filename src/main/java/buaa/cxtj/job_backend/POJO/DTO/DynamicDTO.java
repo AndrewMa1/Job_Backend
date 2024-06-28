@@ -11,11 +11,9 @@ public class DynamicDTO {
     private List<Dynamic> dynamics;
     private List<Boolean> isAgree;
     private List<String> poster;
-    private List<String> transNames;
 
-    public DynamicDTO(String name,List<String> transNames ,List<Dynamic> dynamics) {
+    public DynamicDTO(String name ,List<Dynamic> dynamics) {
         this.name = name;
-        this.transNames = transNames;
         this.dynamics = dynamics;
     }
 

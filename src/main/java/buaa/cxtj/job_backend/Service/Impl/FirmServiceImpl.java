@@ -6,9 +6,7 @@ import buaa.cxtj.job_backend.Mapper.DynamicMapper;
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
-import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
-import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
-import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
+import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.Entity.*;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
@@ -133,6 +131,11 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 .collect(Collectors.toList());
         // 截取前10条
         List<Dynamic> top10Dynamics = sortedDynamics.subList(0, Math.min(sortedDynamics.size(), 10));
+        List<FirmDynamicDTO> firmDynamicDTOS = new ArrayList<>();
+        for(Dynamic dynamic:top10Dynamics){
+            User user = userMapper.selectById(dynamic.getUserId());
+            firmDynamicDTOS.add(new FirmDynamicDTO(user.getNickname(),dynamic));
+        }
         return new ReturnProtocol(true, "", top10Dynamics);
     }
 

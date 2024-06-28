@@ -90,7 +90,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     @Override
     public ReturnProtocol transDynamic(String id) {
         Dynamic dynamic = dynamicMapper.selectById(id);
-        Dynamic dynamic1 = new Dynamic(UserHolder.getUser().getId(), dynamic.getContent(),dynamic.getUserId());
+        User user1 = userMapper.selectById(dynamic.getUserId());
+        Dynamic dynamic1 = new Dynamic(UserHolder.getUser().getId(), dynamic.getContent(),dynamic.getUserId(), user1.getNickname());
         dynamicMapper.insert(dynamic1);
         dynamic.setTrans(dynamic.getTrans() + 1);
         dynamicMapper.updateById(dynamic);
@@ -105,13 +106,13 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",id).orderByDesc("create_time");;
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
-        List<String> names = new ArrayList<>();
-        for(Dynamic dynamic:dynamics){
-            if(dynamic.getTransId()!=null){
-                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
-            }
-        }
-        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),names ,dynamics);
+//        List<String> names = new ArrayList<>();
+//        for(Dynamic dynamic:dynamics){
+//            if(dynamic.getTransId()!=null){
+//                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
+//            }
+//        }
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname() ,dynamics);
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 
@@ -134,13 +135,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",id).orderByDesc("create_time");;
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
-        List<String> names = new ArrayList<>();
-        for(Dynamic dynamic:dynamics){
-            if(dynamic.getTransId()!=null){
-                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
-            }
-        }
-        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),names ,dynamics);
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),dynamics);
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 }

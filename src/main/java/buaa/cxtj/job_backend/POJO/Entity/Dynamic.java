@@ -35,12 +35,13 @@ public class Dynamic {
         this.createTime = LocalDateTime.now().toString();
     }
 
-    public Dynamic(String userId, String content, String transId) {
+    public Dynamic(String userId, String content, String transId,String transName) {
         this.userId = userId;
         this.content = content;
         this.agree = 0;
         this.trans = 0;
         this.transId = transId;
+        this.transName = transName;
         this.createTime = LocalDateTime.now().toString();
     }
 }
