@@ -52,7 +52,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private DynamicMapper dynamicMapper;
     @Autowired
     KafkaTopicServiceImpl kafkaTopicService;
-
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -95,6 +94,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
                 user.setCorporation(firm.getId());
                 user.setJob("Manager");
+                user.setJobName("管理人员");
                 userMapper.updateById(user);
                 return new ReturnProtocol(true, "创建公司成功", firm_id + extensionName);
             }else {
@@ -164,6 +164,8 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         }
         user.setJob(post_id);
         user.setCorporation(corporation_id);
+        Job job = employMapper.selectById(post_id);
+        user.setJobName(job.getJobName());
         userMapper.updateById(user);
         log.info("字符串为 "+pending);
         log.info("user_id "+user_id);
@@ -245,11 +247,11 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     public ReturnProtocol ensureExit(String id) {
         User user = userMapper.selectById(id);
         String firmId = user.getCorporation();
-        Firm firm = firmMapper.selectById(firmId);
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
         redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
         user.setJob(null);
         user.setCorporation(null);
+        user.setJobName(null);
         userMapper.updateById(user);
         return new ReturnProtocol(true,"成功批准" + user.getNickname() + "退出企业");
     }
