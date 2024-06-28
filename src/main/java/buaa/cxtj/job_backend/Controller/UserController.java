@@ -95,7 +95,7 @@ public class UserController {
             String fileName = file.getOriginalFilename();
             if (fileName != null) {
                 String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                String baseImagePath = "/root/Job_Backend/static/image/";
+                String baseImagePath = "/root/Job_Backend/static/image/user/";
 
 //                URL resource = getClass().getClassLoader().getResource("");
 
