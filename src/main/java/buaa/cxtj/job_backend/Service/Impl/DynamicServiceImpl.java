@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,7 +103,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     public ReturnProtocol agreeDynamic(String id) {
         Dynamic dynamic = dynamicMapper.selectById(id);
         String key = RedisUtil.AGREE + UserHolder.getUser().getId();
-        if(redisTemplate.opsForSet().isMember(key,id)){
+        if(Boolean.TRUE.equals(redisTemplate.opsForSet().isMember(key, id))){
             dynamic.setAgree(dynamic.getAgree() - 1);
             int rows = dynamicMapper.updateById(dynamic);
             redisTemplate.opsForSet().remove(key,id);
@@ -159,7 +160,16 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
 //                names.add(userMapper.selectById(dynamic.getTransId()).getNickname());
 //            }
 //        }
-        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname() ,dynamics);
+        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + id).stream().map(Object::toString).collect(Collectors.toSet());
+        ArrayList<Boolean> isAgreeList = new ArrayList<>();
+        for(Dynamic dynamic:dynamics){
+            if(agreeSet.contains(dynamic.getId())){
+                isAgreeList.add(true);
+            }else {
+                isAgreeList.add(false);
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname() ,dynamics,isAgreeList);
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 

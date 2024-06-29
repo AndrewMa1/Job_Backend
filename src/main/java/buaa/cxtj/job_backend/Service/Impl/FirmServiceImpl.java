@@ -133,11 +133,18 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         // 截取前10条
         List<Dynamic> top10Dynamics = sortedDynamics.subList(0, Math.min(sortedDynamics.size(), 10));
         List<FirmDynamicDTO> firmDynamicDTOS = new ArrayList<>();
+        String meId = UserHolder.getUser().getId();
+        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + meId).stream().map(Object::toString).collect(Collectors.toSet());
+
         for(Dynamic dynamic:top10Dynamics){
             User user = userMapper.selectById(dynamic.getUserId());
-            firmDynamicDTOS.add(new FirmDynamicDTO(user.getNickname(),dynamic));
+            if(agreeSet.contains(dynamic.getId())){
+                firmDynamicDTOS.add(new FirmDynamicDTO(user.getNickname(),dynamic,true));
+            }else{
+                firmDynamicDTOS.add(new FirmDynamicDTO(user.getNickname(),dynamic,false));
+            }
         }
-        return new ReturnProtocol(true, "", top10Dynamics);
+        return new ReturnProtocol(true, "",firmDynamicDTOS);
     }
 
     @Override
