@@ -192,7 +192,16 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_id",id).orderByDesc("create_time");;
         List<Dynamic> dynamics = dynamicMapper.selectList(queryWrapper);
-        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),dynamics);
+        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + UserHolder.getUser().getId()).stream().map(Object::toString).collect(Collectors.toSet());
+        ArrayList<Boolean> isAgreeList = new ArrayList<>();
+        for(Dynamic dynamic:dynamics){
+            if(agreeSet.contains(dynamic.getId())){
+                isAgreeList.add(true);
+            }else {
+                isAgreeList.add(false);
+            }
+        }
+        DynamicDTO dynamicDTO = new DynamicDTO(UserHolder.getUser().getNickname(),dynamics,isAgreeList);
         return new  ReturnProtocol(true,"",dynamicDTO);
     }
 }
