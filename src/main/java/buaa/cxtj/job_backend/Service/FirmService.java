@@ -19,7 +19,7 @@ public interface FirmService extends IService<Firm> {
 
     public void hireClerk(String user_id,String corporation_id,String post_id);
 
-    public void refuseHire(String user_id,String corporation_id,String post_id);
+//    public void refuseHire(String user_id,String corporation_id,String post_id);
 
     public void publishHireInfo(Job job);
 

@@ -1,12 +1,15 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
+import buaa.cxtj.job_backend.Controller.Exception.HavePostException;
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
+import buaa.cxtj.job_backend.POJO.Entity.Mail;
 import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
@@ -18,8 +21,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -33,10 +38,15 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     UserService userService;
 
     @Autowired
+    RedisTemplate redisTemplate;
+    @Autowired
     UserMapper userMapper;
 
     @Autowired
     EmployMapper employMapper;
+    @Autowired
+    KafkaTopicServiceImpl kafkaTopicService;
+
 
     @Autowired
     FirmMapper firmMapper;
@@ -112,6 +122,57 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         FirmDTO firmDTO = new FirmDTO(firm.getId(), firm.getName(), firm.getIntro(),firm.getManagerId(),user.getName(),firm.getPicture());
         return firmDTO;
 
+    }
+
+    @Override
+    public void reject(String corporation_id, String user_id, String post_id) {
+        User user = userMapper.selectById(user_id);
+        String pending = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
+        if(user==null){
+            throw new RuntimeException("用户表中不存在该用户");
+        }
+        String front = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
+        Boolean member = redisTemplate.opsForSet().isMember(front, user_id);
+        Set<Object> objects1 = redisUtil.sGet(front);
+        log.info("查询到的所有的该公司该岗位的投递人员 "+objects1);
+        log.info("查询的key为 "+front);
+        log.info("是否查到此人 "+member +" "+user_id);
+        if(!member){
+            throw new RuntimeException("该岗位投递无此人");
+        }
+        ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id, 0);
+        List<Object> objects = redisUtil.lGet(RedisUtil.USERRESUME + user_id, 0, -1);
+        log.info("该人员的所有投递的简历的状态"+objects);
+        log.info("resume内容为"+JSONUtil.toJsonStr(resumeStatusDTO));
+        if(objects==null || !objects.contains(JSONUtil.toJsonStr(resumeStatusDTO))){
+            throw new RuntimeException("您从未投递过此公司此岗位的简历");
+        }
+        user.setJob(post_id);
+        user.setCorporation(corporation_id);
+        Job job = employMapper.selectById(post_id);
+        user.setJobName(job.getJobName());
+        userMapper.updateById(user);
+        log.info("字符串为 "+pending);
+        log.info("user_id "+user_id);
+        redisTemplate.opsForSet().remove(pending, user_id);//直接将拒绝录取的人从待录取中直接删除
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
+        redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
+        Mail mail = new Mail();
+        mail.setSenderId(UserHolder.getUser().getId());
+        mail.setReceiveId(userMapper.selectById(user_id).getId());
+        mail.setCreateTime(LocalDateTime.now().toString());
+        mail.setIsRead(false);
+
+        String firm_name = firmMapper.selectById(corporation_id).getName();
+        String job_name = employMapper.selectById(post_id).getJobName();
+        mail.setContent("很遗憾，您已经被拒绝录取至"+ firm_name + "公司的" + job_name + "岗位！");
+
+        redisUtil.lRemove(RedisUtil.USERRESUME + user_id,0,JSONUtil.toJsonStr(resumeStatusDTO));
+        resumeStatusDTO.setStatus(-1);
+        redisUtil.lSet(RedisUtil.USERRESUME + user_id,JSONUtil.toJsonStr(resumeStatusDTO));
+
+
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
     }
 
 

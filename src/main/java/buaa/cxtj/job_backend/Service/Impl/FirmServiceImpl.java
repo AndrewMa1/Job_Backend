@@ -214,12 +214,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));
     }
 
-    @Override
-    public void refuseHire(String user_id, String corporation_id, String post_id) {
-
-
-
-    }
 
     @Override
     public void publishHireInfo(Job job) {

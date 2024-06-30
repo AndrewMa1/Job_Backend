@@ -71,12 +71,12 @@ public class FirmController {
         return new ReturnProtocol(true,"录用成功");
     }
 
-    @GetMapping("/refuseHire")
-    public ReturnProtocol refuseHire(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
-        permissionUntil.checkIfManagerOfFirm();
-        firmService.refuseHire(user_id,corporation_id,post_id);
-        return new ReturnProtocol(true,"拒绝录用");
-    }
+//    @GetMapping("/refuseHire")
+//    public ReturnProtocol refuseHire(@RequestParam String user_id,@RequestParam String corporation_id,@RequestParam String post_id){
+//        permissionUntil.checkIfManagerOfFirm();
+//        firmService.refuseHire(user_id,corporation_id,post_id);
+//        return new ReturnProtocol(true,"拒绝录用");
+//    }
 
 
 
