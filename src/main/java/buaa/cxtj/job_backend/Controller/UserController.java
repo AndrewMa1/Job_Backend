@@ -192,7 +192,7 @@ public class UserController {
         return userService.deleteFollow(id);
     }
 
-    @PostMapping("change/admin")
+    @GetMapping("change/admin")
     public ReturnProtocol changeAdmin(@RequestParam String userId){
         return userService.changeAdmin(userId);
     }
