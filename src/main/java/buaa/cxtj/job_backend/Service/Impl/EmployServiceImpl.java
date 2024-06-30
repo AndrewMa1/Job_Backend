@@ -3,10 +3,7 @@ package buaa.cxtj.job_backend.Service.Impl;
 import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
-import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
-import buaa.cxtj.job_backend.POJO.DTO.FirmDTO;
-import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
-import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
+import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
@@ -45,8 +42,11 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     FirmMapper firmMapper;
     @Override
     public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
-//        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id,resume,1);
-//        String json = JSONUtil.toJsonStr(pendingOfferDTO);
+        ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id,0);
+        /*
+        用hash存储简历的状态,0表示待录取,1表示已被录取
+         */
+        redisUtil.lSet(RedisUtil.USERRESUME+user_id,JSONUtil.toJsonStr(resumeStatusDTO));
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id);
     }
 

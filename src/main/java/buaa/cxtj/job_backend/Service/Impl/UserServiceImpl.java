@@ -1,12 +1,12 @@
 package buaa.cxtj.job_backend.Service.Impl;
 
+import buaa.cxtj.job_backend.Controller.UserController;
+import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
-import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
-import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
-import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
-import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
+import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
+import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.Enum.EducationEnum;
 import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
@@ -15,7 +15,9 @@ import buaa.cxtj.job_backend.Service.UserService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.json.JSONUtil;
 import cn.hutool.jwt.JWTUtil;
+import com.alibaba.druid.support.json.JSONUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
@@ -25,9 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -36,6 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     private final FirmMapper firmMapper;
     private final RedisUtil redisUtil;
+    private  final EmployMapper employMapper;
     @Autowired
     UserMapper userMapper;
 
@@ -289,6 +294,26 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return new ReturnProtocol(false,"更新权限失败");
         }
 
+    }
+
+    @Override
+    public List<UserResumeStatusDTO> queryResumeStatus() {
+        UserDTO user = UserHolder.getUser();
+        List<Object> objects = redisUtil.lGet(RedisUtil.USERRESUME + user.getId(), 0, -1);
+        log.info("全部项目 "+objects);
+        // 将 JSON 字符串列表转换为 ResumeStatusDTO 对象列表
+        List<ResumeStatusDTO> resumeStatusList = objects.stream()
+                .map(json -> JSONUtil.toBean((String) json, ResumeStatusDTO.class))
+                .collect(Collectors.toList());
+        log.info("转化玩的全部项目为 "+resumeStatusList);
+        List<UserResumeStatusDTO> userResumeStatusDTOS = new ArrayList<>();
+        for(ResumeStatusDTO resumeStatus:resumeStatusList){
+            Firm firm = firmMapper.selectById(resumeStatus.getCorporation_id());
+            Job job = employMapper.selectById(resumeStatus.getPost_id());
+            UserResumeStatusDTO userResumeStatusDTO = new UserResumeStatusDTO(firm.getName(), job.getJobName(), firm.getId(), resumeStatus.getStatus());
+            userResumeStatusDTOS.add(userResumeStatusDTO);
+        }
+        return userResumeStatusDTOS;
     }
 
 }

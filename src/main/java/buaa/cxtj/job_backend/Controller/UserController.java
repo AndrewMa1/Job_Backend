@@ -2,9 +2,7 @@ package buaa.cxtj.job_backend.Controller;
 
 
 import buaa.cxtj.job_backend.Mapper.UserMapper;
-import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
-import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
-import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
+import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.UserService;
@@ -23,6 +21,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -150,6 +149,12 @@ public class UserController {
         } catch (IOException e) {
             return new ReturnProtocol(false,"下载简历失败");
         }
+    }
+
+    @GetMapping("query/resumeStatus")
+    public ReturnProtocol queryResumeStatus(){
+        List<UserResumeStatusDTO> resumeStatusDTOS = userService.queryResumeStatus();
+        return new ReturnProtocol(true,resumeStatusDTOS);
     }
 
     @GetMapping("add/staff")

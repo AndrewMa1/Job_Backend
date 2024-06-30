@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -169,10 +170,21 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             log.info("1"+user.getCorporation().isBlank());
             throw new HavePostException("该用户已经有岗位");
         }
-        Boolean member = redisTemplate.opsForSet().isMember(RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id, user_id);
-        log.info("是否查到此人 "+member);
+        String front = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
+        Boolean member = redisTemplate.opsForSet().isMember(front, user_id);
+        Set<Object> objects1 = redisUtil.sGet(front);
+        log.info("查询到的所有的该公司该岗位的投递人员 "+objects1);
+        log.info("查询的key为 "+front);
+        log.info("是否查到此人 "+member +" "+user_id);
         if(!member){
             throw new RuntimeException("该岗位投递无此人");
+        }
+        ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id, 0);
+        List<Object> objects = redisUtil.lGet(RedisUtil.USERRESUME + user_id, 0, -1);
+        log.info("该人员的所有投递的简历的状态"+objects);
+        log.info("resume内容为"+JSONUtil.toJsonStr(resumeStatusDTO));
+        if(objects==null || !objects.contains(JSONUtil.toJsonStr(resumeStatusDTO))){
+            throw new RuntimeException("您从未投递过此公司此岗位的简历");
         }
         user.setJob(post_id);
         user.setCorporation(corporation_id);
@@ -193,6 +205,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         String firm_name = firmMapper.selectById(corporation_id).getName();
         String job_name = employMapper.selectById(post_id).getJobName();
         mail.setContent("恭喜您，您已经被录取至"+ firm_name + "公司的" + job_name + "岗位！");
+
+        redisUtil.lRemove(RedisUtil.USERRESUME + user_id,0,JSONUtil.toJsonStr(resumeStatusDTO));
+        resumeStatusDTO.setStatus(1);
+        redisUtil.lSet(RedisUtil.USERRESUME + user_id,JSONUtil.toJsonStr(resumeStatusDTO));
 
 
         kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(mail));

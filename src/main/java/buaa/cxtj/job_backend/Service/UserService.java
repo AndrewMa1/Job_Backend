@@ -4,6 +4,7 @@ package buaa.cxtj.job_backend.Service;
 import buaa.cxtj.job_backend.POJO.DTO.LoginFormDTO;
 import buaa.cxtj.job_backend.POJO.DTO.RegisterDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UpdateDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UserResumeStatusDTO;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -43,4 +44,6 @@ public interface UserService extends IService<User> {
     ReturnProtocol deleteFollow(String id);
 
     ReturnProtocol changeAdmin(String userId);
+
+    public List<UserResumeStatusDTO>  queryResumeStatus();
 }

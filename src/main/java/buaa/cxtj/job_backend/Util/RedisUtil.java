@@ -31,6 +31,7 @@ public class RedisUtil {
     public static final String FOLLOWER = "user:follower:";//以user为key,存储了关注该user的所有人
 
     public static final String AGREE = "user:agree:";
+    public static final  String USERRESUME = "user:resume:";
 
     public static final int LOGIN_USER_TTL = 60;
 
