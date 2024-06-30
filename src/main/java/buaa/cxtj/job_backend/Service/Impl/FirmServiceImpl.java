@@ -92,7 +92,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
                 redisUtil.lSet(RedisUtil.STAFF + firm_id, userId);
                 user.setCorporation(firm.getId());
                 user.setJob("Manager");
-                user.setJobName("管理人员");
+                user.setJobName("管理员");
                 userMapper.updateById(user);
                 firm.setPicture(firm.getId()+extensionName);
                 firmMapper.updateById(firm);

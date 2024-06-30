@@ -59,26 +59,25 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     @Override
     public ReturnProtocol postDynamic(String content, MultipartFile picture) {
         String userId = UserHolder.getUser().getId();
-
+        String fileName = null;
+        byte[] bytes = null;
+        String extensionName = null;
         try {
-            byte[] bytes = picture.getBytes();
-            String fileName = picture.getOriginalFilename();
-            if (fileName != null) {
-                String extensionName = fileName.substring(fileName.lastIndexOf("."));
-                Dynamic dynamic = new Dynamic(userId,content);
-                dynamicMapper.insert(dynamic);
-
-                Path path = Paths.get(baseDynamicPath+dynamic.getId()+extensionName);
-                log.info(String.valueOf(path.toAbsolutePath()));
-                Files.write(path,bytes);
-
-                dynamic.setPicture(dynamic.getId()+extensionName);
-                dynamicMapper.updateById(dynamic);
-
-                return new ReturnProtocol(true, "上传成功",dynamic.getId() + extensionName);
-            }else {
-                return new ReturnProtocol(false,"上传失败,文件名为NULL");
+            if(picture!=null) {
+                bytes = picture.getBytes();
+                fileName = picture.getOriginalFilename();
+                extensionName = fileName.substring(fileName.lastIndexOf("."));
             }
+            Dynamic dynamic = new Dynamic(userId, content);
+            dynamicMapper.insert(dynamic);
+            if(picture!=null){
+                Path path = Paths.get(baseDynamicPath + dynamic.getId() + extensionName);
+                log.info(String.valueOf(path.toAbsolutePath()));
+                Files.write(path, bytes);
+                dynamic.setPicture(dynamic.getId() + extensionName);
+                dynamicMapper.updateById(dynamic);
+            }
+            return new ReturnProtocol(true, "上传成功", dynamic.getId() + extensionName);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

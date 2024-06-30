@@ -25,10 +25,10 @@ public class DynamicController {
         return dynamicService.postDynamic(content);
     }
 
-//    @GetMapping("/postDynamic")
-//    public ReturnProtocol postDynamic(@RequestParam("content") String content, @RequestParam("picture")MultipartFile picture){
-//        return dynamicService.postDynamic(content,picture);
-//    }
+    @PostMapping("/postDynamic")
+    public ReturnProtocol postDynamic(@RequestParam("content") String content, @RequestParam(name = "picture", required = false)MultipartFile picture){
+        return dynamicService.postDynamic(content,picture);
+    }
 
     @GetMapping("/deleteDynamic")
     public ReturnProtocol deleteDynamic(@RequestParam("id") String id){
