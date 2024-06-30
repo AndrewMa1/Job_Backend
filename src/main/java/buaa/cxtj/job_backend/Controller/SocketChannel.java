@@ -68,14 +68,14 @@ public class SocketChannel {
 
 //        String userName = UserHolder.getUser().getId();
         log.info("聊天室{}已创建连接，连接人{}", chatId,userName);
-        String id = chatId+" "+userName;  // 该session的Id
+        String id = chatId + "&" + userName;  // 该session的Id
         sessionMap.put(id,session);
         initMes(id);  //初始化聊天记录
     }
 
 
     private void initMes(String id) {
-        String chatId = id.split(" ")[0];
+        String chatId = id.split("&")[0];
         Session session = sessionMap.get(id);
         List<String> messages = null;
         try {
@@ -117,19 +117,18 @@ public class SocketChannel {
         message.setFrom(userName);
 
         String msgJson = JSONUtil.toJsonStr(message);
-        String to_id = chatId+" "+message.getTo();  // 该session的Id
-        String from_id = chatId+" "+userName;  // 该session的Id
+        String to_id = chatId + "&" + message.getTo();  // 该session的Id
+        System.out.println(to_id);
+        String from_id = chatId + "&" + userName;  // 该session的Id
         try{
             Session fromSession = sessionMap.get(from_id);
             sendMessage(chatId,fromSession, msgJson);
-            System.out.println(from_id + "from_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         try{
             Session toSession = sessionMap.get(to_id);
             sendMessage(chatId,toSession, msgJson);
-            System.out.println(to_id+" to_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
