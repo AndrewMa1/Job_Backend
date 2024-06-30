@@ -172,7 +172,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             baseMapper.update(null,wrapper1);
             //TODO:使用Redis在企业的员工列表中删除员工
-            redisUtil.setRemove(RedisUtil.STAFF + firmId, 1, staffId);
+            redisUtil.setRemove(RedisUtil.STAFF + firmId, staffId);
             return new ReturnProtocol(true, "删除员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "删除员工失败");
