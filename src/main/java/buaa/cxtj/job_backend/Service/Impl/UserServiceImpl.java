@@ -252,6 +252,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         try{
             redisUtil.setRemove(RedisUtil.FOLLOW+userId,id);
             redisUtil.setRemove(RedisUtil.FOLLOWER+id,userId);
+            LambdaUpdateWrapper<User>wrapper = new LambdaUpdateWrapper<User>()
+                    .setSql("follower_num = follower_num - 1")
+                    .eq(User::getId,id);
+            LambdaUpdateWrapper<User>wrapper1 = new LambdaUpdateWrapper<User>()
+                    .setSql("interest_num = interest_num - 1")
+                    .eq(User::getId,userId);
+            baseMapper.update(null,wrapper1);
+
+            baseMapper.update(null,wrapper);
             return new ReturnProtocol(true,"取消关注成功");
         }catch (Exception e){
             return new ReturnProtocol(false,"取消关注失败");
