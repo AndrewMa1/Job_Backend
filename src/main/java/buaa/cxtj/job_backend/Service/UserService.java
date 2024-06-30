@@ -41,4 +41,6 @@ public interface UserService extends IService<User> {
     ReturnProtocol isFollowed(String id);
 
     ReturnProtocol deleteFollow(String id);
+
+    ReturnProtocol changeAdmin(String userId);
 }
