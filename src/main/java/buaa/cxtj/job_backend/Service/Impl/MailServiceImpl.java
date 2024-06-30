@@ -32,7 +32,7 @@ public class MailServiceImpl extends ServiceImpl<MailMapper, Mail> implements Ma
         UserDTO userDTO = UserHolder.getUser();
         String to_id = userDTO.getId();
         QueryWrapper<Mail> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("to_id",to_id);
+        queryWrapper.eq("receive_id",to_id);
         List<Mail> mailList = mailMapper.selectList(queryWrapper);
         List<MailDTO> result = new ArrayList<>();
         for(Mail mail: mailList){
