@@ -122,12 +122,14 @@ public class SocketChannel {
         try{
             Session toSession = sessionMap.get(to_id);
             sendMessage(chatId,toSession, msgJson);
+            System.out.println(to_id+" to_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         try{
             Session fromSession = sessionMap.get(from_id);
             sendMessage(chatId,fromSession, msgJson);
+            System.out.println(from_id + "from_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }

@@ -76,8 +76,9 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
                 Files.write(path, bytes);
                 dynamic.setPicture(dynamic.getId() + extensionName);
                 dynamicMapper.updateById(dynamic);
+                return new ReturnProtocol(true, "上传成功", dynamic.getId() + extensionName);
             }
-            return new ReturnProtocol(true, "上传成功", dynamic.getId() + extensionName);
+            return new ReturnProtocol(true, "上传成功", dynamic);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
