@@ -14,12 +14,15 @@ public class TransDTO {
     private String transId;
     private String createTime;
 
-    public TransDTO(String transName, String userId, String content, String transId) {
+    private String picture;
+
+    public TransDTO(String transName, String userId, String content, String transId, String picture) {
         this.transName = transName;
         this.userId = userId;
         this.content = content;
         this.transId = transId;
         this.createTime = LocalDateTime.now().toString();
+        this.picture = picture;
     }
 
 }

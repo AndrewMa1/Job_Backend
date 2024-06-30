@@ -144,7 +144,7 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         dynamic.setTrans(dynamic.getTrans() + 1);
         dynamicMapper.updateById(dynamic);
         User user = userMapper.selectById(dynamic.getUserId());
-        TransDTO transDTO = new TransDTO(user.getNickname(),dynamic1.getUserId(),dynamic1.getContent(),dynamic.getUserId());
+        TransDTO transDTO = new TransDTO(user.getNickname(),dynamic1.getUserId(),dynamic1.getContent(),dynamic.getUserId(),dynamic.getPicture());
         return new ReturnProtocol(true,"",transDTO);
     }
 
