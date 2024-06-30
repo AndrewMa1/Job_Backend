@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.json.GsonFactoryBean;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(User::getRepo,updateDTO.getRepo())
                 .set(User::getEducation,updateDTO.getEducation())
                 .set(User::getInterestJob,updateDTO.getInterestJob())
-                .set(User::getJob,updateDTO.getJob())
+                .set(User::getJobName,updateDTO.getJobName())
                 .eq(User::getId,id);
         try{
             baseMapper.update(user,wrapper);
@@ -145,11 +146,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .set(User::getCorporation,firmId)
                     .eq(User::getId,staffId);
             baseMapper.update(null,wrapper);
-            Set<Object>staffs = redisUtil.sGet(RedisUtil.STAFF + firmId);
+            //Set<Object>staffs = redisUtil.sGet(RedisUtil.STAFF + firmId);
 
 
 
-            return new ReturnProtocol(true, "新增员工成功",staffs);
+            return new ReturnProtocol(true, "新增员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "添加失败");
         }
@@ -167,10 +168,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             LambdaUpdateWrapper<User>wrapper1 = new LambdaUpdateWrapper<User>()
                     .set(User::getCorporation,null)
                     .set(User::getJob,null)
-                    .set(User::getJobName,null);
-            baseMapper.update(null,wrapper1);
+                    .set(User::getJobName,null)
+                    .eq(User::getId,staffId);
+            System.out.println(staffId);
+            int result =  baseMapper.update(null,wrapper1);
+            System.out.println(result);
             //TODO:使用Redis在企业的员工列表中删除员工
-            redisUtil.setRemove(RedisUtil.STAFF + firmId, 1, staffId);
+            //redisUtil.setRemove(RedisUtil.STAFF + firmId, staffId);
             return new ReturnProtocol(true, "删除员工成功");
         } catch (Exception e) {
             return new ReturnProtocol(false, "删除员工失败");

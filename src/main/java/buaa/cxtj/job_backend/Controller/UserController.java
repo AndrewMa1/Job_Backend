@@ -162,12 +162,12 @@ public class UserController {
         return userService.addStaff(firmId);
     }
 
-    @PostMapping("delete/staff")
-    public ReturnProtocol deleteStaff(@RequestBody String firmId) {
-        return userService.deleteStaff(firmId);
+    @GetMapping("delete/staff")
+    public ReturnProtocol deleteStaff(@RequestParam String userId) {
+        return userService.deleteStaff(userId);
     }
 
-    @PostMapping("follow")
+    @GetMapping("follow")
     public ReturnProtocol follow(@RequestParam String follower) {
         return userService.follow(follower);
     }
