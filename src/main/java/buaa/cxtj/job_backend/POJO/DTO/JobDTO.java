@@ -1,5 +1,6 @@
 package buaa.cxtj.job_backend.POJO.DTO;
 
+import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,9 @@ import lombok.NoArgsConstructor;
 public class JobDTO {
     private String jobId;
     private String jobName;
+    private String firmId;
+    private JobEnum jobDesc;
+
 
     private String jobRequirements;
 

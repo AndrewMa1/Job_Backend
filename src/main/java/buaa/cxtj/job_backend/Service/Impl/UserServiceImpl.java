@@ -258,4 +258,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
     }
 
+    @Override
+    public ReturnProtocol changeAdmin(String newAdmin) {
+        String userId = UserHolder.getUser().getId();
+        try{
+            LambdaUpdateWrapper<Firm> firmWrapper = new LambdaUpdateWrapper<Firm>()
+                    .set(Firm::getManagerId,newAdmin)
+                    .eq(Firm::getManagerId,userId);
+            firmMapper.update(null,firmWrapper);
+            LambdaUpdateWrapper<User>userWrapper = new LambdaUpdateWrapper<User>()
+                    .set(User::getJobName,"管理员")
+                    .eq(User::getId,newAdmin);
+            baseMapper.update(null,userWrapper);
+            userWrapper = new LambdaUpdateWrapper<User>()
+                    .set(User::getJobName,"普通员工")
+                    .eq(User::getId,userId);
+            baseMapper.update(null,userWrapper);
+
+            return new ReturnProtocol(true,"更改权限成功");
+        }catch (MybatisPlusException e){
+            return new ReturnProtocol(false,"更新权限失败");
+        }
+
+    }
+
 }

@@ -62,6 +62,10 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         Set<String> stringSet = new HashSet<>();
         //保存user_id的列表
         Set<String>  users = new HashSet<>();
+        log.info("目前在查询公司的某岗位投递人员,人员列表 "+users);
+        if(users==null){
+            throw new RuntimeException("该公司没有员工");
+        }
         // 遍历对象集合，将每个对象转换为字符串类型，并添加到新集合中
         for (Object obj : userList) {
             String str = String.valueOf(obj); // 将对象转换为字符串
