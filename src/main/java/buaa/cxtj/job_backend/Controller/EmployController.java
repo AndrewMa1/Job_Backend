@@ -31,8 +31,8 @@ public class EmployController {
     EmployService employService;
 //    @Value("${file.upload-dir}")
 //    private String basePath;
-//    private String basePath="/root/Job_Backend/resume/job/";
-    private String basePath="src/main/resources/static/";
+    private String basePath="/root/Job_Backend/resume/job/";
+//    private String basePath="src/main/resources/static/";
 
     @Autowired
     PermissionUntil permissionUntil;
