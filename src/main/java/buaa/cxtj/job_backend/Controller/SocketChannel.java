@@ -5,12 +5,14 @@ import buaa.cxtj.job_backend.POJO.Entity.Message;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.Impl.KafkaConsumerService;
 import buaa.cxtj.job_backend.Service.Impl.KafkaTopicServiceImpl;
+import buaa.cxtj.job_backend.Util.SocketChannelMap;
 import buaa.cxtj.job_backend.Util.SpringContextUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.websocket.*;
 import jakarta.websocket.server.PathParam;
 import jakarta.websocket.server.ServerEndpoint;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -29,8 +31,10 @@ public class SocketChannel {
     // 保存链接的session，key为用户名,value为对应的session名
     private KafkaTopicServiceImpl kafkaTopicService;
     private KafkaConsumerService kafkaConsumerService;
-    private static ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<>();
+//    private static ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<>();
 
+    @Autowired
+    SocketChannelMap socketChannelMap;
 
 
     private Map<String, String> parseQueryString(String queryString) {
@@ -69,14 +73,14 @@ public class SocketChannel {
 //        String userName = UserHolder.getUser().getId();
         log.info("聊天室{}已创建连接，连接人{}", chatId,userName);
         String id = chatId + "&" + userName;  // 该session的Id
-        sessionMap.put(id,session);
+        SocketChannelMap.sessionMap.put(id,session);
         initMes(id);  //初始化聊天记录
     }
 
 
     private void initMes(String id) {
         String chatId = id.split("&")[0];
-        Session session = sessionMap.get(id);
+        Session session = SocketChannelMap.sessionMap.get(id);
         List<String> messages = null;
         try {
             messages = kafkaConsumerService.readMessagesFromPartition(chatId, 0);
@@ -121,13 +125,13 @@ public class SocketChannel {
         System.out.println(to_id);
         String from_id = chatId + "&" + userName;  // 该session的Id
         try{
-            Session fromSession = sessionMap.get(from_id);
+            Session fromSession = SocketChannelMap.sessionMap.get(from_id);
             sendMessage(chatId,fromSession, msgJson);
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         try{
-            Session toSession = sessionMap.get(to_id);
+            Session toSession = SocketChannelMap.sessionMap.get(to_id);
             sendMessage(chatId,toSession, msgJson);
         }catch (Exception e){
             System.out.println(e.getMessage());
@@ -145,7 +149,7 @@ public class SocketChannel {
     @OnClose
     public void onClose(Session session,@PathParam(value = "chatId") String chatId){
         log.info("用户{}已关闭连接", chatId);
-        sessionMap.remove(chatId);
+        SocketChannelMap.sessionMap.remove(chatId);
     }
 
 
@@ -158,7 +162,7 @@ public class SocketChannel {
     @OnError
     public void onError(Throwable throwable,@PathParam(value = "chatId") String chatId){
         log.error("用户{}连接发生异常", chatId);
-        sessionMap.remove(chatId);
+        SocketChannelMap.sessionMap.remove(chatId);
     }
 
 
