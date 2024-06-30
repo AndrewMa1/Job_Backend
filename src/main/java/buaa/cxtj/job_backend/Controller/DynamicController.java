@@ -26,7 +26,7 @@ public class DynamicController {
     }
 
     @PostMapping("/postDynamic")
-    public ReturnProtocol postDynamic(@RequestParam("content") String content, @RequestParam("picture")MultipartFile picture){
+    public ReturnProtocol postDynamic(@RequestParam("content") String content, @RequestParam(name = "picture", required = false)MultipartFile picture){
         return dynamicService.postDynamic(content,picture);
     }
 
