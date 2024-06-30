@@ -267,11 +267,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                     .eq(Firm::getManagerId,userId);
             firmMapper.update(null,firmWrapper);
             LambdaUpdateWrapper<User>userWrapper = new LambdaUpdateWrapper<User>()
-                    .set(User::getJobName,"普通员工")
+                    .set(User::getJobName,"管理员")
                     .eq(User::getId,newAdmin);
             baseMapper.update(null,userWrapper);
             userWrapper = new LambdaUpdateWrapper<User>()
-                    .set(User::getJobName,"管理员")
+                    .set(User::getJobName,"普通员工")
                     .eq(User::getId,userId);
             baseMapper.update(null,userWrapper);
 
