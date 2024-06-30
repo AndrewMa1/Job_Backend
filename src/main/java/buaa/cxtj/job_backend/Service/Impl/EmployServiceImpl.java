@@ -65,6 +65,9 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         String front = RedisUtil.KEY_FIRM + corporation_id + ":" +RedisUtil.KEY_FIRMPENDING+ post_id;
         log.info("查询到公司岗位为" + front);
         log.info("存在吗" + redisUtil.hasKey(front));
+        if(!redisUtil.hasKey(front)){
+            throw new RuntimeException("该公司该岗位暂时没有人员投递简历");
+        }
         log.info("岗位投递数量为" + redisUtil.sGetSetSize(front));
         Set<Object> userList = redisUtil.sGet(front);
         Map<String, String> userMap = new HashMap<>();
