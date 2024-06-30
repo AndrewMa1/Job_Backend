@@ -162,8 +162,8 @@ public class UserController {
         return userService.addStaff(firmId);
     }
 
-    @PostMapping("delete/staff")
-    public ReturnProtocol deleteStaff(@RequestBody String userId) {
+    @GetMapping("delete/staff")
+    public ReturnProtocol deleteStaff(@RequestParam String userId) {
         return userService.deleteStaff(userId);
     }
 
