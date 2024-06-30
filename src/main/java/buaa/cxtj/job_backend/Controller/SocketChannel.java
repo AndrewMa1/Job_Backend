@@ -73,6 +73,9 @@ public class SocketChannel {
 //        String userName = UserHolder.getUser().getId();
         log.info("聊天室{}已创建连接，连接人{}", chatId,userName);
         String id = chatId + "&" + userName;  // 该session的Id
+
+        SocketChannelMap.sessionMap.remove(id);
+
         SocketChannelMap.sessionMap.put(id,session);
         initMes(id);  //初始化聊天记录
     }
@@ -144,12 +147,20 @@ public class SocketChannel {
     /**
      * 用于监听连接关闭，当客户端与该服务端点断开连接时，将会回调该注解标注的方法
      * @param session
-     * @param chatId
+     *
      */
     @OnClose
-    public void onClose(Session session,@PathParam(value = "chatId") String chatId){
-        log.info("用户{}已关闭连接", chatId);
-        SocketChannelMap.sessionMap.remove(chatId);
+    public void onClose(Session session){
+        String queryString = session.getQueryString();
+        Map<String, String> queryParams = parseQueryString(queryString);
+        String chatId = queryParams.get("chatId");
+        String userName = queryParams.get("userName");
+
+        String id = chatId + "&" + userName;  // 该session的Id
+
+        log.info("用户{}已关闭连接", id);
+
+        SocketChannelMap.sessionMap.remove(id);
     }
 
 
@@ -157,12 +168,19 @@ public class SocketChannel {
      * 用于监听该连接上的任何错误，当客户端与该服务端点的连接发生任何异常，都将回调该注解标注的方法
      * 注意该方法的参数必选Throwable，可选Sessiion以及0-n个String参数，且String参数需要使用@PathParam注解标注
      * @param throwable
-     * @param chatId
      */
     @OnError
-    public void onError(Throwable throwable,@PathParam(value = "chatId") String chatId){
-        log.error("用户{}连接发生异常", chatId);
-        SocketChannelMap.sessionMap.remove(chatId);
+    public void onError(Throwable throwable,Session session){
+        String queryString = session.getQueryString();
+        Map<String, String> queryParams = parseQueryString(queryString);
+        String chatId = queryParams.get("chatId");
+        String userName = queryParams.get("userName");
+
+        String id = chatId + "&" + userName;  // 该session的Id
+
+        log.info("用户{}连接发生异常", id);
+
+        SocketChannelMap.sessionMap.remove(id);
     }
 
 
