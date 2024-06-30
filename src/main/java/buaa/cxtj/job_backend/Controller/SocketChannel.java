@@ -120,16 +120,16 @@ public class SocketChannel {
         String to_id = chatId+" "+message.getTo();  // 该session的Id
         String from_id = chatId+" "+userName;  // 该session的Id
         try{
-            Session toSession = sessionMap.get(to_id);
-            sendMessage(chatId,toSession, msgJson);
-            System.out.println(to_id+" to_id");
+            Session fromSession = sessionMap.get(from_id);
+            sendMessage(chatId,fromSession, msgJson);
+            System.out.println(from_id + "from_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
         try{
-            Session fromSession = sessionMap.get(from_id);
-            sendMessage(chatId,fromSession, msgJson);
-            System.out.println(from_id + "from_id");
+            Session toSession = sessionMap.get(to_id);
+            sendMessage(chatId,toSession, msgJson);
+            System.out.println(to_id+" to_id");
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
