@@ -31,8 +31,8 @@ public class EmployController {
     EmployService employService;
 //    @Value("${file.upload-dir}")
 //    private String basePath;
-    private String basePath="/root/Job_Backend/resume/job/";
-//    private String basePath="src/main/resources/static/";
+//    private String basePath="/root/Job_Backend/resume/job/";
+    private String basePath="src/main/resources/static/";
 
     @Autowired
     PermissionUntil permissionUntil;
@@ -88,6 +88,18 @@ public class EmployController {
     @GetMapping("queryFirm/{id}")
     public ReturnProtocol queryFirm(@PathVariable String id){
         return new ReturnProtocol(true,employService.queryFrim(id));
+    }
+
+    /**
+     * 公司拒绝某人的申请
+     * @return
+     */
+    @GetMapping("reject")
+    public ReturnProtocol reject(@RequestParam String corporation_id, @RequestParam String user_id, @RequestParam String post_id){
+        log.info("正在拒绝录用");
+//        permissionUntil.checkIfManagerOfFirm();
+        employService.reject(corporation_id, user_id,post_id);
+        return new ReturnProtocol(true,"拒绝成功");
     }
 
 }
