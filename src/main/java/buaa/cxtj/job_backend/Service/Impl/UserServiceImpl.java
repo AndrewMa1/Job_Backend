@@ -118,7 +118,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .set(User::getRepo,updateDTO.getRepo())
                 .set(User::getEducation,updateDTO.getEducation())
                 .set(User::getInterestJob,updateDTO.getInterestJob())
-                .set(User::getJob,updateDTO.getJob())
+                .set(User::getJobName,updateDTO.getJobName())
                 .eq(User::getId,id);
         try{
             baseMapper.update(user,wrapper);
