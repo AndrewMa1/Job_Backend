@@ -50,8 +50,8 @@ public class DynamicController {
         return dynamicService.showOther(id);
     }
     @GetMapping("/transDynamic")
-    public ReturnProtocol transDynamic(@RequestParam String id){
-        return dynamicService.transDynamic(id);
+    public ReturnProtocol transDynamic(@RequestParam String id, @RequestParam(name = "content", required = false) String new_content){
+        return dynamicService.transDynamic(id,new_content);
     }
 
     @GetMapping("/showComment")

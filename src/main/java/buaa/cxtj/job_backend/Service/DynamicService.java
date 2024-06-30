@@ -17,7 +17,7 @@ public interface DynamicService extends IService<Dynamic> {
 
     ReturnProtocol commentDynamic(String id,String comment);
 
-    ReturnProtocol transDynamic(String id);
+    ReturnProtocol transDynamic(String id, String new_content);
 
     ReturnProtocol showDynamic();
 

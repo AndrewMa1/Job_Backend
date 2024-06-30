@@ -135,10 +135,15 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
     }
 
     @Override
-    public ReturnProtocol transDynamic(String id) {
+    public ReturnProtocol transDynamic(String id, String new_content) {
         Dynamic dynamic = dynamicMapper.selectById(id);
         User user1 = userMapper.selectById(dynamic.getUserId());
-        Dynamic dynamic1 = new Dynamic(UserHolder.getUser().getId(), dynamic.getContent(),dynamic.getUserId(), user1.getNickname());
+        String result_content = dynamic.getContent();
+        if(new_content!=null && !new_content.isBlank())
+        {
+            result_content += "&my: " + new_content;
+        }
+        Dynamic dynamic1 = new Dynamic(UserHolder.getUser().getId(), result_content,dynamic.getUserId(), user1.getNickname());
         dynamic1.setPicture(dynamic.getPicture());
         dynamicMapper.insert(dynamic1);
         dynamic.setTrans(dynamic.getTrans() + 1);
