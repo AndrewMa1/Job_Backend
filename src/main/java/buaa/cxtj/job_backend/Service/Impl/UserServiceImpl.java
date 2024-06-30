@@ -167,7 +167,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             LambdaUpdateWrapper<User>wrapper1 = new LambdaUpdateWrapper<User>()
                     .set(User::getCorporation,null)
                     .set(User::getJob,null)
-                    .set(User::getJobName,null);
+                    .set(User::getJobName,null)
+                    .eq(User::getId,staffId);
+
             baseMapper.update(null,wrapper1);
             //TODO:使用Redis在企业的员工列表中删除员工
             redisUtil.setRemove(RedisUtil.STAFF + firmId, 1, staffId);
