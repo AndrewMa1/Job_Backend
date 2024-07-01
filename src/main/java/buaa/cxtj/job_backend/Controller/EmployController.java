@@ -1,5 +1,6 @@
 package buaa.cxtj.job_backend.Controller;
 
+import buaa.cxtj.job_backend.POJO.DTO.*;
 import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
@@ -44,20 +45,33 @@ public class EmployController {
     }
 
     @PostMapping("delivery")
-    public ReturnProtocol deliveryPost(@RequestParam String corporation_id,@RequestParam String user_id,@RequestParam String post_id,@RequestParam("file") MultipartFile file){
+    public ReturnProtocol deliveryPost(@RequestParam String userId,
+                                       @RequestParam String name,
+                                       @RequestParam String sex,
+                                       @RequestParam String education,
+                                       @RequestParam MultipartFile resume,
+                                       @RequestParam String companyId,
+                                       @RequestParam String jobId,
+                                       @RequestParam String intro,
+                                       @RequestParam String age){
+        if(userId.length()==0){
+            throw new RuntimeException("您未登录,请登录");
+        }
+        String resumeName = resume.getOriginalFilename();
+        DeliveryPostDTO deliveryPostDTO = new DeliveryPostDTO(userId,name,sex,education,resumeName,companyId,jobId,intro,age);
         try {
-            log.info("基本信息为: "+corporation_id+'\n'+user_id+'\n'+post_id+'\n'+file.getOriginalFilename());
-            byte[] bytes = file.getBytes();
+            log.info("基本信息为: "+deliveryPostDTO.getEducation()+'\n'+resumeName);
+            byte[] bytes = resume.getBytes();
             log.info("长度是 "+bytes.length);
-            Path path = Paths.get(basePath + file.getOriginalFilename());
+            Path path = Paths.get(basePath + resume.getOriginalFilename());
             Files.write(path, bytes);
         } catch (IOException e) {
             e.printStackTrace();
             return new ReturnProtocol(false,"上传失败");
         }
-        log.info("基本信息为: "+corporation_id+'\n'+user_id+'\n'+post_id+'\n'+file.getOriginalFilename());
-        employService.deliveryPostService(corporation_id,user_id,post_id,file.getOriginalFilename());
-        return new ReturnProtocol(true,file.getOriginalFilename());
+        deliveryPostDTO.setName(resumeName);
+        employService.deliveryPostService(deliveryPostDTO);
+        return new ReturnProtocol(true,resume.getOriginalFilename());
     }
 
     /**
