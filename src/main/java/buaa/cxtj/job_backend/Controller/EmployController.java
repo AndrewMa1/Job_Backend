@@ -4,6 +4,7 @@ import buaa.cxtj.job_backend.POJO.DTO.ExhibitPendingDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
+import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.EmployService;
@@ -70,6 +71,13 @@ public class EmployController {
         permissionUntil.checkIfManagerOfFirm();
        List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
+    }
+
+    @PostMapping("editJobInfo")
+    public ReturnProtocol editJobInfo(@RequestBody Job job){
+        permissionUntil.checkIfManagerOfFirm();
+        employService.updateById(job);
+        return new ReturnProtocol(true,"修改成功");
     }
 
 

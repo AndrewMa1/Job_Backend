@@ -151,21 +151,23 @@ public class RecommendServiceImpl implements RecommendService {
 
     @Override
     public ReturnProtocol recJobForVisitor() {
-        List<Job> recJobList = new ArrayList<>();
+//        List<Job> recJobList = new ArrayList<>();
+//
+//        List<JobEnum> jobEnumList = new ArrayList<>(List.of(JobEnum.values()));
+//        Collections.shuffle(jobEnumList);
+//
+//        for(JobEnum job : jobEnumList){
+//            List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(job.toString(), 0);
+//            for (String jsonString : recJobListJson) {
+//                JSONObject jsonObject = JSONUtil.parseObj(jsonString);
+//                Job job_i = jsonObject.toBean(Job.class);
+//                recJobList.add(job_i);
+//            }
+//            if(recJobList.size()>=9) break;
+//        }
 
-        List<JobEnum> jobEnumList = new ArrayList<>(List.of(JobEnum.values()));
-        Collections.shuffle(jobEnumList);
-        List<JobEnum> jobEnum = jobEnumList.subList(0, 9);
-
-        for(JobEnum job : jobEnum){
-            List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(job.toString(), 0);
-            for (String jsonString : recJobListJson) {
-                JSONObject jsonObject = JSONUtil.parseObj(jsonString);
-                Job job_i = jsonObject.toBean(Job.class);
-                recJobList.add(job_i);
-            }
-        }
-
+        List<Job> recJobList = employMapper.selectList(new QueryWrapper<Job>());
+        Collections.shuffle(recJobList);
         List<Job> result = new ArrayList<>();
         if(!recJobList.isEmpty()) result = recJobList.subList(0, Math.min(9, recJobList.size()));
         return new ReturnProtocol(true,result);
