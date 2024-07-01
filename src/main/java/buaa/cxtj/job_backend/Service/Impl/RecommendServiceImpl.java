@@ -91,14 +91,12 @@ public class RecommendServiceImpl implements RecommendService {
 
     @Override
     public DynamicDTO recRandomTrends() {
-        String userId = UserHolder.getUser().getId();
-
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         List<User> userList = userMapper.selectList(userQueryWrapper);
         Collections.shuffle(userList);
         userList = userList.subList(0,Math.min(50, userList.size()));
-        System.out.println(userList.size());
+
 
         //2 从mysql的dynamic表中拿到这些up主或者公司的动态
         ArrayList<Dynamic> result = new ArrayList<>();
@@ -114,18 +112,26 @@ public class RecommendServiceImpl implements RecommendService {
         }
 
         //3 从redis取出该用户的点赞动态列表
-        Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
-        List<String> fullSet = result.stream().map(Dynamic::getId).toList();
         ArrayList<Boolean> isAgreeList = new ArrayList<>();
-        for(String id: fullSet){
-            if(agreeSet.contains(id)){
-                isAgreeList.add(true);
-            }else {
-                isAgreeList.add(false);
-            }
-        }
-        DynamicDTO dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),result.subList(0,Math.min(10, result.size())),
-                isAgreeList.subList(0,Math.min(10, isAgreeList.size())),poster.subList(0,Math.min(10, poster.size())));
+        DynamicDTO dynamicDTO = null;
+//        if(userId!=null) {
+//            Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
+//            List<String> fullSet = result.stream().map(Dynamic::getId).toList();
+//            for (String id : fullSet) {
+//                if (agreeSet.contains(id)) {
+//                    isAgreeList.add(true);
+//                } else {
+//                    isAgreeList.add(false);
+//                }
+//            }
+//            dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),
+//                    result.subList(0,Math.min(10, result.size())),
+//                    isAgreeList.subList(0,Math.min(10, isAgreeList.size())),poster.subList(0,Math.min(10, poster.size())));
+//        }else{
+        dynamicDTO = new DynamicDTO("游客",
+                    result.subList(0,Math.min(10, result.size())),
+                    isAgreeList,poster.subList(0,Math.min(10, poster.size())));
+
         return dynamicDTO;
     }
 
