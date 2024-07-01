@@ -11,13 +11,14 @@ import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Util.PermissionUntil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -58,12 +59,13 @@ public class EmployController {
             throw new RuntimeException("您未登录,请登录");
         }
         String resumeName = resume.getOriginalFilename();
+        String extensionName = resumeName.substring(resumeName.lastIndexOf("."));
         DeliveryPostDTO deliveryPostDTO = new DeliveryPostDTO(userId,name,sex,education,resumeName,companyId,jobId,intro,age);
         try {
             log.info("基本信息为: "+deliveryPostDTO.getEducation()+'\n'+resumeName);
             byte[] bytes = resume.getBytes();
             log.info("长度是 "+bytes.length);
-            Path path = Paths.get(basePath + resume.getOriginalFilename());
+            Path path = Paths.get(basePath + userId+"&"+jobId+extensionName);
             Files.write(path, bytes);
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,6 +75,33 @@ public class EmployController {
         employService.deliveryPostService(deliveryPostDTO);
         return new ReturnProtocol(true,resume.getOriginalFilename());
     }
+
+    @PostMapping("getUserPostResume")
+    public ReturnProtocol getUserPostResume(@RequestParam String user_id, @RequestParam String post_id, HttpServletResponse response){
+        String pathName = basePath + user_id + "&" + post_id + ".pdf";
+        File file = new File(pathName);
+        if(!file.exists()){
+            return new ReturnProtocol(false,"未上传简历");
+        }
+        response.setContentType("application/octet-stream");
+        response.setCharacterEncoding("utf-8");
+        response.setContentLength((int) file.length());
+        response.setHeader("Content-Disposition", "attachment;filename=" + user_id + "&" + post_id + ".pdf");
+        try(BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file))) {
+            byte[] buff = new byte[1024];
+            OutputStream os  = response.getOutputStream();
+            int i;
+            while ((i = bis.read(buff)) != -1) {
+                os.write(buff, 0, i);
+                os.flush();
+            }
+            return new ReturnProtocol(true,"下载简历成功");
+        } catch (IOException e) {
+            return new ReturnProtocol(false,"下载简历失败");
+        }
+    }
+
+
 
     /**
      * 公司管理员查询该公司某岗位下的应聘成员列表
