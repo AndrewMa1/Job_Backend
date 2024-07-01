@@ -139,15 +139,16 @@ public class SocketChannel {
         }
         try{
             Session toSession = SocketChannelMap.sessionMap.get(to_id);
+            if(chatMapper==null){
+                chatMapper = SpringContextUtil.getBean(ChatMapper.class);
+            }
+            Chat chat = chatMapper.selectById(chatId);
+            chat.setTimestamp(LocalDateTime.now().toString());
             if(toSession==null){
                 // 对方未登陆聊天室，设置聊天室未读人
-                if(chatMapper==null){
-                    chatMapper = SpringContextUtil.getBean(ChatMapper.class);
-                }
-                Chat chat = chatMapper.selectById(chatId);
                 chat.setUnreadUsername(message.getTo());
-                chatMapper.updateById(chat);
             }
+            chatMapper.updateById(chat);
             sendMessage(chatId,toSession, msgJson);
         }catch (Exception e){
             System.out.println(e.getMessage());

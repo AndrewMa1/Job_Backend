@@ -32,7 +32,7 @@ public class AIController {
             throw new RuntimeException(e);
         }
         String refineResume = aiService.refineResume(resume_content);
-        response.reset();
+//        response.reset();
         response.setContentType("application/octet-stream");
 //        response.setContentType(String.valueOf(MediaType.APPLICATION_PDF));
         response.setCharacterEncoding("utf-8");
