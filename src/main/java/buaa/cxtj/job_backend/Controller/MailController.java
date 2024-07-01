@@ -44,6 +44,7 @@ public class MailController {
     @KafkaListener(topics = {"Mail"},groupId = "Mail_cons")
     public void onMessage1(String mailJsonStr){
         Mail mail = JSONUtil.toBean(mailJsonStr, Mail.class);
+        mail.setIsAnswer(false);
         mailService.save(mail);
     }
 

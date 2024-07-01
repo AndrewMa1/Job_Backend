@@ -27,6 +27,8 @@ public interface FirmService extends IService<Firm> {
 
     ReturnProtocol editContent(String firm_id,String name,String intro,MultipartFile picture);
 
-    ReturnProtocol ensureExit(String id);
+    ReturnProtocol ensureExit(String id,String mail_id);
     ReturnProtocol sendExit();
+
+    ReturnProtocol rejectExit(String userId, String mailId);
 }

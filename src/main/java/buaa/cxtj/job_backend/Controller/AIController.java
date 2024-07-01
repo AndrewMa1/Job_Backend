@@ -32,11 +32,12 @@ public class AIController {
             throw new RuntimeException(e);
         }
         String refineResume = aiService.refineResume(resume_content);
-        response.reset();
+//        response.reset();
         response.setContentType("application/octet-stream");
+//        response.setContentType(String.valueOf(MediaType.APPLICATION_PDF));
         response.setCharacterEncoding("utf-8");
-        response.setHeader("Content-Disposition", "attachment;filename=optimized_resume.txt");
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(refineResume.getBytes("UTF-8"));
+        response.setHeader("Content-Disposition", "attachment;filename=optimized_resume.md");
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(refineResume.getBytes(StandardCharsets.UTF_8));
              OutputStream os = response.getOutputStream()) {
             byte[] buff = new byte[1024];
             int i = 0;

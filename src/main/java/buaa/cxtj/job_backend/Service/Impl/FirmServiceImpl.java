@@ -12,6 +12,7 @@ import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.FirmService;
 
+import buaa.cxtj.job_backend.Service.MailService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.json.JSONUtil;
@@ -50,6 +51,8 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     private RedisUtil redisUtil;
     @Autowired
     private DynamicMapper dynamicMapper;
+    @Autowired
+    private MailService mailService;
     @Autowired
     KafkaTopicServiceImpl kafkaTopicService;
     @Autowired
@@ -227,6 +230,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         mail.setReceiveId(userMapper.selectById(user_id).getId());
         mail.setCreateTime(LocalDateTime.now().toString());
         mail.setIsRead(false);
+        mail.setType(0);
 
         String firm_name = firmMapper.selectById(corporation_id).getName();
         String job_name = employMapper.selectById(post_id).getJobName();
@@ -293,7 +297,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     }
 
     @Override
-    public ReturnProtocol ensureExit(String id) {
+    public ReturnProtocol ensureExit(String id, String mail_id) {
         User user = userMapper.selectById(id);
         String firmId = user.getCorporation();
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
@@ -302,7 +306,42 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         user.setCorporation(null);
         user.setJobName(null);
         userMapper.updateById(user);
+        Mail mail = mailService.getById(mail_id);
+        mail.setIsAnswer(true);
+        mailService.updateById(mail);
+
+        Mail user_mail = new Mail();
+        user_mail.setSenderId(UserHolder.getUser().getId());
+        user_mail.setReceiveId(userMapper.selectById(id).getId());
+        user_mail.setCreateTime(LocalDateTime.now().toString());
+        user_mail.setIsRead(false);
+        user_mail.setType(0);
+
+        String firm_name = firmMapper.selectById(firmId).getName();
+        user_mail.setContent("管理员同意了您的退出"+ firm_name + "公司的请求，您已经正式退出该公司");
+
         return new ReturnProtocol(true,"成功批准" + user.getNickname() + "退出企业");
+    }
+
+    @Override
+    public ReturnProtocol rejectExit(String userId, String mailId) {
+        User user = userMapper.selectById(userId);
+        String firmId = user.getCorporation();
+        Mail mail = mailService.getById(mailId);
+        mail.setIsAnswer(true);
+        mailService.updateById(mail);
+
+        Mail user_mail = new Mail();
+        user_mail.setSenderId(UserHolder.getUser().getId());
+        user_mail.setReceiveId(userMapper.selectById(userId).getId());
+        user_mail.setCreateTime(LocalDateTime.now().toString());
+        user_mail.setIsRead(false);
+        user_mail.setType(0);
+
+        String firm_name = firmMapper.selectById(firmId).getName();
+        user_mail.setContent("管理员驳回了您的退出"+ firm_name + "公司的请求");
+
+        return new ReturnProtocol(true,"成功拒绝" + user.getNickname() + "退出企业");
     }
 
     @Override
@@ -325,6 +364,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         mail.setReceiveId(manager.getId());
         mail.setCreateTime(LocalDateTime.now().toString());
         mail.setIsRead(false);
+        mail.setType(1);
 
         String job_name = employMapper.selectById(user.getJob()).getJobName();
         mail.setContent("id:" +user.getId() + "员工"+ user.getNickname() + "工作于"+ job_name +"岗位，已经提交辞职申请，请您审批！");

@@ -29,9 +29,15 @@ public class FirmController {
         return firmService.editContent(id,name,intro,picture);
     }
     @GetMapping("/ensureExit")
-    public ReturnProtocol ensureExit(String id){
-        return firmService.ensureExit(id);
+    public ReturnProtocol ensureExit(@RequestParam("user_id") String user_id, @RequestParam("mail_id")String mail_id){
+        return firmService.ensureExit(user_id,mail_id);
     }
+
+    @GetMapping("/rejectExit")
+    public ReturnProtocol rejectExit(@RequestParam("user_id") String user_id, @RequestParam("mail_id")String mail_id){
+        return firmService.rejectExit(user_id,mail_id);
+    }
+
     @GetMapping("/sendExit")
     public ReturnProtocol sendExit(){
         return firmService.sendExit();

@@ -3,15 +3,15 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 import buaa.cxtj.job_backend.Config.OpenAIConfig;
 import buaa.cxtj.job_backend.Service.AIService;
-import buaa.cxtj.job_backend.Util.ReturnProtocol;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Base64;
 
 @Service
@@ -19,6 +19,8 @@ public class AIServiceImpl implements AIService {
 
     @Autowired
     private OpenAIConfig openAIConfig;
+
+
 
     public String refineResume(String resume) {
         String apiKey = openAIConfig.getApiKey();
@@ -35,7 +37,7 @@ public class AIServiceImpl implements AIService {
         String resumeContent = new String(decodedBytes);
 
         // Constructing the prompt for resume optimization
-        String prompt = "Please optimize the following resume to make it more appealing to employers and give me optimized version, dont make examples but use my actual resume:\n\n" + resumeContent;
+        String prompt = "Please optimize the following resume to make it more appealing to employers and give me optimized version in .pdf format, dont make examples but use my actual resume:\n\n" + resumeContent;
 
 
         JSONObject body = new JSONObject();
