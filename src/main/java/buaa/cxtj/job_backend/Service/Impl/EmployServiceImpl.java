@@ -62,7 +62,7 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     }
 
     @Override
-    public List<ExhibitPendingDTO> queryEmployee(String corporation_id, String post_id) {
+    public List<DeliveryPostDTO> queryEmployee(String corporation_id, String post_id) {
         String front = RedisUtil.KEY_FIRM + corporation_id + ":" +RedisUtil.KEY_FIRMPENDING+ post_id;
         log.info("查询到公司岗位为" + front);
         log.info("存在吗" + redisUtil.hasKey(front));
@@ -71,36 +71,16 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         }
         log.info("岗位投递数量为" + redisUtil.sGetSetSize(front));
         Set<Object> userList = redisUtil.sGet(front);
-        Map<String, String> userMap = new HashMap<>();
-        // 创建一个新的字符串类型的集合
-        Set<String> stringSet = new HashSet<>();
-        //保存user_id的列表
-        Set<String>  users = new HashSet<>();
-        for (Object obj : userList) {
-            String userStr = String.valueOf(obj); // 假设 obj 能够正确转换为 String
-            users.add(userStr);
-        }
+        List<DeliveryPostDTO> deliveryPostDTOS = new ArrayList<>();
         log.info("目前在查询公司的某岗位投递人员,人员列表 "+userList);
         // 遍历对象集合，将每个对象转换为字符串类型，并添加到新集合中
         for (Object obj : userList) {
             String str = String.valueOf(obj); // 将对象转换为字符串
             log.info("对象字符串为 "+str);
-            PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(str, PendingOfferDTO.class);
-            users.add(pendingOfferDTO.getUser_id());
-            stringSet.add(str); // 添加到新集合中
-            userMap.put(pendingOfferDTO.getUser_id(),pendingOfferDTO.getResume());
+            DeliveryPostDTO deliveryPostDTO = JSONUtil.toBean(str, DeliveryPostDTO.class);
+            deliveryPostDTOS.add(deliveryPostDTO);
         }
-        log.info("人员为"+users);
-        List<User> usersInSet = userService.getUsersInSet(users);
-        log.info("人员信息为 "+usersInSet);
-        List<ExhibitPendingDTO> userDto = new ArrayList<>();
-        for(User user : usersInSet){
-            ExhibitPendingDTO exhibitPendingDTO = new ExhibitPendingDTO();
-            BeanUtils.copyProperties(user,exhibitPendingDTO);
-            exhibitPendingDTO.setResume(userMap.get(user.getId()));
-            userDto.add(exhibitPendingDTO);
-        }
-        return userDto;
+        return deliveryPostDTOS;
     }
     @Override
     public JobDTO queryJob(String job_id) {
@@ -140,12 +120,22 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
             throw new RuntimeException("用户表中不存在该用户");
         }
         String front = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
-        Boolean member = redisTemplate.opsForSet().isMember(front, user_id);
         Set<Object> objects1 = redisUtil.sGet(front);
+        int flag = 0;
+        List<DeliveryPostDTO> deliveryPostDTOS = new ArrayList<>();
+        for(Object ob : objects1){
+            String str = String.valueOf(ob);
+            DeliveryPostDTO deliveryPostDTO = JSONUtil.toBean(str, DeliveryPostDTO.class);
+            if(deliveryPostDTO.getUserId().equals(user_id)){
+                flag = 1;
+            }else{
+                deliveryPostDTOS.add(deliveryPostDTO);
+            }
+        }
         log.info("查询到的所有的该公司该岗位的投递人员 "+objects1);
         log.info("查询的key为 "+front);
-        log.info("是否查到此人 "+member +" "+user_id);
-        if(!member){
+        log.info("是否查到此人 "+flag +" "+user_id);
+        if(flag == 0){
             throw new RuntimeException("该岗位投递无此人");
         }
         ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id, 0);
@@ -162,6 +152,18 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         userMapper.updateById(user);
         log.info("字符串为 "+pending);
         log.info("user_id "+user_id);
+
+        log.info("全部删除候选人");
+        redisUtil.del(front);
+        //直接将被录取的人从待录取中直接删除
+        if(deliveryPostDTOS.size()!=0){
+            log.info("正在重新添加被删除后的候选人");
+            for(DeliveryPostDTO p:deliveryPostDTOS){
+                String s1 = JSONUtil.toJsonStr(p);
+                redisUtil.sSet(front,s1);
+            }
+        }
+
         redisTemplate.opsForSet().remove(pending, user_id);//直接将拒绝录取的人从待录取中直接删除
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
         redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);

@@ -83,7 +83,7 @@ public class EmployController {
     @GetMapping ("queryEmployee")
     public ReturnProtocol queryEmployee(@RequestParam String corporation_id,@RequestParam String post_id){
         permissionUntil.checkIfManagerOfFirm();
-       List<ExhibitPendingDTO> strings = employService.queryEmployee(corporation_id, post_id);
+       List<DeliveryPostDTO> strings = employService.queryEmployee(corporation_id, post_id);
         return new ReturnProtocol(true,strings);
     }
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EmployService extends IService<Job> {
     public void deliveryPostService(DeliveryPostDTO deliveryPostDTO);
-    public List<ExhibitPendingDTO> queryEmployee(String corporation_id, String post_id);
+    public List<DeliveryPostDTO> queryEmployee(String corporation_id, String post_id);
 
     public JobDTO queryJob(String job_id);
 

@@ -173,12 +173,23 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
             throw new HavePostException("该用户已经有岗位");
         }
         String front = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
-        Boolean member = redisTemplate.opsForSet().isMember(front, user_id);
+        Set<Object> objects2 = redisUtil.sGet(front);
+        int flag = 0;
+        List<DeliveryPostDTO> deliveryPostDTOS = new ArrayList<>();
+        for(Object ob : objects2){
+            String str = String.valueOf(ob);
+            DeliveryPostDTO deliveryPostDTO = JSONUtil.toBean(str, DeliveryPostDTO.class);
+            if(deliveryPostDTO.getUserId().equals(user_id)){
+                flag = 1;
+            }else{
+                deliveryPostDTOS.add(deliveryPostDTO);
+            }
+        }
         Set<Object> objects1 = redisUtil.sGet(front);
         log.info("查询到的所有的该公司该岗位的投递人员 "+objects1);
         log.info("查询的key为 "+front);
-        log.info("是否查到此人 "+member +" "+user_id);
-        if(!member){
+        log.info("是否查到此人 "+flag +" "+user_id);
+        if(flag == 0){
             throw new RuntimeException("该岗位投递无此人");
         }
         ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id, 0);
@@ -198,20 +209,13 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         userMapper.updateById(user);
         log.info("字符串为 "+pending);
         log.info("user_id "+user_id);
-        List<PendingOfferDTO> pendingOfferDTOS = new ArrayList<>();
-        for(Object o:objects){
-            String s = String.valueOf(o);
-            PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(s, PendingOfferDTO.class);
-            if(!pendingOfferDTO.getUser_id().equals(user_id)){
-                pendingOfferDTOS.add(pendingOfferDTO);
-            }
-        }
+
         log.info("全部删除候选人");
         redisUtil.del(front);
         //直接将被录取的人从待录取中直接删除
-        if(pendingOfferDTOS.size()!=0){
+        if(deliveryPostDTOS.size()!=0){
             log.info("正在重新添加被删除后的候选人");
-            for(PendingOfferDTO p:pendingOfferDTOS){
+            for(DeliveryPostDTO p:deliveryPostDTOS){
                 String s1 = JSONUtil.toJsonStr(p);
                 redisUtil.sSet(front,s1);
             }
