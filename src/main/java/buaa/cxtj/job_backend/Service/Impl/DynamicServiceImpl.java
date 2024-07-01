@@ -122,7 +122,8 @@ public class DynamicServiceImpl extends ServiceImpl<DynamicMapper, Dynamic> impl
         Dynamic dynamic = dynamicMapper.selectById(id);
         dynamic.setComments(dynamic.getComments() + 1);
         dynamicMapper.updateById(dynamic);
-        CommentDTO commentDTO = new CommentDTO(UserHolder.getUser().getId(),id,comment);
+        User user = userMapper.selectById(UserHolder.getUser().getId());
+        CommentDTO commentDTO = new CommentDTO(UserHolder.getUser().getId(),id,comment,user.getPicture());
         redisUtil.lSet(key, JSONUtil.toJsonStr(commentDTO));
         List<Object> comments = redisUtil.lGet(key, 0, redisUtil.lGetListSize(key));
         List<CommentDTO> commentDTOS = new ArrayList<>();

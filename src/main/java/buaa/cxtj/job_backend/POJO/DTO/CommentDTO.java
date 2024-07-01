@@ -12,12 +12,14 @@ public class CommentDTO {
     private String idDy;
     private String comment;
     private String createTime;
+    private String picture;
 
-    public CommentDTO(String idCom, String idDy, String comment) {
+    public CommentDTO(String idCom, String idDy, String comment, String picture) {
         this.idCom = idCom;
         this.idDy = idDy;
         this.comment = comment;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.createTime = sdf.format(new Date());;
+        this.picture = picture;
     }
 }
