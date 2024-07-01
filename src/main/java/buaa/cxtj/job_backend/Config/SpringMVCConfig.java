@@ -22,7 +22,10 @@ public class SpringMVCConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/user/register")
                 .excludePathPatterns("/api/rec/recJobForVisitor")
                 .excludePathPatterns("/static/**")
-                .excludePathPatterns("/chat/**");
+                .excludePathPatterns("/chat/**")
+                .excludePathPatterns("/api/employ/queryJob/**")
+                .excludePathPatterns("/api/employ/queryFirm/**")
+                .excludePathPatterns("/api/rec/search");
     }
 
     @Override

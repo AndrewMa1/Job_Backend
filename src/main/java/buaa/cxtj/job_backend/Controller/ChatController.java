@@ -65,6 +65,8 @@ public class ChatController {
         chat.setNowUserId(UserHolder.getUser().getId());
         chat.setUser1Name(UserHolder.getUser().getNickname()); //当前用户的姓名
         chat.setUser2Name(userMapper.selectById(to).getNickname());
+        chat.setUnreadUsername("");
+        chatMapper.updateById(chat);
         return new ReturnProtocol(true,"create chat room success",chat);
     }
 

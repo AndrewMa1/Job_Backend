@@ -1,6 +1,8 @@
 package buaa.cxtj.job_backend.Controller;
 
 
+import buaa.cxtj.job_backend.Mapper.ChatMapper;
+import buaa.cxtj.job_backend.POJO.Entity.Chat;
 import buaa.cxtj.job_backend.POJO.Entity.Message;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.Impl.KafkaConsumerService;
@@ -32,6 +34,8 @@ public class SocketChannel {
     private KafkaTopicServiceImpl kafkaTopicService;
     private KafkaConsumerService kafkaConsumerService;
 //    private static ConcurrentHashMap<String, Session> sessionMap = new ConcurrentHashMap<>();
+
+    private ChatMapper chatMapper;
 
     @Autowired
     SocketChannelMap socketChannelMap;
@@ -135,6 +139,14 @@ public class SocketChannel {
         }
         try{
             Session toSession = SocketChannelMap.sessionMap.get(to_id);
+            if(toSession==null){
+                // 对方未登陆聊天室，设置聊天室未读人
+                if(chatMapper==null){
+                    chatMapper = SpringContextUtil.getBean(ChatMapper.class);
+                }
+                Chat chat = chatMapper.selectById(chatId);
+                chat.setUnreadUsername(message.getTo());
+            }
             sendMessage(chatId,toSession, msgJson);
         }catch (Exception e){
             System.out.println(e.getMessage());
