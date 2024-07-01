@@ -16,6 +16,9 @@ public class Job {
 
     private String firmId;
 
+    @TableField(exist = false)
+    private String firmName;
+
     private String jobName;
 
     private String jobRequirements;
@@ -29,6 +32,7 @@ public class Job {
     private int hireCounts;
 
     private String wage;
+
 
     @TableField("work_place")
     private String workPlace;
