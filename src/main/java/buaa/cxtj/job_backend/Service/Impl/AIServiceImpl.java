@@ -5,9 +5,6 @@ import buaa.cxtj.job_backend.Config.OpenAIConfig;
 import buaa.cxtj.job_backend.Service.AIService;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -24,17 +21,6 @@ public class AIServiceImpl implements AIService {
     private OpenAIConfig openAIConfig;
 
 
-//    public byte[] generatePdf(String textContent) throws IOException {
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        PdfWriter writer = new PdfWriter(byteArrayOutputStream);
-//        com.itextpdf.kernel.pdf.PdfDocument pdfDoc = new com.itextpdf.kernel.pdf.PdfDocument(writer);
-//        Document document = new Document(pdfDoc);
-//
-//        document.add(new Paragraph(textContent));
-//        document.close();
-//
-//        return byteArrayOutputStream.toByteArray();
-//    }
 
     public String refineResume(String resume) {
         String apiKey = openAIConfig.getApiKey();
