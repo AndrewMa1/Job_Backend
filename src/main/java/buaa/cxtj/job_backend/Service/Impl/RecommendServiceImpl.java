@@ -112,8 +112,8 @@ public class RecommendServiceImpl implements RecommendService {
             queryWrapper.eq("user_id", user.getId());
             List<Dynamic> dynamicList = dynamicMapper.selectList(queryWrapper);
             dynamicList.forEach(dynamic -> {
-                dynamic.setUserId(userMapper.selectById(dynamic.getUserId()).getPicture());
-                if(dynamic.getTransId()!=null) dynamic.setTransId(userMapper.selectById(dynamic.getTransId()).getPicture());
+                dynamic.setUserPicture(userMapper.selectById(dynamic.getUserId()).getPicture());
+                if(dynamic.getTransId()!=null) dynamic.setTransPicture(userMapper.selectById(dynamic.getTransId()).getPicture());
             });
             result.addAll(dynamicList);
             for(int i=0;i<dynamicList.size();++i){
