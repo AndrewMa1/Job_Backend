@@ -101,7 +101,10 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     }
     @Override
     public JobDTO queryJob(String job_id) {
-        Job job = employMapper.selectById(job_id);// 使用 queryWrapper 进行查询
+        Job job = employMapper.selectById(job_id);
+        if(job==null){
+            throw new RuntimeException("查询不到指定的岗位");
+        }
         log.info("查询到的结果为 "+ job);
         JobDTO jobDTO = new JobDTO();
         BeanUtils.copyProperties(job,jobDTO);

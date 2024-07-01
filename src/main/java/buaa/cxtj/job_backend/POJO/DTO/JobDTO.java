@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 public class JobDTO {
     private String jobId;
     private String jobName;
+    private String firmId;
 
     private JobEnum jobDesc;
 
