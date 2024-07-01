@@ -14,7 +14,7 @@ public interface EmployService extends IService<Job> {
     public void deliveryPostService(String corporation_id,String user_id,String post_id,String resume);
     public List<ExhibitPendingDTO> queryEmployee(String corporation_id, String post_id);
 
-    public List<JobDTO> queryJob(String job_id);
+    public JobDTO queryJob(String job_id);
 
     public FirmDTO queryFrim(String id);
 

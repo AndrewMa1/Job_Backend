@@ -100,19 +100,18 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         return userDto;
     }
     @Override
-    public List<JobDTO> queryJob(String job_id) {
-        // 使用 MyBatis-Plus 的 QueryWrapper 进行条件查询
-        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("job_id", job_id);  // 在原始的 queryWrapper 上设置查询条件
-        List<Job> jobs = employMapper.selectList(queryWrapper);// 使用 queryWrapper 进行查询
-        List<JobDTO> jobDTOS = new ArrayList<>();
-        log.info("查询到的结果为 "+ jobs);
-        for(Job job:jobs){
-            JobDTO jobDTO = new JobDTO();
-            BeanUtils.copyProperties(job,jobDTO);
-            jobDTOS.add(jobDTO);
+    public JobDTO queryJob(String job_id) {
+        Job job = employMapper.selectById(job_id);// 使用 queryWrapper 进行查询
+        log.info("查询到的结果为 "+ job);
+        JobDTO jobDTO = new JobDTO();
+        BeanUtils.copyProperties(job,jobDTO);
+        Firm firm = firmMapper.selectById(job.getFirmId());
+        if(firm==null){
+            throw new RuntimeException("该岗位所属公司已跑路");
         }
-        return jobDTOS;
+        jobDTO.setFirmName(firm.getName());
+        jobDTO.setPicture(firm.getPicture());
+        return jobDTO;
     }
 
     @Override

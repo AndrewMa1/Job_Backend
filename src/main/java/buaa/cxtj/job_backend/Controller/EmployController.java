@@ -78,8 +78,8 @@ public class EmployController {
      */
     @GetMapping("queryJob/{id}")
     public ReturnProtocol queryJob(@PathVariable String id){
-        List<JobDTO> jobDTOS = employService.queryJob(id);
-        return new ReturnProtocol(true,jobDTOS);
+        JobDTO jobDTO = employService.queryJob(id);
+        return new ReturnProtocol(true,jobDTO);
     }
 
     /**
@@ -97,7 +97,7 @@ public class EmployController {
     @GetMapping("reject")
     public ReturnProtocol reject(@RequestParam String corporation_id, @RequestParam String user_id, @RequestParam String post_id){
         log.info("正在拒绝录用");
-//        permissionUntil.checkIfManagerOfFirm();
+        permissionUntil.checkIfManagerOfFirm();
         employService.reject(corporation_id, user_id,post_id);
         return new ReturnProtocol(true,"拒绝成功");
     }
