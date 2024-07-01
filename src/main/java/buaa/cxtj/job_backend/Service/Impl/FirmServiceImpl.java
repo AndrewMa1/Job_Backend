@@ -309,15 +309,38 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         Mail mail = mailService.getById(mail_id);
         mail.setIsAnswer(true);
         mailService.updateById(mail);
+
+        Mail user_mail = new Mail();
+        user_mail.setSenderId(UserHolder.getUser().getId());
+        user_mail.setReceiveId(userMapper.selectById(id).getId());
+        user_mail.setCreateTime(LocalDateTime.now().toString());
+        user_mail.setIsRead(false);
+        user_mail.setType(0);
+
+        String firm_name = firmMapper.selectById(firmId).getName();
+        user_mail.setContent("管理员同意了您的退出"+ firm_name + "公司的请求，您已经正式退出该公司");
+
         return new ReturnProtocol(true,"成功批准" + user.getNickname() + "退出企业");
     }
 
     @Override
     public ReturnProtocol rejectExit(String userId, String mailId) {
         User user = userMapper.selectById(userId);
+        String firmId = user.getCorporation();
         Mail mail = mailService.getById(mailId);
         mail.setIsAnswer(true);
         mailService.updateById(mail);
+
+        Mail user_mail = new Mail();
+        user_mail.setSenderId(UserHolder.getUser().getId());
+        user_mail.setReceiveId(userMapper.selectById(userId).getId());
+        user_mail.setCreateTime(LocalDateTime.now().toString());
+        user_mail.setIsRead(false);
+        user_mail.setType(0);
+
+        String firm_name = firmMapper.selectById(firmId).getName();
+        user_mail.setContent("管理员驳回了您的退出"+ firm_name + "公司的请求");
+
         return new ReturnProtocol(true,"成功拒绝" + user.getNickname() + "退出企业");
     }
 
