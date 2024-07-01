@@ -21,6 +21,7 @@ public class SpringMVCConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/api/user/login")
                 .excludePathPatterns("/api/user/register")
                 .excludePathPatterns("/api/rec/recJobForVisitor")
+                .excludePathPatterns("/api/rec/recRandomTrends")
                 .excludePathPatterns("/static/**")
                 .excludePathPatterns("/chat/**")
                 .excludePathPatterns("/api/employ/queryJob/**")
