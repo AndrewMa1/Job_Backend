@@ -11,13 +11,11 @@ public class PendingOfferDTO {
     private String user_id;
     private String resume;
 
-    private int status;
     public PendingOfferDTO() {
     }
 
-    public PendingOfferDTO(String user_id, String resume, int status) {
+    public PendingOfferDTO(String user_id, String resume) {
         this.user_id = user_id;
         this.resume = resume;
-        this.status = status;
     }
 }

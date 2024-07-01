@@ -53,11 +53,9 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     @Override
     public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
         ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id,0);
-        /*
-        用hash存储简历的状态,0表示待录取,1表示已被录取
-         */
         redisUtil.lSet(RedisUtil.USERRESUME+user_id,JSONUtil.toJsonStr(resumeStatusDTO));
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,user_id);
+        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id, resume);
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,JSONUtil.toJsonStr(pendingOfferDTO));
     }
 
     @Override
@@ -75,13 +73,15 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         Set<String> stringSet = new HashSet<>();
         //保存user_id的列表
         Set<String>  users = new HashSet<>();
-        log.info("目前在查询公司的某岗位投递人员,人员列表 "+users);
-        if(users==null){
-            throw new RuntimeException("该公司没有员工");
+        for (Object obj : userList) {
+            String userStr = String.valueOf(obj); // 假设 obj 能够正确转换为 String
+            users.add(userStr);
         }
+        log.info("目前在查询公司的某岗位投递人员,人员列表 "+userList);
         // 遍历对象集合，将每个对象转换为字符串类型，并添加到新集合中
         for (Object obj : userList) {
             String str = String.valueOf(obj); // 将对象转换为字符串
+            log.info("对象字符串为 "+str);
             PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(str, PendingOfferDTO.class);
             users.add(pendingOfferDTO.getUser_id());
             stringSet.add(str); // 添加到新集合中

@@ -193,7 +193,24 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         userMapper.updateById(user);
         log.info("字符串为 "+pending);
         log.info("user_id "+user_id);
-        redisTemplate.opsForSet().remove(pending, user_id);//直接将被录取的人从待录取中直接删除
+        List<PendingOfferDTO> pendingOfferDTOS = new ArrayList<>();
+        for(Object o:objects){
+            String s = String.valueOf(o);
+            PendingOfferDTO pendingOfferDTO = JSONUtil.toBean(s, PendingOfferDTO.class);
+            if(!pendingOfferDTO.getUser_id().equals(user_id)){
+                pendingOfferDTOS.add(pendingOfferDTO);
+            }
+        }
+        log.info("全部删除候选人");
+        redisUtil.del(front);
+        //直接将被录取的人从待录取中直接删除
+        if(pendingOfferDTOS.size()!=0){
+            log.info("正在重新添加被删除后的候选人");
+            for(PendingOfferDTO p:pendingOfferDTOS){
+                String s1 = JSONUtil.toJsonStr(p);
+                redisUtil.sSet(front,s1);
+            }
+        }
         redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
         redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
         Mail mail = new Mail();
