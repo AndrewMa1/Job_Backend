@@ -146,6 +146,7 @@ public class SocketChannel {
                 }
                 Chat chat = chatMapper.selectById(chatId);
                 chat.setUnreadUsername(message.getTo());
+                chatMapper.updateById(chat);
             }
             sendMessage(chatId,toSession, msgJson);
         }catch (Exception e){
