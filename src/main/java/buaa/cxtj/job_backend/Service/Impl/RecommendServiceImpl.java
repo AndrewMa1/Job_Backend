@@ -2,9 +2,11 @@ package buaa.cxtj.job_backend.Service.Impl;
 
 
 import buaa.cxtj.job_backend.Mapper.DynamicMapper;
+import buaa.cxtj.job_backend.Mapper.EmployMapper;
 import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
+import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
@@ -46,6 +48,9 @@ public class RecommendServiceImpl implements RecommendService {
 
     @Autowired
     KafkaConsumerService kafkaConsumerService;
+
+    @Autowired
+    EmployMapper employMapper;
 
     @Override
     public DynamicDTO recTrends() {
@@ -175,11 +180,22 @@ public class RecommendServiceImpl implements RecommendService {
 
 
     @Override
-    public ReturnProtocol searchFirm(String firm) {
+    public ReturnProtocol searchFirm(String firm,String job) {
+        List<Firm> firms = null;
+        List<Job> jobList = null;
         //根据公司名称，返回公司信息，作模糊搜索
-        QueryWrapper<Firm> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like("name",firm);
-        List<Firm> firms = firmMapper.selectList(queryWrapper);
-        return new ReturnProtocol(true,firms);
+        if(firm!=null) {
+            QueryWrapper<Firm> queryWrapper = new QueryWrapper<>();
+            queryWrapper.like("name", firm);
+            firms = firmMapper.selectList(queryWrapper);
+            return new ReturnProtocol(true,firms);
+        }else if(job!=null){
+            QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
+            queryWrapper.like("job_name",job);
+            jobList = employMapper.selectList(queryWrapper);
+            return new ReturnProtocol(true,jobList);
+        }else{
+            return new ReturnProtocol(false,"参数错误");
+        }
     }
 }

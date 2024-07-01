@@ -16,7 +16,7 @@ public interface RecommendService {
 
     public void recUserAndFirm();
 
-    ReturnProtocol searchFirm(String firm);
+    ReturnProtocol searchFirm(String firm,String job);
 
     public DynamicDTO recRandomTrends();
 }
