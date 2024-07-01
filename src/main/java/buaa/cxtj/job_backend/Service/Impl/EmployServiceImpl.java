@@ -51,11 +51,14 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
     @Autowired
     FirmMapper firmMapper;
     @Override
-    public void deliveryPostService(String corporation_id, String user_id, String post_id,String resume) {
+    public void deliveryPostService(DeliveryPostDTO deliveryPostDTO) {
+        String user_id = deliveryPostDTO.getUserId();
+        String corporation_id = deliveryPostDTO.getCompanyId();
+        String post_id = deliveryPostDTO.getJobId();
+        String resume = deliveryPostDTO.getResumeName();
         ResumeStatusDTO resumeStatusDTO = new ResumeStatusDTO(corporation_id, post_id,0);
         redisUtil.lSet(RedisUtil.USERRESUME+user_id,JSONUtil.toJsonStr(resumeStatusDTO));
-        PendingOfferDTO pendingOfferDTO = new PendingOfferDTO(user_id, resume);
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,JSONUtil.toJsonStr(pendingOfferDTO));
+        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMPENDING+post_id,JSONUtil.toJsonStr(deliveryPostDTO));
     }
 
     @Override
