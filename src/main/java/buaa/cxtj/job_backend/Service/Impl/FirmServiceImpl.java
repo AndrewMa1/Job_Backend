@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -160,6 +161,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     }
 
     @Override
+    @Transactional
     public void hireClerk(String user_id, String corporation_id, String post_id) {
         User user = userMapper.selectById(user_id);
         String pending = RedisUtil.KEY_FIRM + corporation_id + ":" + RedisUtil.KEY_FIRMPENDING + post_id;
@@ -189,6 +191,9 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         user.setJob(post_id);
         user.setCorporation(corporation_id);
         Job job = employMapper.selectById(post_id);
+        job.setHireCounts(job.getHireCounts()+1);
+        employMapper.updateById(job);
+
         user.setJobName(job.getJobName());
         userMapper.updateById(user);
         log.info("字符串为 "+pending);
@@ -234,6 +239,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
     @Override
     public void publishHireInfo(Job job) {
+        job.setHireCounts(0);
         employMapper.insert(job);
         JobEnum interestJob = job.getJobDesc();
         if(!kafkaTopicService.topicExists(interestJob.toString())){

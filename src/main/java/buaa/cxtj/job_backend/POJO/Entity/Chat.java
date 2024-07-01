@@ -22,6 +22,9 @@ public class Chat{
 
     private String timestamp;
 
+    @TableField("unread_username")
+    private String unreadUsername;
+
     @TableField(exist = false)
     private String nowUserId;
 

@@ -12,6 +12,7 @@ public class JobDTO {
 
     private JobEnum jobDesc;
 
+    private int hireCounts;
 
     private String jobRequirements;
     private String picture;

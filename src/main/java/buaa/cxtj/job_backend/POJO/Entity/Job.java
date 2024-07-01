@@ -25,6 +25,9 @@ public class Job {
     @TableField("job_desc")
     private JobEnum jobDesc;
 
+    @TableField("hire_counts")
+    private int hireCounts;
+
     private String wage;
 
     @TableField("work_place")
