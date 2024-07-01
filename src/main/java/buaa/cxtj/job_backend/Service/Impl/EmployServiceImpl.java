@@ -165,8 +165,7 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         }
 
         redisTemplate.opsForSet().remove(pending, user_id);//直接将拒绝录取的人从待录取中直接删除
-        redisUtil.sSet(RedisUtil.KEY_FIRM+corporation_id+":"+RedisUtil.KEY_FIRMCLERK+post_id,user_id);
-        redisUtil.lSet(RedisUtil.STAFF+corporation_id,user_id);
+
         Mail mail = new Mail();
         mail.setSenderId(UserHolder.getUser().getId());
         mail.setReceiveId(userMapper.selectById(user_id).getId());
