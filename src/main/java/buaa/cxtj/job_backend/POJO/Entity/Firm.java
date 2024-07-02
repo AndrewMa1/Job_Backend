@@ -22,3 +22,4 @@ public class Firm {
         this.managerId = managerId;
     }
 }
+
