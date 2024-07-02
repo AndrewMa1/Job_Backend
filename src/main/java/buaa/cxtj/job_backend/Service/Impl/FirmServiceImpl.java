@@ -255,10 +255,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         job.setJobDesc(JobEnum.getEnum(job.getJobDesc().getValue()-1));
         employMapper.insert(job);
         JobEnum interestJob = job.getJobDesc();
-        if(!kafkaTopicService.topicExists(interestJob.toString())){
-            kafkaTopicService.createTopic(interestJob.toString());
-        }
-        kafkaTopicService.sendMessage(interestJob.toString(),JSONUtil.toJsonStr(job));
+//        if(!kafkaTopicService.topicExists(interestJob.toString())){
+//            kafkaTopicService.createTopic(interestJob.toString());
+//        }
+//        kafkaTopicService.sendMessage(interestJob.toString(),JSONUtil.toJsonStr(job));
     }
 
     @Override
