@@ -304,11 +304,6 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
         redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
 
-        String jobId = user.getJob();
-        Job job = employMapper.selectById(jobId);
-        job.setHireCounts(job.getHireCounts()-1);
-        employMapper.updateById(job);
-
         user.setJob("");
         user.setCorporation("");
         user.setJobName("");
