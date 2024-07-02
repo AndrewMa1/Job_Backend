@@ -76,7 +76,7 @@ public class EmployController {
         return new ReturnProtocol(true,resume.getOriginalFilename());
     }
 
-    @PostMapping("getUserPostResume")
+    @GetMapping("getUserPostResume")
     public ReturnProtocol getUserPostResume(@RequestParam String user_id, @RequestParam String post_id, HttpServletResponse response){
         String pathName = basePath + user_id + "&" + post_id + ".pdf";
         File file = new File(pathName);
