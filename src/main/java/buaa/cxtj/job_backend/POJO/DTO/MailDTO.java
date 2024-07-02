@@ -2,6 +2,7 @@ package buaa.cxtj.job_backend.POJO.DTO;
 
 
 import buaa.cxtj.job_backend.POJO.Entity.Mail;
+import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,6 +22,9 @@ public class MailDTO {
     private String createTime;
     private Boolean isRead;
 
+    private Boolean isAnswer;
+    private int type;
+
     public MailDTO(Mail mail){
         this.id = mail.getId();
         this.senderId = mail.getSenderId();
@@ -28,6 +32,8 @@ public class MailDTO {
         this.content = mail.getContent();
         this.createTime = mail.getCreateTime();
         this.isRead = mail.getIsRead();
+        this.type = mail.getType();
+        this.isAnswer = mail.getIsAnswer();
     }
 
 
