@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Data
@@ -33,6 +34,9 @@ public class Dynamic {
     @TableField(exist = false)
     private String transPicture;
 
+    @TableField(exist = false)
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
     public Dynamic( String userId, String content) {
         this.userId = userId;
@@ -40,7 +44,7 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
-        this.createTime = LocalDateTime.now().toString();
+        this.createTime = LocalDateTime.now().format(formatter);
     }
     public Dynamic( String userId, String content, String picture) {
         this.userId = userId;
@@ -49,7 +53,7 @@ public class Dynamic {
         this.agree = 0;
         this.trans = 0;
         this.transId = null;
-        this.createTime = LocalDateTime.now().toString();
+        this.createTime = LocalDateTime.now().format(formatter);
     }
 
     public Dynamic(String userId, String content, String transId,String transName) {
@@ -59,6 +63,6 @@ public class Dynamic {
         this.trans = 0;
         this.transId = transId;
         this.transName = transName;
-        this.createTime = LocalDateTime.now().toString();
+        this.createTime = LocalDateTime.now().format(formatter);
     }
 }
