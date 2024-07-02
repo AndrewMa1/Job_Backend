@@ -252,6 +252,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
     @Override
     public void publishHireInfo(Job job) {
         job.setHireCounts(0);
+        job.setJobDesc(JobEnum.getEnum(job.getJobDesc().getValue()-1));
         employMapper.insert(job);
         JobEnum interestJob = job.getJobDesc();
         if(!kafkaTopicService.topicExists(interestJob.toString())){
