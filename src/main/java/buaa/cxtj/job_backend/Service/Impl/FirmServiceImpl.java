@@ -15,6 +15,7 @@ import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Service.MailService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -159,7 +160,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         queryWrapper.eq("firm_id", id); // 根据公司id查询
         List<Job> jobList = employMapper.selectList(queryWrapper);
         // 将查询结果转换为JobDTO对象列表
-        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts(),job.getWage(),job.getWorkPlace(),job.getInternTime(),job.getBonus())).toList();
+//        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts(),job.getWage(),
+//                job.getWorkPlace(),job.getInternTime(),job.getBonus(),job.getHireCounts())).toList();
+
+        List<JobDTO> jobDTOList = jobList.stream().map(job->BeanUtil.copyProperties(job,JobDTO.class)).toList();
         return new ReturnProtocol(true,"", jobDTOList);
     }
 
@@ -302,10 +306,12 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         String firmId = user.getCorporation();
         redisUtil.setRemove(RedisUtil.KEY_FIRM+firmId+":"+RedisUtil.KEY_FIRMCLERK+user.getJob(),user.getId());
         redisUtil.lRemove(RedisUtil.STAFF+firmId,0,user.getId());
-        user.setJob(null);
-        user.setCorporation(null);
-        user.setJobName(null);
+
+        user.setJob("");
+        user.setCorporation("");
+        user.setJobName("");
         userMapper.updateById(user);
+
         Mail mail = mailService.getById(mail_id);
         mail.setIsAnswer(true);
         mailService.updateById(mail);
@@ -319,6 +325,7 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
         String firm_name = firmMapper.selectById(firmId).getName();
         user_mail.setContent("管理员同意了您的退出"+ firm_name + "公司的请求，您已经正式退出该公司");
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(user_mail));
 
         return new ReturnProtocol(true,"成功批准" + user.getNickname() + "退出企业");
     }
@@ -340,6 +347,8 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
 
         String firm_name = firmMapper.selectById(firmId).getName();
         user_mail.setContent("管理员驳回了您的退出"+ firm_name + "公司的请求");
+
+        kafkaTopicService.sendMessage("Mail",JSONUtil.toJsonStr(user_mail));
 
         return new ReturnProtocol(true,"成功拒绝" + user.getNickname() + "退出企业");
     }
