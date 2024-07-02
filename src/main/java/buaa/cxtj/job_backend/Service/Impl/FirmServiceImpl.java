@@ -15,6 +15,7 @@ import buaa.cxtj.job_backend.Service.FirmService;
 import buaa.cxtj.job_backend.Service.MailService;
 import buaa.cxtj.job_backend.Util.RedisUtil;
 import buaa.cxtj.job_backend.Util.ReturnProtocol;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -159,8 +160,10 @@ public class FirmServiceImpl extends ServiceImpl<FirmMapper, Firm> implements Fi
         queryWrapper.eq("firm_id", id); // 根据公司id查询
         List<Job> jobList = employMapper.selectList(queryWrapper);
         // 将查询结果转换为JobDTO对象列表
-        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts(),job.getWage(),
-                job.getWorkPlace(),job.getInternTime(),job.getBonus(),job.getHireCounts())).toList();
+//        List<JobDTO> jobDTOList = jobList.stream().map(job -> new JobDTO(job.getJobId(),job.getJobName(), job.getJobRequirements(), job.getJobCounts(),job.getWage(),
+//                job.getWorkPlace(),job.getInternTime(),job.getBonus(),job.getHireCounts())).toList();
+
+        List<JobDTO> jobDTOList = jobList.stream().map(job->BeanUtil.copyProperties(job,JobDTO.class)).toList();
         return new ReturnProtocol(true,"", jobDTOList);
     }
 
