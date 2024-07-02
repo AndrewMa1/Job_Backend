@@ -171,6 +171,7 @@ public class EmployServiceImpl extends ServiceImpl<EmployMapper, Job> implements
         mail.setReceiveId(userMapper.selectById(user_id).getId());
         mail.setCreateTime(LocalDateTime.now().toString());
         mail.setIsRead(false);
+        mail.setType(1);
 
         String firm_name = firmMapper.selectById(corporation_id).getName();
         String job_name = employMapper.selectById(post_id).getJobName();
