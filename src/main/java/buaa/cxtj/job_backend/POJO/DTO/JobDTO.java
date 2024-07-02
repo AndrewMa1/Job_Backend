@@ -26,7 +26,7 @@ public class JobDTO {
     private String internTime;
     private String bonus;
 
-    public JobDTO(String postId, String jobName, String jobRequirements, String jobCounts, String wage, String workPlace, String internTime, String bonus) {
+    public JobDTO(String postId, String jobName, String jobRequirements, String jobCounts, String wage, String workPlace, String internTime, String bonus,int hireCounts) {
         this.jobId = postId;
         this.jobName = jobName;
         this.jobRequirements = jobRequirements;
@@ -35,5 +35,6 @@ public class JobDTO {
         this.workPlace = workPlace;
         this.internTime = internTime;
         this.bonus = bonus;
+        this.hireCounts = hireCounts;
     }
 }
