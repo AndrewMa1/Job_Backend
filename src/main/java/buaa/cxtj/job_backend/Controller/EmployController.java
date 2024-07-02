@@ -71,7 +71,6 @@ public class EmployController {
             e.printStackTrace();
             return new ReturnProtocol(false,"上传失败");
         }
-        deliveryPostDTO.setName(resumeName);
         employService.deliveryPostService(deliveryPostDTO);
         return new ReturnProtocol(true,resume.getOriginalFilename());
     }
