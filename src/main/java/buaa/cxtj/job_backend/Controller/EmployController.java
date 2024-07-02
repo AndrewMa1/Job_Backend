@@ -121,8 +121,7 @@ public class EmployController {
     @PostMapping("editJobInfo")
     public ReturnProtocol editJobInfo(@RequestBody Job job){
         permissionUntil.checkIfManagerOfFirm();
-        Job oldjob = employService.getById(job.getJobId());
-        if(oldjob.getJobDesc()!=job.getJobDesc() && job.getJobDesc()!=null) {
+        if(job.getJobDesc()!=null) {
             job.setJobDesc(JobEnum.getEnum(job.getJobDesc().getValue() - 1));
         }
         employService.updateById(job);
