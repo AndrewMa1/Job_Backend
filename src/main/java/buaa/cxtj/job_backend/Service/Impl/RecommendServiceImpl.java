@@ -152,15 +152,15 @@ public class RecommendServiceImpl implements RecommendService {
     @Override
     public ReturnProtocol recJobForUser() {
         JobEnum interestJob = null;
-        List<Job> recJobList = new ArrayList<>();
         interestJob = userMapper.selectById(UserHolder.getUser().getId()).getInterestJob();
-        List<String> recJobListJson = kafkaConsumerService.readMessagesFromPartition(interestJob.toString(), 0);
-        for (String jsonString : recJobListJson) {
-            JSONObject jsonObject = JSONUtil.parseObj(jsonString);
-            Job job = jsonObject.toBean(Job.class);
-            recJobList.add(job);
-        }
+        QueryWrapper<Job> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("job_desc",interestJob);
+        List<Job> recJobList = employMapper.selectList(queryWrapper);
+        Collections.shuffle(recJobList);
         List<Job> result = new ArrayList<>();
+        recJobList.forEach(job -> {
+            job.setFirmName(firmMapper.selectById(job.getFirmId()).getName());
+        });
         if(!recJobList.isEmpty()) result = recJobList.subList(0, Math.min(9, recJobList.size()));
         return new ReturnProtocol(true,result);
     }
