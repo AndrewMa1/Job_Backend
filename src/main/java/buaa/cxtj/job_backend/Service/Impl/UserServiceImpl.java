@@ -135,7 +135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         //获取当前登录的员工信息
         String staffId = UserHolder.getUser().getId();
         User user = userMapper.selectById(staffId);
-        if(user.getCorporation().length()!=0){
+        if(user.getCorporation()!=null && user.getCorporation().length()!=0){
             throw new RuntimeException("您已拥有企业,无法再加入别的企业!");
         }
 
