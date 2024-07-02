@@ -7,6 +7,7 @@ import buaa.cxtj.job_backend.POJO.DTO.PendingOfferDTO;
 import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
 import buaa.cxtj.job_backend.POJO.Entity.User;
+import buaa.cxtj.job_backend.POJO.Enum.JobEnum;
 import buaa.cxtj.job_backend.POJO.UserHolder;
 import buaa.cxtj.job_backend.Service.EmployService;
 import buaa.cxtj.job_backend.Util.PermissionUntil;
@@ -120,6 +121,10 @@ public class EmployController {
     @PostMapping("editJobInfo")
     public ReturnProtocol editJobInfo(@RequestBody Job job){
         permissionUntil.checkIfManagerOfFirm();
+        Job oldjob = employService.getById(job.getJobId());
+        if(oldjob.getJobDesc()!=job.getJobDesc() && job.getJobDesc()!=null) {
+            job.setJobDesc(JobEnum.getEnum(job.getJobDesc().getValue() - 1));
+        }
         employService.updateById(job);
         return new ReturnProtocol(true,"修改成功");
     }
