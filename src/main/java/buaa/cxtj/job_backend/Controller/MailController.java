@@ -28,7 +28,7 @@ public class MailController {
 
     @GetMapping("/delMail")
     public ReturnProtocol delMail(@RequestParam("mail_id") String mail_id){
-        mailService.readMail(mail_id);
+        mailService.removeById(mail_id);
         return new ReturnProtocol(true,"删除成功");
     }
 
