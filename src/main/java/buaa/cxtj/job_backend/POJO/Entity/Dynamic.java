@@ -27,6 +27,13 @@ public class Dynamic {
     private int comments;
     private String createTime;      //创建时间
 
+    @TableField(exist = false)
+    private String userPicture;
+
+    @TableField(exist = false)
+    private String transPicture;
+
+
     public Dynamic( String userId, String content) {
         this.userId = userId;
         this.content = content;

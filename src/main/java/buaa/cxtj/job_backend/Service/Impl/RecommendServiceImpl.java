@@ -7,6 +7,7 @@ import buaa.cxtj.job_backend.Mapper.FirmMapper;
 import buaa.cxtj.job_backend.Mapper.UserMapper;
 import buaa.cxtj.job_backend.POJO.DTO.DynamicDTO;
 import buaa.cxtj.job_backend.POJO.DTO.JobDTO;
+import buaa.cxtj.job_backend.POJO.DTO.UserDTO;
 import buaa.cxtj.job_backend.POJO.Entity.Dynamic;
 import buaa.cxtj.job_backend.POJO.Entity.Firm;
 import buaa.cxtj.job_backend.POJO.Entity.Job;
@@ -90,7 +91,12 @@ public class RecommendServiceImpl implements RecommendService {
     }
 
     @Override
-    public DynamicDTO recRandomTrends() {
+    public DynamicDTO recRandomTrends(int type) {
+
+        String userId = null;
+        UserDTO user_now = UserHolder.getUser();
+        if(user_now!=null) userId = user_now.getId();
+
 
         QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
         List<User> userList = userMapper.selectList(userQueryWrapper);
@@ -105,6 +111,10 @@ public class RecommendServiceImpl implements RecommendService {
             QueryWrapper<Dynamic> queryWrapper = new QueryWrapper<>();
             queryWrapper.eq("user_id", user.getId());
             List<Dynamic> dynamicList = dynamicMapper.selectList(queryWrapper);
+            dynamicList.forEach(dynamic -> {
+                dynamic.setUserPicture(userMapper.selectById(dynamic.getUserId()).getPicture());
+                if(dynamic.getTransId()!=null) dynamic.setTransPicture(userMapper.selectById(dynamic.getTransId()).getPicture());
+            });
             result.addAll(dynamicList);
             for(int i=0;i<dynamicList.size();++i){
                 poster.add(user.getNickname());
@@ -114,24 +124,24 @@ public class RecommendServiceImpl implements RecommendService {
         //3 从redis取出该用户的点赞动态列表
         ArrayList<Boolean> isAgreeList = new ArrayList<>();
         DynamicDTO dynamicDTO = null;
-//        if(userId!=null) {
-//            Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
-//            List<String> fullSet = result.stream().map(Dynamic::getId).toList();
-//            for (String id : fullSet) {
-//                if (agreeSet.contains(id)) {
-//                    isAgreeList.add(true);
-//                } else {
-//                    isAgreeList.add(false);
-//                }
-//            }
-//            dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),
-//                    result.subList(0,Math.min(10, result.size())),
-//                    isAgreeList.subList(0,Math.min(10, isAgreeList.size())),poster.subList(0,Math.min(10, poster.size())));
-//        }else{
-        dynamicDTO = new DynamicDTO("游客",
+        if(type!=0) {
+            Set<String> agreeSet = redisUtil.sGet(RedisUtil.AGREE + userId).stream().map(Object::toString).collect(Collectors.toSet());
+            List<String> fullSet = result.stream().map(Dynamic::getId).toList();
+            for (String id : fullSet) {
+                if (agreeSet.contains(id)) {
+                    isAgreeList.add(true);
+                } else {
+                    isAgreeList.add(false);
+                }
+            }
+            dynamicDTO = new DynamicDTO(userMapper.selectById(userId).getNickname(),
                     result.subList(0,Math.min(10, result.size())),
-                    isAgreeList,poster.subList(0,Math.min(10, poster.size())));
-
+                    isAgreeList.subList(0,Math.min(10, isAgreeList.size())),poster.subList(0,Math.min(10, poster.size())));
+        }else {
+            dynamicDTO = new DynamicDTO("游客",
+                    result.subList(0, Math.min(10, result.size())),
+                    isAgreeList, poster.subList(0, Math.min(10, poster.size())));
+        }
         return dynamicDTO;
     }
 
@@ -173,6 +183,9 @@ public class RecommendServiceImpl implements RecommendService {
 //        }
 
         List<Job> recJobList = employMapper.selectList(new QueryWrapper<Job>());
+        recJobList.forEach(job -> {
+            job.setFirmName(firmMapper.selectById(job.getFirmId()).getName());
+        });
         Collections.shuffle(recJobList);
         List<Job> result = new ArrayList<>();
         if(!recJobList.isEmpty()) result = recJobList.subList(0, Math.min(9, recJobList.size()));

@@ -24,9 +24,9 @@ public class RecommendController {
         return new ReturnProtocol(true,"推送成功",recommendService.recTrends());
     }
 
-    @PostMapping("/recRandomTrends")
-    public ReturnProtocol recRandomTrends(){
-        return new ReturnProtocol(true, recommendService.recRandomTrends());
+    @PostMapping("/recRandomTrends/{type}")
+    public ReturnProtocol recRandomTrends(@PathVariable("type")int type){
+        return new ReturnProtocol(true, recommendService.recRandomTrends(type));
     }
 
     @PostMapping("/recJobForVisitor")
