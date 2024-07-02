@@ -15,6 +15,7 @@ public class MyCorsFilter {
         CorsConfiguration config = new CorsConfiguration();
         // 支持域
         config.addAllowedOriginPattern("*");
+
         // 是否发送 Cookie
         config.setAllowCredentials(true);
         // 支持请求方式
